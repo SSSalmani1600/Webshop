@@ -1,6 +1,6 @@
 # BPMN Documentatie
 
-In dit document worden de BPMN-diagrammen van Sem, Kevin, Dion, Nedzhet en Nabil beschreven. Sem heeft twee BPMN-diagrammen gemaakt: **Inloggen** en **Add to Cart**. De overige vier projectgenoten zullen hun documentatie in de volgende secties toevoegen.
+In dit document worden de BPMN-diagrammen van Sem, Kevin, Dion, Nedzhet en Nabil beschreven. 
 
 ---
 

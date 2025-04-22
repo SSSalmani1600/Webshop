@@ -22,8 +22,13 @@ export class OrderService {
                 sessionId,
                 orderNumber,
                 totalPrice
-            )
+            );
+
+            return result.insertId;
+        } catch (e) {
+            throw new Error(`Failed to create order: ${e}`);
+        } finally {
+            connection.release();
         }
     }
-
 }

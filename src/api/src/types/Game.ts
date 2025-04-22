@@ -8,4 +8,5 @@ export interface Game {
     images: string;
     authors: string;
     tags: string;
+    price?: number | null;
 }

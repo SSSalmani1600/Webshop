@@ -30,6 +30,7 @@ router.get("/secret", (req, res) => welcomeController.getSecret(req, res));
 
 // TODO: The following endpoints have to be implemented in their own respective controller
 router.get("/products", (_req, _res) => productController.getAllGames(_req, _res));
+router.get("/product-prices/:id", (req, res) => productController.getGamePrice(req, res));
 
 router.get("/products/:id", (_req, _res) => {
     throw new Error("Return a specific product");

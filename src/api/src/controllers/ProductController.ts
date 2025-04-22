@@ -15,4 +15,21 @@ export class ProductController {
             res.status(500).json({ error: "Failed to fetch games." });
         }
     }
+
+    public async getGamePrice(req: Request, res: Response): Promise<void> {
+        const gameId: string = req.params.id;
+
+        try {
+            const priceRes: globalThis.Response = await fetch(`http://oege.ie.hva.nl:8889/api/productprices/${gameId}`);
+            if (!priceRes.ok) throw new Error("Price API error");
+
+            // eslint-disable-next-line @typescript-eslint/typedef, @typescript-eslint/no-unsafe-assignment
+            const data = await priceRes.json();
+            res.json(data);
+        }
+        catch (error) {
+            console.error("Fout bij ophalen van prijs:", error);
+            res.status(500).json({ error: "Failed to fetch price." });
+        }
+    }
 }

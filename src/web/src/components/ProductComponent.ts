@@ -1,10 +1,11 @@
 import type { Game } from "../../../api/src/types/Game";
+import type { GamePrices } from "../../../api/src/types/GamePrices";
 
 interface SessionResponse {
     sessionId: string;
 }
 
-class GameList extends HTMLElement {
+export class GameList extends HTMLElement {
     public constructor() {
         super();
         this.attachShadow({ mode: "open" });
@@ -15,7 +16,6 @@ class GameList extends HTMLElement {
 
         try {
             const sessionId: string = await this.getSession();
-            console.log("Session ID:", sessionId);
 
             const res: Response = await fetch("http://localhost:3001/products", {
                 headers: {
@@ -37,11 +37,30 @@ class GameList extends HTMLElement {
                 return;
             }
 
-            this.render(games);
+            await this.render(games);
         }
         catch (error) {
             console.error("Er trad een fout op:", error);
             this.renderError("Er is een onverwachte fout opgetreden.");
+        }
+    }
+
+    private async fetchGamePrice(gameId: number): Promise<number | null> {
+        try {
+            const sessionId: string = await this.getSession();
+            const res: Response = await fetch(`http://localhost:3001/product-prices/${gameId}`, {
+                headers: {
+                    "x-session": sessionId,
+                },
+            });
+
+            const data: GamePrices[] = (await res.json()) as GamePrices[];
+
+            return data[0]?.price ?? null;
+        }
+        catch (error) {
+            console.error(`Fout bij ophalen van prijs voor game ${gameId}:`, error);
+            return null;
         }
     }
 
@@ -55,7 +74,6 @@ class GameList extends HTMLElement {
             "sessionId" in data &&
             typeof (data as SessionResponse).sessionId === "string"
         ) {
-            console.log("Session opgehaald:", data);
             return (data as SessionResponse).sessionId;
         }
 
@@ -84,7 +102,7 @@ class GameList extends HTMLElement {
         this.shadowRoot.innerHTML = style + `<p>${message}</p>`;
     }
 
-    private render(games: Game[]): void {
+    private async render(games: Game[]): Promise<void> {
         const style: string = `
             <style>
               :host {
@@ -92,13 +110,13 @@ class GameList extends HTMLElement {
                 padding: 20px;
                 font-family: Arial, sans-serif;
               }
-
+    
               .game-container {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 20px;
               }
-
+    
               .game {
                 width: 200px;
                 text-align: center;
@@ -107,7 +125,7 @@ class GameList extends HTMLElement {
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                 padding: 10px;
               }
-
+    
               .product-image {
                 width: 100%;
                 height: 200px;
@@ -115,18 +133,31 @@ class GameList extends HTMLElement {
                 border-radius: 8px;
                 background-color: #f5f5f5;
               }
-
+    
               .game strong {
                 display: block;
                 font-size: 16px;
                 font-weight: bold;
                 margin-top: 10px;
               }
+    
+              .price {
+                margin-top: 5px;
+                color: #333;
+                font-size: 14px;
+              }
             </style>
         `;
 
-        const content: string = games
-            .map((game: Game): string => {
+        const gamesWithPrices: Game[] = await Promise.all(
+            games.map(async game => {
+                const price: number | null = await this.fetchGamePrice(game.id);
+                return { ...game, price };
+            })
+        );
+        console.log("Games with prices:", gamesWithPrices);
+        const content: string = gamesWithPrices
+            .map(game => {
                 const imageUrl: string =
                     typeof game.images === "string" && game.images.length > 0
                         ? game.images.split(",")[0].trim()
@@ -134,17 +165,22 @@ class GameList extends HTMLElement {
 
                 const gameTitle: string = game.title;
 
+                console.log("Game Price:", game.price);
+                const price: string = game.price !== null && game.price !== undefined
+                    ? `€ ${game.price.toFixed(2)}`
+                    : "Prijs onbekend";
+
                 return `
                     <div class="game">
                         <img class="product-image" src="${imageUrl}" alt="${gameTitle}" />
                         <strong>${gameTitle}</strong>
+                        <div class="price">${price}</div>
                     </div>
                 `;
             })
             .join("");
 
         if (!this.shadowRoot) return;
-
         this.shadowRoot.innerHTML = style + `<div class="game-container">${content}</div>`;
     }
 }

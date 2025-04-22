@@ -1,5 +1,5 @@
 import { DatabaseService } from "./DatabaseService";
-import { PoolConnection } from "mysql2";
+import { PoolConnection, ResultSetHeader } from "mysql2";
 
 export class OrderService {
     private readonly _db: DatabaseService = new DatabaseService();
@@ -10,6 +10,20 @@ export class OrderService {
         totalPrice: number
     ): Promise<number> {
         const connection: PoolConnection = await this._db.openConnection();
+
+        try {
+            const result: ResultSetHeader = await this._db.query<ResultSetHeader>(
+                connection,
+                `
+                INSERT INTO \`order\` (session_id, order_number, total_price)
+                VALUES (?, ?, ?)
+
+                `,
+                sessionId,
+                orderNumber,
+                totalPrice
+            )
+        }
     }
 
 }

@@ -1,5 +1,6 @@
-import { Request,Response } from "express";
+import { Request, Response } from "express";
 import { OrderService } from "@api/services/OrderService";
+import { sessionMiddleware } from "@api/middleware/sessionMiddleware";
 
 export class OrderController {
     private readonly _orderService: OrderService = new OrderService();
@@ -11,7 +12,7 @@ export class OrderController {
 
     if (!orderNumber || totalPrice === undefined) {
       res.status(400).json({ error: "Ordernummer of totaalprijs ontbreekt" });
-      return;
-        
+      return;  
+      
     } 
 }

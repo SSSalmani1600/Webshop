@@ -1,5 +1,5 @@
 import { DatabaseService } from "./DatabaseService";
-import { PoolConnection, ResultSetHeader } from "mysql2";
+import { PoolConnection, ResultSetHeader } from "mysql2/promise";
 
 export class OrderService {
     private readonly _db: DatabaseService = new DatabaseService();
@@ -25,9 +25,11 @@ export class OrderService {
             );
 
             return result.insertId;
-        } catch (e) {
+        }
+        catch (e) {
             throw new Error(`Failed to create order: ${e}`);
-        } finally {
+        }
+        finally {
             connection.release();
         }
     }

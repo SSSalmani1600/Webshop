@@ -27,7 +27,7 @@ export class OrderService {
             return result.insertId;
         }
         catch (e) {
-            throw new Error(`Failed to create order: ${e}`);
+            throw new Error(`Bestelling maken mislukt: ${e}`);
         }
         finally {
             connection.release();

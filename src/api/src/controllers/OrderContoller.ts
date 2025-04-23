@@ -10,7 +10,7 @@ export class OrderController {
     }
 
     if (!orderNumber || totalPrice === undefined) {
-      res.status(400).json({ error: "Missing orderNumber or totalPrice" });
+      res.status(400).json({ error: "Ordernummer of totaalprijs ontbreekt" });
       return;
         
     } 

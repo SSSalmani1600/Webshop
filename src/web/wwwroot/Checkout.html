@@ -2,42 +2,56 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checkout</title>
-  <link rel="stylesheet" href="Checkout.css">
+  <title>Afrekenen</title>
+  <link rel="stylesheet" href="checkout.css">
 </head>
 <body>
+  <main class="checkout-container">
+    <section class="checkout-left">
+      <h2>Afrekenen</h2>
 
-  <div class="checkout-container">
-    <h2>Afrekenen</h2>
+      <div class="checkout-section">
+        <h3>Verzendadres</h3>
+        <form>
+          <input type="text" placeholder="Naam">
+          <input type="text" placeholder="Straat + Huisnummer">
+          <input type="text" placeholder="Postcode + Plaats">
+          <input type="text" placeholder="Telefoonnummer">
+        </form>
+      </div>
 
-    <form action="/submit-order" method="POST">
-      <label for="fullname">Volledige naam</label>
-      <input type="text" id="fullname" name="fullname" required>
+      <div class="checkout-section">
+        <h3>Verzendmethode</h3>
+        <label><input type="radio" name="verzending"> Standaard - Gratis</label>
+        <label><input type="radio" name="verzending"> Express - €5,95</label>
+      </div>
 
-      <label for="email">E-mailadres</label>
-      <input type="email" id="email" name="email" required>
+      <div class="checkout-section">
+        <h3>Betaalmethode</h3>
+        <label><input type="radio" name="betaling"> iDEAL</label>
+        <label><input type="radio" name="betaling"> Creditcard</label>
+        <label><input type="radio" name="betaling"> PayPal</label>
+      </div>
+    </section>
 
-      <label for="address">Adres</label>
-      <input type="text" id="address" name="address" required>
-
-      <label for="zipcode">Postcode</label>
-      <input type="text" id="zipcode" name="zipcode" required>
-
-      <label for="city">Plaats</label>
-      <input type="text" id="city" name="city" required>
-
-      <label for="payment">Betaalmethode</label>
-      <select id="payment" name="payment" required>
-        <option value="">-- Kies een betaalmethode --</option>
-        <option value="ideal">iDEAL</option>
-        <option value="creditcard">Creditcard</option>
-        <option value="paypal">PayPal</option>
-      </select>
-
-      <button type="submit">Bestelling plaatsen</button>
-    </form>
-  </div>
-
+    <aside class="checkout-summary">
+      <h3>Winkelwagen</h3>
+      <div class="summary-item">
+        <img src="product.jpg" alt="Product">
+        <div>
+          <p>Productnaam</p>
+          <p>Maat: M</p>
+          <p>€59,95</p>
+        </div>
+      </div>
+      <hr>
+      <div class="summary-total">
+        <p>Subtotaal: €59,95</p>
+        <p>Verzendkosten: €0,00</p>
+        <p><strong>Totaal: €59,95</strong></p>
+      </div>
+      <button class="checkout-btn">Bestelling plaatsen</button>
+    </aside>
+  </main>
 </body>
 </html>

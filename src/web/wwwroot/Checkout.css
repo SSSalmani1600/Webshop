@@ -39,15 +39,28 @@ body {
     padding-bottom: 5px;
   }
   
-  input[type="text"] {
+  input[type="text"],
+  input[type="email"],
+  select {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fafafa;
   }
   
   label {
     display: block;
     margin-bottom: 10px;
+  }
+  
+  .payment-fields {
+    margin-top: 10px;
+  }
+  
+  .hidden {
+    display: none;
   }
   
   .summary-item {
@@ -74,5 +87,6 @@ body {
     border: none;
     cursor: pointer;
     font-weight: bold;
+    border-radius: 4px;
   }
   

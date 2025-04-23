@@ -7,21 +7,27 @@
 </head>
 
 <body>
-    <div class="cart-container">
-      <h2>Mijn winkelwagen</h2>
+    
+
+    <div class="cart-header">
+        <h2>Winkelwagen</h2>
+        <p>Rond je bestelling af - producten aan je winkelwagen toevoegen betekent geen reservering</p>
+    </div>
+
+    <div class="cart-container"> 
+        <div class="cart-content">
+            <div id="cart-list"></div>
   
-      <div class="cart-content">
-        <div id="cart-list"></div>
-  
-        <div class="cart-summary">
-          <h3>Totaal</h3>
-          <p id="total-price">€0,00</p>
-          <button class="checkout-button">Ga door naar checkout</button>
+            <div class="cart-summary">
+                <h3>Totaal</h3>
+                <p id="total-price">€0,00</p>
+                <button class="checkout-button">Ga door naar checkout</button>
+            </div>
         </div>
-      </div>
+
     </div>
   
     <script type="module" src="/src/pages/cart.ts" defer></script>
-  </body>
+</body>
   
 </html>

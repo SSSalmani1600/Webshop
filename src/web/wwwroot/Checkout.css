@@ -55,6 +55,12 @@ body {
     margin-bottom: 10px;
   }
   
+  .required {
+    color: red;
+    margin-left: 3px;
+    font-weight: bold;
+  }
+  
   .payment-fields {
     margin-top: 10px;
   }

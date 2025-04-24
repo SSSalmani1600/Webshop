@@ -1,5 +1,6 @@
 import { DatabaseService } from "./DatabaseService";
 import { RowDataPacket } from "mysql2";
+import { PoolConnection } from "mysql2/promise";
 
 interface UserData extends RowDataPacket {
     id: number;
@@ -12,12 +13,12 @@ interface UserData extends RowDataPacket {
 export class LoginService {
     private databaseService: DatabaseService;
 
-    constructor() {
+    public constructor() {
         this.databaseService = new DatabaseService();
     }
 
     public async validateUser(loginIdentifier: string, password: string): Promise<UserData | null> {
-        const connection = await this.databaseService.openConnection();
+        const connection: PoolConnection = await this.databaseService.openConnection();
 
         try {
             // Zoek de gebruiker op basis van gebruikersnaam OF e-mail
@@ -40,7 +41,7 @@ export class LoginService {
     }
 
     public async updateLoginStatus(userId: number, loggedIn: boolean): Promise<void> {
-        const connection = await this.databaseService.openConnection();
+        const connection: PoolConnection = await this.databaseService.openConnection();
 
         try {
             await this.databaseService.query(

@@ -12,6 +12,8 @@ interface LoginResponse {
 }
 
 export class LoginComponent extends HTMLElement {
+    // We declareren deze variabelen maar gebruiken ze niet direct in de code
+    // Ze worden gebruikt in andere contexten zoals event handlers
     private _emailInput: HTMLInputElement | null = null;
     private _passwordInput: HTMLInputElement | null = null;
     private _rememberMeCheckbox: HTMLInputElement | null = null;
@@ -67,6 +69,7 @@ export class LoginComponent extends HTMLElement {
 
         // Directe referenties ophalen om zeker te zijn
         const emailInput: HTMLInputElement = (this.querySelector("input[name='username']") || this.querySelector("input[type='email']")) as HTMLInputElement;
+<<<<<<< HEAD
         const passwordComponent: any = this.querySelector("password-input") as unknown;
 
         // Check of passwordComponent de getValue methode heeft
@@ -76,6 +79,17 @@ export class LoginComponent extends HTMLElement {
             console.log("Password from component getValue:", password);
         } else {
             const passwordInput: HTMLInputElement | null = passwordComponent?.shadowRoot?.querySelector("input.password-input") as HTMLInputElement;
+=======
+        const passwordComponent: Element | null = this.querySelector("password-input");
+        
+        // Check of passwordComponent de getValue methode heeft
+        let password: string = "";
+        if (passwordComponent && typeof ((passwordComponent as unknown) as { getValue?: () => string }).getValue === "function") {
+            password = ((passwordComponent as unknown) as { getValue: () => string }).getValue();
+            console.log("Password from component getValue:", password);
+        } else {
+            const passwordInput: HTMLInputElement | null = passwordComponent?.shadowRoot?.querySelector("input.password-input") as HTMLInputElement | null;
+>>>>>>> 58ffa230c71f70fe5cd59e47d65df5e12f79eff0
             password = passwordInput?.value || "";
             console.log("Password from shadowRoot:", password);
         }
@@ -87,7 +101,11 @@ export class LoginComponent extends HTMLElement {
         }
 
         const loginIdentifier: string = emailInput.value.trim();
+<<<<<<< HEAD
         console.log("Login with:", loginIdentifier, password);
+=======
+        console.log("Login with:", loginIdentifier, password ? "***password provided***" : "***no password***");
+>>>>>>> 58ffa230c71f70fe5cd59e47d65df5e12f79eff0
         const rememberMe: boolean = this._rememberMeCheckbox?.checked || false;
 
         if (!loginIdentifier || !password) {
@@ -157,7 +175,11 @@ export class LoginComponent extends HTMLElement {
 
         // Vraag anders een nieuwe sessie aan
         const res: Response = await fetch("http://localhost:3001/session");
+<<<<<<< HEAD
         const data: any = await res.json();
+=======
+        const data: { sessionId: string } = await res.json() as { sessionId: string };
+>>>>>>> 58ffa230c71f70fe5cd59e47d65df5e12f79eff0
 
         if (data && data.sessionId) {
             return data.sessionId;
@@ -183,7 +205,11 @@ export class LoginComponent extends HTMLElement {
 
         // Voor het password veld in password-input component
         if (passwordComponent) {
+<<<<<<< HEAD
             const passwordInput: HTMLInputElement | null = passwordComponent.shadowRoot?.querySelector("input.password-input") as HTMLInputElement;
+=======
+            const passwordInput: HTMLInputElement | null = ((passwordComponent as unknown) as { shadowRoot?: ShadowRoot }).shadowRoot?.querySelector("input.password-input") as HTMLInputElement | null;
+>>>>>>> 58ffa230c71f70fe5cd59e47d65df5e12f79eff0
             if (passwordInput) {
                 const originalBorder: string = passwordInput.style.boxShadow;
                 passwordInput.style.boxShadow = "0 0 0 2px #ff5555";

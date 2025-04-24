@@ -145,7 +145,7 @@ export class CartPageComponent extends HTMLElement {
             background: linear-gradient(90deg, rgba(38, 38, 38, 1) 0%, rgba(38, 38, 38, 0) 53%);
             display: block;
             margin: 0;
-            padding: 1.5rem;
+            padding: 2.5rem;
             box-sizing: border-box;
         }
 

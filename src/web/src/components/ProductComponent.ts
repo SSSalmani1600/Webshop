@@ -1,50 +1,61 @@
 import type { Game } from "../../../api/src/types/Game";
 import type { GamePrices } from "../../../api/src/types/GamePrices";
 
+// Interface representing the response structure for a session
 interface SessionResponse {
     sessionId: string;
 }
 
+// Define a custom web component named GameList
 export class GameList extends HTMLElement {
     public constructor() {
         super();
+        // Attach a shadow DOM for encapsulation
         this.attachShadow({ mode: "open" });
     }
 
+    // Called when the component is inserted into the DOM
     public async connectedCallback(): Promise<void> {
         console.log("GameList component is connected.");
 
         try {
+            // Retrieve session ID
             const sessionId: string = await this.getSession();
 
+            // Fetch the list of games
             const res: Response = await fetch("http://localhost:3001/products", {
                 headers: {
                     "x-session": sessionId,
                 },
             });
 
+            // Handle fetch error
             if (!res.ok) {
-                console.error("Fout bij het ophalen van games:", res.status);
-                this.renderError(`Fout bij ophalen van games: ${res.status}`);
+                console.error("Error fetching games:", res.status);
+                this.renderError(`Error fetching games: ${res.status}`);
                 return;
             }
 
+            // Parse the games JSON response
             const games: Game[] = (await res.json()) as Game[];
-            console.log("Games opgehaald:", games);
+            console.log("Fetched games:", games);
 
+            // If no games found, show error
             if (games.length === 0) {
-                this.renderError("Geen games gevonden.");
+                this.renderError("No games found.");
                 return;
             }
 
+            // Render the game list
             await this.render(games);
         }
         catch (error) {
-            console.error("Er trad een fout op:", error);
-            this.renderError("Er is een onverwachte fout opgetreden.");
+            console.error("An error occurred:", error);
+            this.renderError("An unexpected error occurred.");
         }
     }
 
+    // Fetch the price for a specific game by its ID
     private async fetchGamePrice(gameId: number): Promise<number | null> {
         try {
             const sessionId: string = await this.getSession();
@@ -56,18 +67,21 @@ export class GameList extends HTMLElement {
 
             const data: GamePrices[] = (await res.json()) as GamePrices[];
 
+            // Return the first price found, or null
             return data[0]?.price ?? null;
         }
         catch (error) {
-            console.error(`Fout bij ophalen van prijs voor game ${gameId}:`, error);
+            console.error(`Error fetching price for game ${gameId}:`, error);
             return null;
         }
     }
 
+    // Retrieve a session ID from the backend
     private async getSession(): Promise<string> {
         const res: Response = await fetch("http://localhost:3001/session");
         const data: unknown = await res.json();
 
+        // Validate and return the session ID
         if (
             typeof data === "object" &&
             data !== null &&
@@ -77,9 +91,10 @@ export class GameList extends HTMLElement {
             return (data as SessionResponse).sessionId;
         }
 
-        throw new Error("Ongeldig sessie-object");
+        throw new Error("Invalid session object");
     }
 
+    // Render an error message to the shadow DOM
     private renderError(message: string): void {
         const style: string = `
             <style>
@@ -102,6 +117,7 @@ export class GameList extends HTMLElement {
         this.shadowRoot.innerHTML = style + `<p>${message}</p>`;
     }
 
+    // Render the list of games, including price and image
     private async render(games: Game[]): Promise<void> {
         const style: string = `
             <style>
@@ -110,13 +126,13 @@ export class GameList extends HTMLElement {
                 padding: 20px;
                 font-family: Arial, sans-serif;
               }
-    
+
               .game-container {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 20px;
               }
-    
+
               .game {
                 width: 200px;
                 text-align: center;
@@ -125,7 +141,7 @@ export class GameList extends HTMLElement {
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                 padding: 10px;
               }
-    
+
               .product-image {
                 width: 100%;
                 height: 200px;
@@ -133,14 +149,14 @@ export class GameList extends HTMLElement {
                 border-radius: 8px;
                 background-color: #f5f5f5;
               }
-    
+
               .game strong {
                 display: block;
                 font-size: 16px;
                 font-weight: bold;
                 margin-top: 10px;
               }
-    
+
               .price {
                 margin-top: 5px;
                 color: #333;
@@ -149,13 +165,17 @@ export class GameList extends HTMLElement {
             </style>
         `;
 
+        // Fetch the price for each game and merge it into the game object
         const gamesWithPrices: Game[] = await Promise.all(
             games.map(async game => {
                 const price: number | null = await this.fetchGamePrice(game.id);
                 return { ...game, price };
             })
         );
+
         console.log("Games with prices:", gamesWithPrices);
+
+        // Generate HTML content for each game
         const content: string = gamesWithPrices
             .map(game => {
                 const imageUrl: string =
@@ -168,7 +188,7 @@ export class GameList extends HTMLElement {
                 console.log("Game Price:", game.price);
                 const price: string = game.price !== null && game.price !== undefined
                     ? `€ ${game.price.toFixed(2)}`
-                    : "Prijs onbekend";
+                    : "Price unknown";
 
                 return `
                     <div class="game">
@@ -185,4 +205,5 @@ export class GameList extends HTMLElement {
     }
 }
 
+// Register the custom element so it can be used in HTML
 customElements.define("game-list", GameList);

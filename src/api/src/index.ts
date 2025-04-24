@@ -1,3 +1,11 @@
+// Zorg dat defineMetadata global beschikbaar is als het niet bestaat
+(global as any).defineMetadata = function(key: string, value: any, target: any) {
+    if (!target.__metadata) {
+        target.__metadata = {};
+    }
+    target.__metadata[key] = value;
+};
+
 import "@hboictcloud/metadata";
 
 import "dotenv/config";

@@ -24,17 +24,14 @@ const loginController: LoginController = new LoginController();
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: any, res: any) => loginController.login(req, res));
 
-
 // NOTE: After this line, all endpoints will check for a session.
 router.use(sessionMiddleware);
 
-<<<<<<< src/api/src/routes.ts
 router.get("/session", (req: any, res: any) => welcomeController.getSession(req, res));
 router.delete("/session", (req: any, res: any) => welcomeController.deleteSession(req, res));
 router.delete("/session/expired", (req: any, res: any) => welcomeController.deleteExpiredSessions(req, res));
 router.get("/welcome", (req: any, res: any) => welcomeController.getWelcome(req, res));
-router.get("/cart", (_req, _res) => cartController.getCart(_req, _res));
->>>>>>> src/api/src/routes.ts
+router.get("/cart", (req: any, res: any) => cartController.getCart(req, res));
 
 // NOTE: After this line, all endpoints will require a valid session.
 router.use(requireValidSessionMiddleware);
@@ -51,13 +48,4 @@ router.get("/products/:id", (_req: any, _res: any) => {
     throw new Error("Return a specific product");
 });
 
-router.post("/cart/add", (_req: any, _res: any) => {
-    throw new Error("Add a product to the cart");
-});
-<<<<<<< src/api/src/routes.ts
-
-router.get("/cart", (_req: any, _res: any) => {
-    throw new Error("Return a list of products in the cart and the total price");
-});
-=======
->>>>>>> src/api/src/routes.ts
+router.post("/cart/add", (req: any, res: any) => cartController.addToCart(req, res));

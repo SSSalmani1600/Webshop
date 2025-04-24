@@ -45,4 +45,34 @@ Het endpoint retourneert een array van **Game-objecten**. Elk object bevat o.a.:
     },
 ]
 
+## 📌 Endpoint: `GET /api/productprices/:gameId`
+
+### ✅ Wat doet het endpoint?
+Het `/api/productprices/:gameId` endpoint haalt de prijsinformatie op van een specifieke game, op basis van het opgegeven `gameId`.
+
+### 🔁 Type verzoek
+`GET`
+
+### 📥 Ontvangen data
+
+#### URL Parameter:
+- `:gameId` _(string of number)_: Het ID van de game waarvan de prijs opgehaald moet worden.
+
+#### Headers:
+- `x-session` _(string)_: Een geldige sessie-ID die wordt meegegeven voor authenticatie of sessiebeheer.
+
+### 📤 Teruggegeven data
+Het endpoint retourneert een array met één of meerdere **GamePrices-objecten**. Elk object bevat o.a.:
+
+```json
+[
+  {
+        "price": 39.99,
+        "productId": "1",
+        "currency": "EURO",
+        "validUntil": "2025-04-24T12:27:33.050+00:00"
+    }
+]
+
+
 

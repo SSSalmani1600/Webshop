@@ -1,0 +1,74 @@
+/* Navbar styles voor de login pagina */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1c1c1c;
+    padding: 1rem 2rem;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 100;
+}
+
+.navbar .logo a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+}
+
+.navbar .logo img {
+    height: 30px;
+    margin-right: 0.5rem;
+}
+
+.navbar nav ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar nav ul li {
+    margin: 0 1rem;
+}
+
+.navbar nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar nav ul li a:hover {
+    color: #805ad5; /* Paarse kleur uit het logo */
+}
+
+.auth-buttons .btn-register {
+    background-color: transparent;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.auth-buttons .btn-register:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    
+    .navbar nav ul {
+        margin: 1rem 0;
+    }
+} 

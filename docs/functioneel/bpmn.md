@@ -68,12 +68,26 @@ In dit document worden de BPMN-diagrammen van Sem, Kevin, Dion, Nedzhet en Nabil
 
 ---
 
-## 5. Documentatie Nedzhet
+## 5. Documentatie Nedzhat
 
-### 5.1 BPMN van Nedzhet
-*(Plaats hier het BPMN-diagram van Nedzhet, met bijbehorende uitleg.)*
+### 5.1 BPMN van Nedzhat - Order Complete
 
----
+#### 6.1.1 Screenshot  
+
+![BPMN Diagram - Order Complete](OrderComplete.png)
+
+#### 6.1.2 Uitleg  
+
+1. **Klant klikt op betalen**
+De klant heeft alle gegevens ingevulled en klikt op betalen.
+
+2. **Bevesteging van betaling wordt ontvangen**
+   - **Nee**
+     - **Toon foutmelding en probeer opnieuw**
+       - Er verschijnt een foutmelding en de klant wordt terug naar de checkout pagina gestuurd.
+   - **Ja**
+     - **Order wordt opgeslagen in de database**
+       - Een bevestigins mail wordt gestuurd naar de klant van de bestelling.
 
 ## 6. Documentatie Nabil
 

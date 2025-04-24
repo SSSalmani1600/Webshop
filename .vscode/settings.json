@@ -19,5 +19,8 @@
     "npm.packageManager": "npm",
     "[typescript]": {
         "editor.defaultFormatter": "vscode.typescript-language-features"
+    "[css]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+
     }
 }

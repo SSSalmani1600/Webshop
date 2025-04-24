@@ -7,7 +7,7 @@ beforeEach(() => {
         customElements.define("order-confirmation", OrderConfirmationComponent);
     }
 
-    document.body.innerHTML = "",
+    document.body.innerHTML = "";
 });
 
 describe("OrderConfirmationComponent", () => {

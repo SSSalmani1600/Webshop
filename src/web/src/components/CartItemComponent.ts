@@ -7,15 +7,21 @@ export class CartItemComponent extends HTMLElement {
         const price: number = typeof item.price === "string" ? parseFloat(item.price) : item.price;
 
         this.innerHTML = `
-      <div class="cart-item">
-        <img src="${item.thumbnail}" alt="${item.title}">
-        <div>
-          <h4>${item.title}</h4>
-          <p>Prijs: €${price.toFixed(2)}</p>
-          <p>Aantal: ${item.quantity}</p>
-        </div>
-      </div>
-    `;
+  <div class="cart-item">
+
+    <img src="${item.thumbnail}" alt="${item.title}">
+
+    <div class="item-details">
+      <h4>${item.title}</h4>
+      <p>Aantal: ${item.quantity}</p>
+    </div>
+
+    <div class="item-price">
+      €${price.toFixed(2)}
+    </div>
+    
+  </div>
+`;
     }
 }
 

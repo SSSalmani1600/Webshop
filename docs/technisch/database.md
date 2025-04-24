@@ -5,4 +5,4 @@
 ![UML](../img/UML%20case%20diagram.png)
 
 ## Bijgewerkt .sql bestand
-[Open SQL bestand](./../.sql)
+[Open SQL bestand](./../pb4sea2425_laajoowiicoo13_dev.sql)

@@ -19,6 +19,18 @@ export class CartPageComponent extends HTMLElement {
             box-sizing: border-box;
         }
 
+        .continue-shopping-button {
+        margin: 2rem auto 0;
+        padding: 0.8rem 1.5rem;
+        background-color: #222121;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        cursor: pointer;
+        text-align: center;
+    }
+
         .cart-container {
             min-width: 300px;
             padding: 1.5rem;
@@ -165,67 +177,70 @@ export class CartPageComponent extends HTMLElement {
             flex-direction: column;
             }
 
-            .cart-item {
+        .cart-item {
             flex-direction: column;
             align-items: flex-start;
-            }
+        }
 
-            .cart-item img {
+        .cart-item img {
             width: 100%;
             height: auto;
-            }
+        }
 
-            .item-price {
+        .item-price {
             text-align: left;
             padding-top: 0.5rem;
-            }
-
-            .checkout-button {
-            width: 100%;
-            }
-
-            .summary-inner {
-            width: 100%;
-            }
         }
+
+        .checkout-button {
+            width: 100%;
+       }
+
+        .summary-inner {
+            width: 100%;
+        }
+}
 `;
 
         const container: HTMLDivElement = document.createElement("div");
         container.innerHTML = `
-      <div class="cart-header">
+    <div class="cart-header">
         <h2>Winkelwagen</h2>
         <p>Rond je bestelling af - producten aan je winkelwagen toevoegen betekent geen reservering</p>
-      </div>
+    </div>
 
-      <div class="cart-container">
-
+    <div class="cart-container">
         <div class="cart-content">
-
-          <div id="cart-list"></div>
+            <div id="cart-list"></div>
 
             <div class="cart-summary">
                 <div class="summary-inner">
-                <div class="cart-summary-header">
-                <h3>Totaal</h3>
-                <p id="total-price">€0,00</p>
+                    <div class="cart-summary-header">
+                        <h3>Totaal</h3>
+                        <p id="total-price">€0,00</p>
+                    </div>
+                    <button class="checkout-button">Ga door naar checkout</button>
+                </div>
             </div>
-            <button class="checkout-button">Ga door naar checkout</button>
-  </div>
-</div>
-</div>
-
-
-
         </div>
-        
-      </div>
-    `;
+
+        <!-- Verplaats de knop naar de shadow DOM -->
+        <button class="continue-shopping-button">Verder winkelen</button>
+    </div>
+`;
 
         shadow.append(style, container);
     }
 
     public connectedCallback(): void {
         void this.fetchCart();
+
+        const continueShoppingButton: HTMLButtonElement | null = this.shadowRoot?.querySelector(".continue-shopping-button") ?? null;
+        if (continueShoppingButton) {
+            continueShoppingButton.addEventListener("click", () => {
+                window.location.href = "index.html";
+            });
+        }
     }
 
     private async fetchCart(): Promise<void> {

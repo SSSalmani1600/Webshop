@@ -3,7 +3,7 @@ interface MetadataTarget {
     __metadata?: Record<string, unknown>;
 }
 
-(global as { defineMetadata?: (key: string, value: unknown, target: MetadataTarget) => void }).defineMetadata = 
+(global as { defineMetadata?: (key: string, value: unknown, target: MetadataTarget) => void }).defineMetadata =
 function (key: string, value: unknown, target: MetadataTarget) {
     if (!target.__metadata) {
         target.__metadata = {};

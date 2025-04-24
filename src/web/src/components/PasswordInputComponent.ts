@@ -54,7 +54,7 @@ export class PasswordInputComponent extends HTMLElement {
         button.className = "toggle-password";
         button.type = "button";
         button.setAttribute("aria-label", this._isPasswordVisible ? "Verberg wachtwoord" : "Toon wachtwoord");
-        
+
         // SVG voor het oog icoon
         button.innerHTML = `
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -104,13 +104,13 @@ export class PasswordInputComponent extends HTMLElement {
             const currentValue: string = this._input.value;
             const selectionStart: number | null = this._input.selectionStart;
             const selectionEnd: number | null = this._input.selectionEnd;
-            
+
             // Toggle de zichtbaarheid
             this._isPasswordVisible = !this._isPasswordVisible;
-            
+
             // Update direct het type van de input
             this._input.type = this._isPasswordVisible ? "text" : "password";
-            
+
             // Update het oog icoon
             const toggleButton: HTMLButtonElement | null = this.shadowRoot?.querySelector(".toggle-password") || null;
             if (toggleButton) {

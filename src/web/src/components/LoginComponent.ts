@@ -11,6 +11,8 @@ interface LoginResponse {
 }
 
 export class LoginComponent extends HTMLElement {
+    // We declareren deze variabelen maar gebruiken ze niet direct in de code
+    // Ze worden gebruikt in andere contexten zoals event handlers
     private _emailInput: HTMLInputElement | null = null;
     private _passwordInput: HTMLInputElement | null = null;
     private _rememberMeCheckbox: HTMLInputElement | null = null;
@@ -66,15 +68,15 @@ export class LoginComponent extends HTMLElement {
         
         // Directe referenties ophalen om zeker te zijn
         const emailInput: HTMLInputElement = (this.querySelector("input[name='username']") || this.querySelector("input[type='email']")) as HTMLInputElement;
-        const passwordComponent = this.querySelector("password-input");
+        const passwordComponent: Element | null = this.querySelector("password-input");
         
         // Check of passwordComponent de getValue methode heeft
-        let password = "";
-        if (passwordComponent && typeof (passwordComponent as any).getValue === "function") {
-            password = (passwordComponent as any).getValue();
+        let password: string = "";
+        if (passwordComponent && typeof ((passwordComponent as unknown) as { getValue?: () => string }).getValue === "function") {
+            password = ((passwordComponent as unknown) as { getValue: () => string }).getValue();
             console.log("Password from component getValue:", password);
         } else {
-            const passwordInput = passwordComponent?.shadowRoot?.querySelector("input.password-input") as HTMLInputElement | null;
+            const passwordInput: HTMLInputElement | null = passwordComponent?.shadowRoot?.querySelector("input.password-input") as HTMLInputElement | null;
             password = passwordInput?.value || "";
             console.log("Password from shadowRoot:", password);
         }
@@ -85,9 +87,9 @@ export class LoginComponent extends HTMLElement {
             return;
         }
 
-        const loginIdentifier = emailInput.value.trim();
+        const loginIdentifier: string = emailInput.value.trim();
         console.log("Login with:", loginIdentifier, password ? "***password provided***" : "***no password***");
-        const rememberMe = this._rememberMeCheckbox?.checked || false;
+        const rememberMe: boolean = this._rememberMeCheckbox?.checked || false;
 
         if (!loginIdentifier || !password) {
             this.showError("Vul a.u.b. alle verplichte velden in");
@@ -96,8 +98,8 @@ export class LoginComponent extends HTMLElement {
         }
 
         try {
-            const sessionId = await this.getSession();
-            const response = await fetch("http://localhost:3001/auth/login", {
+            const sessionId: string = await this.getSession();
+            const response: Response = await fetch("http://localhost:3001/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -149,17 +151,17 @@ export class LoginComponent extends HTMLElement {
 
     private async getSession(): Promise<string> {
         // Probeer eerst uit localStorage (voor 'remember me')
-        const storedSession = localStorage.getItem("sessionId");
+        const storedSession: string | null = localStorage.getItem("sessionId");
         if (storedSession) {
             return storedSession;
         }
 
         // Vraag anders een nieuwe sessie aan
-        const res = await fetch("http://localhost:3001/session");
-        const data = await res.json();
+        const res: Response = await fetch("http://localhost:3001/session");
+        const data: { sessionId: string } = await res.json() as { sessionId: string };
 
         if (data && data.sessionId) {
-            return data.sessionId as string;
+            return data.sessionId;
         }
 
         throw new Error("Kon geen sessie krijgen");
@@ -169,7 +171,7 @@ export class LoginComponent extends HTMLElement {
     private highlightErrorFields(emailInput: HTMLInputElement | null, passwordComponent: Element | null): void {
         // Voeg een rode border toe aan de invoervelden
         if (emailInput) {
-            const originalBorder = emailInput.style.border;
+            const originalBorder: string = emailInput.style.border;
             emailInput.style.border = "2px solid #ff5555";
             
             // Border na 1 seconde weer terugzetten
@@ -182,9 +184,9 @@ export class LoginComponent extends HTMLElement {
         
         // Voor het password veld in password-input component
         if (passwordComponent) {
-            const passwordInput = (passwordComponent as any).shadowRoot?.querySelector("input.password-input") as HTMLInputElement | null;
+            const passwordInput: HTMLInputElement | null = ((passwordComponent as unknown) as { shadowRoot?: ShadowRoot }).shadowRoot?.querySelector("input.password-input") as HTMLInputElement | null;
             if (passwordInput) {
-                const originalBorder = passwordInput.style.boxShadow;
+                const originalBorder: string = passwordInput.style.boxShadow;
                 passwordInput.style.boxShadow = "0 0 0 2px #ff5555";
                 
                 // Border na 1 seconde weer terugzetten

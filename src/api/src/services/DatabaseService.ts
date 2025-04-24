@@ -1,5 +1,6 @@
 import { PoolConnection, Pool, createPool, Connection } from "mysql2/promise";
 
+
 /**
  * Pool of database connections
  *

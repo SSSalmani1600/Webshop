@@ -3,6 +3,9 @@ import { WelcomeController } from "./controllers/WelcomeController";
 import { requireValidSessionMiddleware, sessionMiddleware } from "./middleware/sessionMiddleware";
 import { CartController } from "./controllers/CartController";
 import { ProductController } from "./controllers/ProductController";
+import CheckoutController from "./controllers/CheckoutController";
+
+
 
 // Create a router
 export const router: Router = Router();
@@ -43,4 +46,7 @@ router.post("/cart/add", (_req, _res) => {
     throw new Error("Add a product to the cart");
 });
 
+const checkoutController = new CheckoutController();
+
+router.get("/checkout", (req, res) => checkoutController.getCheckoutData(req, res));
 

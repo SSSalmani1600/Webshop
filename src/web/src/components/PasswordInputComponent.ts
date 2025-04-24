@@ -1,5 +1,3 @@
-import { html } from "@web/helpers/webComponents";
-
 export class PasswordInputComponent extends HTMLElement {
     private _isPasswordVisible: boolean = false;
     private _input: HTMLInputElement | null = null;
@@ -55,7 +53,7 @@ export class PasswordInputComponent extends HTMLElement {
         button.type = "button";
         button.setAttribute("aria-label", this._isPasswordVisible ? "Verberg wachtwoord" : "Toon wachtwoord");
         
-        // SVG voor het oog icoon
+        // SVG voor het oog icoon - hier moeten we backticks behouden vanwege de string interpolatie
         button.innerHTML = `
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 ${this._isPasswordVisible
@@ -115,6 +113,7 @@ export class PasswordInputComponent extends HTMLElement {
             const toggleButton: HTMLButtonElement | null = this.shadowRoot?.querySelector(".toggle-password") || null;
             if (toggleButton) {
                 toggleButton.setAttribute("aria-label", this._isPasswordVisible ? "Verberg wachtwoord" : "Toon wachtwoord");
+                // Hier moeten we backticks behouden vanwege de string interpolatie
                 toggleButton.innerHTML = `
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         ${this._isPasswordVisible

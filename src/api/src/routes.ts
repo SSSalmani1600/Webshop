@@ -1,4 +1,4 @@
-import { Router } from ".express";
+import { Router } from "express";
 import { WelcomeController } from "./controllers/WelcomeController";
 import { requireValidSessionMiddleware, sessionMiddleware } from "./middleware/sessionMiddleware";
 import { ProductController } from "./controllers/ProductController";

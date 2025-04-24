@@ -1,5 +1,10 @@
 // Zorg dat defineMetadata global beschikbaar is als het niet bestaat
-(global as any).defineMetadata = function(key: string, value: any, target: any) {
+interface MetadataTarget {
+    __metadata?: Record<string, unknown>;
+}
+
+(global as { defineMetadata?: (key: string, value: unknown, target: MetadataTarget) => void }).defineMetadata = 
+function (key: string, value: unknown, target: MetadataTarget) {
     if (!target.__metadata) {
         target.__metadata = {};
     }
@@ -9,7 +14,7 @@
 import "@hboictcloud/metadata";
 
 import "dotenv/config";
-import express, { Application } from "express"; 
+import express, { Application } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import "express-async-errors";

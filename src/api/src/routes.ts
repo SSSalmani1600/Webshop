@@ -42,3 +42,5 @@ router.get("/products/:id", (_req, _res) => {
 router.post("/cart/add", (_req, _res) => {
     throw new Error("Add a product to the cart");
 });
+
+

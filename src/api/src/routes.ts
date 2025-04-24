@@ -1,6 +1,7 @@
 import { Router } from ".express";
 import { WelcomeController } from "./controllers/WelcomeController";
 import { requireValidSessionMiddleware, sessionMiddleware } from "./middleware/sessionMiddleware";
+import { ProductController } from "./controllers/ProductController";
 
 // Create a router
 export const router: Router = Router();
@@ -12,6 +13,7 @@ router.get("/", (_: any, res: { send: (arg0: string) => void; }) => {
 
 // Forward endpoints to other routers
 const welcomeController: WelcomeController = new WelcomeController();
+const productController: ProductController = new ProductController();
 
 // NOTE: After this line, all endpoints will check for a session.
 router.use(sessionMiddleware);
@@ -27,9 +29,8 @@ router.use(requireValidSessionMiddleware);
 router.get("/secret", (req: any, res: any) => welcomeController.getSecret(req, res));
 
 // TODO: The following endpoints have to be implemented in their own respective controller
-router.get("/products", (_req: any, _res: any) => {
-    throw new Error("Return a list of products");
-});
+router.get("/products", (_req: any, _res: any) => productController.getAllGames(_req, _res));
+router.get("/product-prices/:id", (req: any, res:any) => productController.getGamePrice(req, res));
 
 router.get("/products/:id", (_req: any, _res: any) => {
     throw new Error("Return a specific product");

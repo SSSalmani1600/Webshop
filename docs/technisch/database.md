@@ -3,3 +3,5 @@
 
 ## UML Use case diagram
 ![UML](../img/UML%20case%20diagram.png)
+
+## Bijgewerkt .sql bestand

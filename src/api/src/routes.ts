@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { WelcomeController } from "./controllers/WelcomeController";
+import { OrderController } from "./controllers/OrderContoller";
 import { requireValidSessionMiddleware, sessionMiddleware } from "./middleware/sessionMiddleware";
 
 // Create a router
@@ -12,6 +13,7 @@ router.get("/", (_, res) => {
 
 // Forward endpoints to other routers
 const welcomeController: WelcomeController = new WelcomeController();
+const orderController: OrderController = new OrderController();
 
 // NOTE: After this line, all endpoints will check for a session.
 router.use(sessionMiddleware);
@@ -25,6 +27,8 @@ router.get("/welcome", (req, res) => welcomeController.getWelcome(req, res));
 router.use(requireValidSessionMiddleware);
 
 router.get("/secret", (req, res) => welcomeController.getSecret(req, res));
+
+router.post("/order/complete", (req, res) => orderController.createOrder(req, res));
 
 // TODO: The following endpoints have to be implemented in their own respective controller
 router.get("/products", (_req, _res) => {

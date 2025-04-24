@@ -12,7 +12,13 @@ export class OrderController {
                 res.status(401).json({ error: "Geen geldige sessie" });
                 return;
             }
-        
+            
+            const { orderNumber, totalPrice } = req.body;
+
+            if (!orderNumber || !totalPrice) {
+                res.status(400).json({ error: "orderNumber en totalPrice zijn verplicht" });
+                return;
+            }
         }
     }
 

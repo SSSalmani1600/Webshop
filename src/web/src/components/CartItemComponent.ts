@@ -8,18 +8,12 @@ export class CartItemComponent extends HTMLElement {
 
         this.innerHTML = `
   <div class="cart-item">
-
     <img src="${item.thumbnail}" alt="${item.title}">
-
     <div class="item-details">
-      <h4>${item.title}</h4>
-      <p>Aantal: ${item.quantity}</p>
+      <h4 class="item-title">${item.title}</h4>
+      <p class="item-quantity">Aantal: ${item.quantity}</p>
     </div>
-
-    <div class="item-price">
-      €${price.toFixed(2)}
-    </div>
-    
+    <div class="item-price">€${price.toFixed(2)}</div>
   </div>
 `;
     }

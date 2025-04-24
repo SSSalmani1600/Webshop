@@ -77,5 +77,39 @@ In dit document worden de BPMN-diagrammen van Sem, Kevin, Dion, Nedzhet en Nabil
 
 ## 6. Documentatie Nabil
 
-### 6.1 BPMN van Nabil
-*(Plaats hier het BPMN-diagram van Nabil, met bijbehorende uitleg.)*
+### 6.1 BPMN van Nabil - Checkout
+
+#### 6.1.1 Screenshot  
+![BPMN Diagram - Checkout](Checkout.png)
+
+#### 6.1.2 Uitleg  
+1. **Klant klikt op afrekenen**  
+   De klant besluit af te rekenen en start het checkoutproces.
+
+2. **Zijn alle verplichte velden ingevuld?**  
+   - **Nee**  
+     - **Toon foutmelding en herhaal stap of kies andere methode**  
+       - Er verschijnt een foutmelding en de klant moet eerst alle verplichte velden invullen.
+   - **Ja**  
+     - Het proces gaat verder.
+
+3. **Kies betaalmethode**  
+   De klant kiest een beschikbare betaalmethode.
+
+4. **Voer betaalgegevens in**  
+   De klant vult de betaalgegevens in, zoals IBAN of creditcardgegevens.
+
+5. **Controle: Betaling gelukt?**  
+   - **Nee**  
+     - **Toon foutmelding**  
+       - Er verschijnt een foutmelding dat de betaling is mislukt.  
+     - **Toon foutmelding en herhaal stap of kies andere methode**  
+       - De klant krijgt de kans om de stap opnieuw te doen of een andere betaalmethode te kiezen.
+   - **Ja**  
+     - Het proces gaat verder.
+
+6. **Bevestig bestelling en genereer ordernummer**  
+   De bestelling wordt bevestigd en er wordt een uniek ordernummer gegenereerd.
+
+7. **Bestelling succesvol geplaatst**  
+   De bestelling is succesvol afgerond en wordt verder verwerkt.

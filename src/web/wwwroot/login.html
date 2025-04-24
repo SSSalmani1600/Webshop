@@ -9,7 +9,7 @@
 
     <link href="/assets/css/navbar-login.css" rel="stylesheet">
     <link href="/assets/css/login.css" rel="stylesheet">
-    <script type="module" src="/src/components/PasswordInputComponent.ts"></script>
+    <script type="module" src="./../src/pages/login.ts"></script>
 </head>
 
 <body>
@@ -40,9 +40,9 @@
             
             <h2>Welkom terug!</h2>
             
-            <form class="login-form">
+            <login-form id="login-form">
                 <div class="form-group">
-                    <input type="text" id="email" name="email" placeholder="Email of gebruikersnaam" required>
+                    <input type="text" id="email" name="username" placeholder="Email of gebruikersnaam" required>
                 </div>
                 
                 <div class="form-group">
@@ -58,13 +58,13 @@
                 <div class="remember-register">
                     <label class="remember-me">
                         <input type="checkbox" name="remember"> 
-                        <span>remember me</span>
+                        <span>Onthoud mij</span>
                     </label>
                     <div class="no-account">
                         Heb je geen account? <a href="/register">Registreer</a>
                     </div>
                 </div>
-            </form>
+            </login-form>
         </div>
     </main>
 </body>

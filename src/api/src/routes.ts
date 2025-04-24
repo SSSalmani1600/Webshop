@@ -2,6 +2,7 @@ import { Router } from "express";
 import { WelcomeController } from "./controllers/WelcomeController";
 import { requireValidSessionMiddleware, sessionMiddleware } from "./middleware/sessionMiddleware";
 import { ProductController } from "./controllers/ProductController";
+import { LoginController } from "./controllers/LoginController";
 
 // Create a router
 export const router: Router = Router();
@@ -14,6 +15,10 @@ router.get("/", (_: any, res: { send: (arg0: string) => void; }) => {
 // Forward endpoints to other routers
 const welcomeController: WelcomeController = new WelcomeController();
 const productController: ProductController = new ProductController();
+const loginController: LoginController = new LoginController();
+
+// Authentication endpoints (no session required)
+router.post("/auth/login", (req: any, res: any) => loginController.login(req, res));
 
 // NOTE: After this line, all endpoints will check for a session.
 router.use(sessionMiddleware);

@@ -1,3 +1,5 @@
+import { html } from "@web/helpers/webComponents";
+
 export class PasswordInputComponent extends HTMLElement {
     private _isPasswordVisible: boolean = false;
     private _input: HTMLInputElement | null = null;
@@ -12,75 +14,23 @@ export class PasswordInputComponent extends HTMLElement {
         this.setupEventListeners();
     }
 
+    // Publieke methode om de huidige waarde te krijgen
+    public getValue(): string {
+        return this._input?.value || "";
+    }
+
+    // Publieke methode om input element te krijgen
+    public getInputElement(): HTMLInputElement | null {
+        return this._input;
+    }
+
     private render(): void {
         if (!this.shadowRoot) return;
 
-        const style: string = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                }
-
-                .password-container {
-                    position: relative;
-                    width: 100%;
-                }
-
-                .password-input {
-                    width: 100%;
-                    padding: 0.8rem;
-                    padding-right: 2.5rem;
-                    border: none;
-                    border-radius: 4px;
-                    background-color: #222222;
-                    color: white;
-                    font-size: 1rem;
-                    box-sizing: border-box;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-                    transition: box-shadow 0.3s ease, background-color 0.3s ease;
-                }
-
-                .password-input:focus {
-                    outline: none;
-                    box-shadow: 0 2px 10px rgba(128, 90, 213, 0.4);
-                    background-color: #2a2a2a;
-                }
-
-                .password-input::placeholder {
-                    color: #999;
-                }
-
-                .toggle-password {
-                    position: absolute;
-                    right: 0.8rem;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    background: none;
-                    border: none;
-                    cursor: pointer;
-                    padding: 4px;
-                    color: #999;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: color 0.3s ease;
-                }
-
-                .toggle-password:hover {
-                    color: #805ad5;
-                }
-
-                .toggle-password:focus {
-                    outline: none;
-                }
-
-                .toggle-password svg {
-                    width: 18px;
-                    height: 18px;
-                }
-            </style>
-        `;
+        // Link naar externe CSS
+        const styleLink: HTMLLinkElement = document.createElement("link");
+        styleLink.rel = "stylesheet";
+        styleLink.href = "/assets/css/passwordtoggle.css";
 
         const container: HTMLDivElement = document.createElement("div");
         container.className = "password-container";
@@ -104,7 +54,7 @@ export class PasswordInputComponent extends HTMLElement {
         button.className = "toggle-password";
         button.type = "button";
         button.setAttribute("aria-label", this._isPasswordVisible ? "Verberg wachtwoord" : "Toon wachtwoord");
-
+        
         // SVG voor het oog icoon
         button.innerHTML = `
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -128,7 +78,7 @@ export class PasswordInputComponent extends HTMLElement {
         while (this.shadowRoot.firstChild) {
             this.shadowRoot.removeChild(this.shadowRoot.firstChild);
         }
-        this.shadowRoot.innerHTML = style;
+        this.shadowRoot.appendChild(styleLink);
         this.shadowRoot.appendChild(container);
 
         // Update de input referentie
@@ -154,13 +104,13 @@ export class PasswordInputComponent extends HTMLElement {
             const currentValue: string = this._input.value;
             const selectionStart: number | null = this._input.selectionStart;
             const selectionEnd: number | null = this._input.selectionEnd;
-
+            
             // Toggle de zichtbaarheid
             this._isPasswordVisible = !this._isPasswordVisible;
-
+            
             // Update direct het type van de input
             this._input.type = this._isPasswordVisible ? "text" : "password";
-
+            
             // Update het oog icoon
             const toggleButton: HTMLButtonElement | null = this.shadowRoot?.querySelector(".toggle-password") || null;
             if (toggleButton) {

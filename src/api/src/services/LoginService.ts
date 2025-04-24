@@ -18,7 +18,7 @@ export class LoginService {
 
     public async validateUser(loginIdentifier: string, password: string): Promise<UserData | null> {
         const connection = await this.databaseService.openConnection();
-        
+
         try {
             // Zoek de gebruiker op basis van gebruikersnaam OF e-mail
             const users: UserData[] = await this.databaseService.query<UserData[]>(
@@ -32,7 +32,7 @@ export class LoginService {
             if (users && users.length > 0) {
                 return users[0];
             }
-            
+
             return null;
         } finally {
             connection.release();
@@ -41,7 +41,7 @@ export class LoginService {
 
     public async updateLoginStatus(userId: number, loggedIn: boolean): Promise<void> {
         const connection = await this.databaseService.openConnection();
-        
+
         try {
             await this.databaseService.query(
                 connection,

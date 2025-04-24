@@ -16,5 +16,8 @@
         "htmlArray"
     ],
     "lit-plugin.rules.no-complex-attribute-binding": "off",
-    "npm.packageManager": "npm"
+    "npm.packageManager": "npm",
+    "[css]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }

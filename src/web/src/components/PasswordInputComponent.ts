@@ -1,5 +1,3 @@
-import { html } from "@web/helpers/webComponents";
-
 export class PasswordInputComponent extends HTMLElement {
     private _input: HTMLInputElement | null = null;
     private _toggleButton: HTMLButtonElement | null = null;
@@ -70,7 +68,8 @@ export class PasswordInputComponent extends HTMLElement {
                 this._toggleButton.innerHTML = "🔒";
                 this._toggleButton.title = "Wachtwoord verbergen";
             }
-        } else {
+        }
+        else {
             this._input.type = "password";
             if (this._toggleButton) {
                 this._toggleButton.innerHTML = "👁️";

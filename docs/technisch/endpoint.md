@@ -31,6 +31,7 @@ Het endpoint retourneert een array van **Game-objecten**. Elk object bevat o.a.:
         "tags": "OUT B"
     },
 ]
+```
 
 ---
 
@@ -62,3 +63,4 @@ Het endpoint retourneert een array met één of meerdere **GamePrices-objecten**
         "validUntil": "2025-04-24T12:27:33.050+00:00"
     }
 ]
+```

@@ -68,12 +68,18 @@ In dit document worden de BPMN-diagrammen van Sem, Kevin, Dion, Nedzhet en Nabil
 
 ---
 
-## 5. Documentatie Nedzhet
+## 5. Documentatie Nedzhat
 
-### 5.1 BPMN van Nedzhet
-*(Plaats hier het BPMN-diagram van Nedzhet, met bijbehorende uitleg.)*
+### 5.1 BPMN van Nedzhat - Order Complete
 
----
+#### 6.1.1 Screenshot  
+
+![BPMN Diagram - Order Complete](OrderComplete.png)
+
+#### 6.1.2 Uitleg  
+
+1. **Klant klikt op afrekenen**  
+   De klant besluit af te rekenen en start het checkoutproces.
 
 ## 6. Documentatie Nabil
 

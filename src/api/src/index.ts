@@ -25,9 +25,12 @@ const app: Application = express();
 
 // Configureer middleware
 app.use(cors({
-    origin: ["http://localhost:3000"], // Frontend origin
     credentials: true,
+    origin(requestOrigin, callback) {
+        callback(null, requestOrigin);
+    },
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 

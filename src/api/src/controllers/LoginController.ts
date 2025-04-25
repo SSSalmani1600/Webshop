@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { LoginService } from "../services/LoginService";
+import { LoginService, UserData } from "../services/LoginService";
 
 interface LoginRequest {
     loginIdentifier: string;
@@ -10,7 +10,7 @@ interface LoginRequest {
 export class LoginController {
     private loginService: LoginService;
 
-    constructor() {
+    public constructor() {
         this.loginService = new LoginService();
     }
 
@@ -22,18 +22,18 @@ export class LoginController {
             if (!loginIdentifier || !password) {
                 res.status(400).json({
                     success: false,
-                    message: "Gebruikersnaam/e-mail en wachtwoord zijn verplicht"
+                    message: "Gebruikersnaam/e-mail en wachtwoord zijn verplicht",
                 });
                 return;
             }
 
             // Valideer login
-            const user = await this.loginService.validateUser(loginIdentifier, password);
+            const user: UserData | null = await this.loginService.validateUser(loginIdentifier, password);
 
             if (!user) {
                 res.status(401).json({
                     success: false,
-                    message: "Ongeldige inloggegevens"
+                    message: "Ongeldige inloggegevens",
                 });
                 return;
             }
@@ -52,16 +52,17 @@ export class LoginController {
                 user: {
                     id: user.id,
                     username: user.username,
-                    email: user.email
+                    email: user.email,
                 },
-                sessionId
+                sessionId,
             });
-        } catch (error) {
+        }
+        catch (error) {
             console.error("Login error:", error);
             res.status(500).json({
                 success: false,
-                message: "Er is een fout opgetreden bij het inloggen"
+                message: "Er is een fout opgetreden bij het inloggen",
             });
         }
     }
-} 
+}

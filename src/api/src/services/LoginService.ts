@@ -2,7 +2,7 @@ import { DatabaseService } from "./DatabaseService";
 import { RowDataPacket } from "mysql2";
 import { PoolConnection } from "mysql2/promise";
 
-interface UserData extends RowDataPacket {
+export interface UserData extends RowDataPacket {
     id: number;
     username: string;
     email: string;
@@ -30,12 +30,13 @@ export class LoginService {
                 password
             );
 
-            if (users && users.length > 0) {
+            if (users.length > 0) {
                 return users[0];
             }
 
             return null;
-        } finally {
+        }
+        finally {
             connection.release();
         }
     }
@@ -50,8 +51,9 @@ export class LoginService {
                 loggedIn ? 1 : 0,
                 userId
             );
-        } finally {
+        }
+        finally {
             connection.release();
         }
     }
-} 
+}

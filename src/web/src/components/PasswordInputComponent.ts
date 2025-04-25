@@ -57,7 +57,7 @@ export class PasswordInputComponent extends HTMLElement {
         if (!this.shadowRoot) return;
 
         this._input = this.shadowRoot.querySelector("input.password-input");
-        this._toggleButton = this.shadowRoot.querySelector("button.password-toggle");
+        this._toggleButton = this.shadowRoot.querySelector("button.toggle-password");
 
         if (this._toggleButton && this._input) {
             this._toggleButton.addEventListener("click", this.togglePasswordVisibility.bind(this));
@@ -70,14 +70,25 @@ export class PasswordInputComponent extends HTMLElement {
         if (this._input.type === "password") {
             this._input.type = "text";
             if (this._toggleButton) {
-                this._toggleButton.innerHTML = "🔒";
+                this._toggleButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                `;
                 this._toggleButton.title = "Wachtwoord verbergen";
             }
         }
         else {
             this._input.type = "password";
             if (this._toggleButton) {
-                this._toggleButton.innerHTML = "👁️";
+                this._toggleButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                `;
                 this._toggleButton.title = "Wachtwoord tonen";
             }
         }

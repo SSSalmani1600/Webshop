@@ -245,7 +245,11 @@ export class CartPageComponent extends HTMLElement {
 
     private async fetchCart(): Promise<void> {
         try {
-            const res: Response = await fetch("http://localhost:3001/cart", {
+            const API_BASE: string = window.location.hostname.includes("localhost")
+                ? "http://localhost:3001"
+                : "https://jouw-live-backend-url.cloud";
+
+            const res: Response = await fetch(`${API_BASE}/cart`, {
                 credentials: "include",
             });
 

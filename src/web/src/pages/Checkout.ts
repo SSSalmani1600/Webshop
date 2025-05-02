@@ -1,4 +1,3 @@
-// Interface voor een winkelwagenitem
 interface CartItem {
     id: number;
     name: string;

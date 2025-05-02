@@ -7,7 +7,7 @@ import CheckoutController from "./controllers/CheckoutController";
 
 
 
-// Create a router
+// maak a router
 export const router: Router = Router();
 
 // Setup endpoints

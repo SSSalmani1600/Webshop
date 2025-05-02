@@ -1,4 +1,3 @@
-// src/controllers/CheckoutController.ts
 
 import { Request, Response } from "express";
 import CartService from "../services/CartService";

@@ -1,17 +1,4 @@
-interface CartItem {
-    id: number;
-    name: string;
-    price: number;
-    quantity: number;
-  }
-  
-  interface CheckoutData {
-    items: CartItem[];
-    subtotal: number;
-    shipping: number;
-    total: number;
-  }
-  
+
   document.addEventListener("DOMContentLoaded", async () => {
     try {
       const response = await fetch("/checkout");

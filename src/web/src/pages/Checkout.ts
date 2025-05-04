@@ -1,36 +1,53 @@
-// Import van benodigde modules, services of types
-import { CartService } from "../services/CartService";
-import { PaymentService } from "../services/PaymentService";
-
-// Klasse die de afhandeling van de checkout regelt
-export class Checkout {
-    private cartService: CartService;
-    private paymentService: PaymentService;
-
-    // Constructor die de benodigde dependencies initialiseert
-    constructor(cartService: CartService, paymentService: PaymentService) {
-        this.cartService = cartService;
-        this.paymentService = paymentService;
+interface CartItem {
+    id: number;
+    name: string;
+    price: number;
+    quantity: number;
+  }
+  
+  interface CheckoutData {
+    items: CartItem[];
+    subtotal: number;
+    shipping: number;
+    total: number;
+  }
+  
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      const response = await fetch("/checkout");
+      const data: CheckoutData = await response.json();
+  
+      updateCheckoutSummary(data);
+    } catch (error) {
+      console.error("Fout bij ophalen van checkout-data:", error);
     }
-
-    // Methode die de checkout verwerkt, zoals betaling en bevestiging
-    public async processCheckout(userId: string): Promise<boolean> {
-        const cart = await this.cartService.getCartByUserId(userId);
-
-        // Controle of de winkelwagen geldig is of betaling geslaagd is
-        if (!cart) {
-            return false;
-        }
-
-        const total = cart.products.reduce((sum, p) => sum + p.price * p.quantity, 0);
-        const paymentSuccess = await this.paymentService.charge(userId, total);
-
-        // Controle of de winkelwagen geldig is of betaling geslaagd is
-        if (paymentSuccess) {
-            await this.cartService.clearCart(userId);
-            return true;
-        }
-
-        return false;
-    }
-}
+  });
+  
+  function updateCheckoutSummary(data: CheckoutData) {
+    const summaryContainer = document.querySelector(".checkout-summary");
+  
+    const itemList = data.items
+      .map(
+        (item) => `
+        <div class="summary-item">
+          <div>
+            <p>${item.name} × ${item.quantity}</p>
+            <p>€${(item.price * item.quantity).toFixed(2)}</p>
+          </div>
+        </div>`
+      )
+      .join("");
+  
+    summaryContainer!.innerHTML = `
+      <h3>Winkelwagen</h3>
+      ${itemList}
+      <hr>
+      <div class="summary-total">
+        <p>Subtotaal: €${data.subtotal.toFixed(2)}</p>
+        <p>Verzendkosten: €${data.shipping.toFixed(2)}</p>
+        <p><strong>Totaal: €${data.total.toFixed(2)}</strong></p>
+      </div>
+      <button class="checkout-btn">Bestelling plaatsen</button>
+    `;
+  }
+  

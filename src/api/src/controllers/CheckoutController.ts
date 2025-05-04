@@ -1,17 +1,20 @@
-import { Request, Response } from "express";
-import CartService from "../services/CartService";
-
-const cartService = new CartService();
-
+// Controller voor de checkoutpagina. Verwerkt en toont winkelwagengegevens.
 export default class CheckoutController {
-  async getCheckoutData(req: Request, res: Response) {
-    try {
-      const data = await cartService.getCartData(req);
-      res.status(200).json(data);
-    } catch (error) {
 
-        console.error("Fout in CheckoutController:", error);
-      res.status(500).json({ error: "Serverfout bij ophalen checkout-data" });
+    // Haalt gegevens op voor de checkoutpagina, inclusief producten uit de winkelwagen.
+    public async index(req: Request, res: Response) {
+
+        // Haalt de winkelwagen op aan de hand van het user ID.
+        const cart = await CartService.getCartByUserId(req.user.id);
+
+        // Als er geen winkelwagen is gevonden, toon een foutmelding.
+        if (!cart) {
+            return res.status(404).send("Winkelwagen niet gevonden");
+        }
+
+        // Rendert de checkoutpagina met de producten in de winkelwagen.
+        return res.render("checkout", {
+            products: cart.products
+        });
     }
-  }
 }

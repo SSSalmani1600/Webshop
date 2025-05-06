@@ -1,20 +1,29 @@
+// Zorg dat defineMetadata global beschikbaar is als het niet bestaat
+interface MetadataTarget {
+    __metadata?: Record<string, unknown>;
+}
+
+(global as { defineMetadata?: (key: string, value: unknown, target: MetadataTarget) => void }).defineMetadata =
+function (key: string, value: unknown, target: MetadataTarget) {
+    if (!target.__metadata) {
+        target.__metadata = {};
+    }
+    target.__metadata[key] = value;
+};
+
 import "@hboictcloud/metadata";
 
-import cookieParser from "cookie-parser";
+import "dotenv/config";
+import express, { Application } from "express";
 import cors from "cors";
-import { config } from "dotenv";
-import express, { Express } from "express";
+import cookieParser from "cookie-parser";
 import "express-async-errors";
 import { router } from "./routes";
 
-// Create an Express application
-export const app: Express = express();
+// Maak Express applicatie
+const app: Application = express();
 
-// Load the .env files
-config();
-config({ path: ".env.local", override: true });
-
-// Enable CORS headers
+// Configureer middleware
 app.use(cors({
     credentials: true,
     origin(requestOrigin, callback) {
@@ -22,18 +31,17 @@ app.use(cors({
     },
 }));
 
-// Enable JSON-body support for requests
 app.use(express.json());
-
-// Enable cookie support for requests
 app.use(cookieParser());
 
-// Forward all requests to the router for further handling
-app.use("/", router);
+// Voeg statische bestanden toe
+app.use(express.static("./wwwroot"));
 
-// Start the Express application by listening for connections on the configured port
-const port: number = (process.env.PORT || 8080) as number;
+// Routers toevoegen
+app.use(router);
 
+// Start server
+const port: number = parseInt(process.env.PORT || "3001");
 app.listen(port, () => {
     console.log(`API is running on http://localhost:${port}`);
 });

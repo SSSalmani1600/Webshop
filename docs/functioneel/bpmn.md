@@ -54,11 +54,25 @@ In dit document worden de BPMN-diagrammen van Sem, Kevin, Dion, Nedzhet en Nabil
 
 ---
 
-## 3. Documentatie Kevin
+## Winkelwagen BPMN
 
-### 3.1 BPMN van Kevin
-*(Plaats hier het BPMN-diagram van Kevin, met bijbehorende uitleg.)*
+![Winkelwagen](Winkelwagen_BPMN.png)
 
+### Toelichting
+
+1. **Klant gaat naar winkelwagen**
+>> De klant klikt op het winkelwagen icoontje.
+
+2. **Er wordt gechecked of klant producten in de winkelwagen heeft**
+>> De klant kan hier 2 verschillende resultaten krijgen:
+   1. Wel producten - De producten worden weergegeven
+   2. Geen prodcuten - De winkelwagen is leeg en dit wordt ook vermeld op de pagina.
+
+3. **De klant klikt op "Doorgaan naar afrekenen"**
+>> Als de klant tevreden is met de producten die in de winkelwagen zit, klikt hij/zij op "Doorgaaan naar afrekenen".
+
+4. **Er wordt gechecked of de gebruiker is ingelogd**
+>> De gebruiker kan pas afrekenen als diegene is ingelogd.
 ---
 
 ## 4. Documentatie Dion
@@ -68,12 +82,26 @@ In dit document worden de BPMN-diagrammen van Sem, Kevin, Dion, Nedzhet en Nabil
 
 ---
 
-## 5. Documentatie Nedzhet
+## 5. Documentatie Nedzhat
 
-### 5.1 BPMN van Nedzhet
-*(Plaats hier het BPMN-diagram van Nedzhet, met bijbehorende uitleg.)*
+### 5.1 BPMN van Nedzhat - Order Complete
 
----
+#### 6.1.1 Screenshot  
+
+![BPMN Diagram - Order Complete](OrderComplete.png)
+
+#### 6.1.2 Uitleg  
+
+1. **Klant klikt op betalen**
+De klant heeft alle gegevens ingevulled en klikt op betalen.
+
+2. **Bevesteging van betaling wordt ontvangen**
+   - **Nee**
+     - **Toon foutmelding en probeer opnieuw**
+       - Er verschijnt een foutmelding en de klant wordt terug naar de checkout pagina gestuurd.
+   - **Ja**
+     - **Order wordt opgeslagen in de database**
+       - Een bevestigins mail wordt gestuurd naar de klant van de bestelling.
 
 ## 6. Documentatie Nabil
 
@@ -113,3 +141,6 @@ In dit document worden de BPMN-diagrammen van Sem, Kevin, Dion, Nedzhet en Nabil
 
 7. **Bestelling succesvol geplaatst**  
    De bestelling is succesvol afgerond en wordt verder verwerkt.
+
+## Bestelling traceren BPMN
+![BestellingTracerenBPMN](BestellingTraceren_BPMN.png)

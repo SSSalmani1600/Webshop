@@ -1,6 +1,7 @@
 import { ISessionService } from "@api/interfaces/ISessionService";
 import { PoolConnection, ResultSetHeader } from "mysql2/promise";
 import { DatabaseService } from "./DatabaseService";
+import { randomUUID } from "node:crypto";
 
 type SessionQueryResult = {
     id: string;
@@ -18,7 +19,7 @@ export class SessionService implements ISessionService {
         const connection: PoolConnection = await this._databaseService.openConnection();
 
         try {
-            const sessionId: string = crypto.randomUUID();
+            const sessionId: string = randomUUID();
 
             const result: ResultSetHeader = await this._databaseService.query<ResultSetHeader>(
                 connection,

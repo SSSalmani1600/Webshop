@@ -1,8 +1,8 @@
-export interface CheckoutItem {
-    id: number;
-    productId: number;
-    quantity: number;
-    productName: string;
-    productPrice: number;
-  }
-  
+// import { CartItem } from "../interfaces/CartItem";
+// import { CartItemComponent } from "../components/CartItemComponent";
+
+// private async fetchCart(): Promise<void> {
+//     try {
+//         const res: Response = await fetch("http://localhost:3001/cart", {
+//             credentials: "include",
+//         }); 

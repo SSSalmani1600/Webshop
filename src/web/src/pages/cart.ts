@@ -249,8 +249,12 @@ export class CartPageComponent extends HTMLElement {
                 credentials: "include",
             });
 
+
+
             const data: { cart: CartItem[] } = await res.json() as { cart: CartItem[] };
             const cart: CartItem[] = data.cart;
+
+            
 
             const container: HTMLElement | null = this.shadowRoot ? this.shadowRoot.querySelector("#cart-list") : null;
             const totalDisplay: HTMLElement | null = this.shadowRoot?.querySelector("#total-price") ?? null;

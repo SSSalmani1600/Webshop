@@ -7,10 +7,15 @@ interface CartItem {
     quantity: number;
   }
   
-  // Functie om cart items op te halen uit de backend
   async function fetchCartItems(): Promise<CartItem[]> {
-    const response = await fetch("http://localhost:3000/api/cart"); // pas eventueel de URL aan
-    if (!response.ok) throw new Error("Kan cart items niet ophalen");
+    const response: Response = await fetch("http://localhost:3001/cart", {
+      credentials: "include", // belangrijk: stuurt sessie/cookies mee
+    });
+  
+    if (!response.ok) {
+      throw new Error("Kan cart items niet ophalen");
+    }
+  
     return await response.json();
   }
   

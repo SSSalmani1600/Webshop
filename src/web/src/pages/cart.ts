@@ -219,7 +219,12 @@ export class CartPageComponent extends HTMLElement {
                         <h3>Totaal</h3>
                         <p id="total-price">€0,00</p>
                     </div>
-                    <button class="checkout-button">Ga door naar checkout</button>
+
+            
+                    
+                    <button class="checkout-button"> <a href="/checkout.html" class="login-button">Ga door naar checkout</a></button>
+
+                    
                 </div>
             </div>
         </div>
@@ -281,3 +286,6 @@ export class CartPageComponent extends HTMLElement {
 }
 
 customElements.define("webshop-page-cart", CartPageComponent);
+
+
+ 

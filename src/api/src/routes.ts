@@ -35,6 +35,7 @@ router.use(requireValidSessionMiddleware);
 router.get("/secret", (req, res) => welcomeController.getSecret(req, res));
 
 router.post("/order/complete", (req, res) => orderController.createOrder(req, res));
+router.get("/order/complete", (req, res) => orderController.getBoughtGames(req, res));
 
 // TODO: The following endpoints have to be implemented in their own respective controller
 router.get("/products", (_req, _res) => productController.getAllGames(_req, _res));

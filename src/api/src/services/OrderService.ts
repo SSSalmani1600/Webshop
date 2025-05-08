@@ -50,8 +50,11 @@ export class OrderService {
                 [sessionId]
             );
             return rows as { title: string; quantity: number; price: number }[];
+        } catch (e) {
+            throw new Error(`Kan cart items niet ophalen: ${e}`);
+        } finally {
+            connection.release();
         }
-    }
-        
-     
+    } 
+            
 }

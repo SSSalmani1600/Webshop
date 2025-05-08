@@ -33,4 +33,10 @@ export class OrderService {
             connection.release();
         }
     }
+
+    public async getCartItemsBySession(sessionId: string): Promise<
+    { title: string; quantity: number; price: number }[]
+    > 
+        
+     
 }

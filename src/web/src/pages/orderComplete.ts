@@ -5,6 +5,9 @@ export class OrderConfirmationComponent extends HTMLElement {
         // eslint-disable-next-line @typescript-eslint/typedef
         const shadow = this.attachShadow({ mode: "open" });
 
+        const container = document.createElement("div");
+        container.classList.add("order-wrapper");
+
         // eslint-disable-next-line @typescript-eslint/typedef
         const style = document.createElement("style");
         style.textContent = `
@@ -124,8 +127,6 @@ export class OrderConfirmationComponent extends HTMLElement {
               `;
 
         // eslint-disable-next-line @typescript-eslint/typedef
-        const container = document.createElement("div");
-        container.classList.add("order-wrapper");
         container.innerHTML = `
         <div class="order-container">
           <div class="header-bar">
@@ -139,9 +140,8 @@ export class OrderConfirmationComponent extends HTMLElement {
             <p class="order-number">Ordernummer: <strong>#123456</strong></p>
             <div class="order-box">
               <h2>Uw bestelling</h2>
-              <div class="order-item"><span>1× Cyberpunk 2077</span><span>€59,99</span></div>
-              <div class="order-item"><span>2× Elden Ring</span><span>€69,99</span></div>
-              <div class="order-total"><span>Totaal:</span><span>€129,98</span></div>
+              <div id="order-items"></div>
+              <div class="order-total"><span>Totaal:</span><span id="total-price">€0,00</span></div>
             </div>
             <a class="return-home" href="/">Terug naar Home</a>
           </div>
@@ -149,6 +149,37 @@ export class OrderConfirmationComponent extends HTMLElement {
       `;
 
         shadow.append(style, container);
+
+        this.loadOrderItems(container);
+    }
+
+    private async loadOrderItems(container: HTMLElement): Promise<void> {
+        try {
+            const response = await fetch("/order/complete");
+            const games = await response.json();
+
+            const orderItemsContainer = container.querySelector("#order-items");
+            const totalPriceElement = container.querySelector("#total-price");
+
+            let total = 0;
+
+            games.forEach((game: { title: string; quantity: number; price: number }) => {
+                const itemTotal = game.quantity * game.price;
+                total += itemTotal;
+
+                const item = document.createElement("div");
+                item.classList.add("order-item");
+                item.innerHTML = `<span>${game.quantity}× ${game.title}</span><span>€${itemTotal.toFixed(2)}</span>`;
+
+                orderItemsContainer?.appendChild(item);
+            });
+
+            if (totalPriceElement) {
+                totalPriceElement.textContent = `€${total.toFixed(2)}`;
+            }
+        } catch (error) {
+            console.error("Fout bij laden van gekochte games:", error);
+        }
     }
 }
 

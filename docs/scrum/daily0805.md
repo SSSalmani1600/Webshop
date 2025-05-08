@@ -16,13 +16,14 @@
 
 ## 👤 Sem
 - **Wat heb je gedaan?**  
-    -
+    - Aan mijn LJ gewerkt
+    - Docker gedownload en beetje onderzocht
 
 - **Wat ga je doen?**  
-    -
+    - Verder aan LJ en beginnen met coderen beetje
 
 - **Zijn er blokkades?**  
-    - 
+    - Momenteel lukt alles nog
 
 ---
 

@@ -27,4 +27,15 @@ export class OrderController {
             res.status(500).json({ error: "Kon bestelling niet aanmaken" });
         }
     }
+
+    public async getBoughtGames(req: Request, res: Response): Promise<void> {
+        try {
+            const sessionId = req.sessionId;
+
+            if (!sessionId) {
+                res.status(401).json({ error: "Geen geldige sessie" });
+                return;
+            }
+        }
+    }
 }

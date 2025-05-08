@@ -36,6 +36,12 @@ export class OrderController {
                 res.status(401).json({ error: "Geen geldige sessie" });
                 return;
             }
+
+            const games = await orderService.getCartItemsBySession(sessionId);
+            res.status(200).json(games);
+        } catch (error) {
+            console.error("Fout bij ophalen gekochte games:", error);
+            res.status(500).json({ error: "Kon gekochte games niet ophalen" });
         }
     }
 }

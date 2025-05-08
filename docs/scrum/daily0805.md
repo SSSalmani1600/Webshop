@@ -3,7 +3,8 @@
 ## 👤 Kevin
 - **Wat heb je gedaan?**  
   - Voornamelijk alleen aan mijn learning journey gewerkt
-  - User stories aangepast en een nieuwe op basis van de sprint review feedback       
+  - User stories aangepast en een nieuwe op basis van de sprint review feedback      
+  - Docker geinstalleerd en gegekeken hoe ik ga beginnen met het maken van de Discount code third party API. 
 
 - **Wat ga je doen?**  
   - Les krijgen over docker en oege

@@ -36,7 +36,22 @@ export class OrderService {
 
     public async getCartItemsBySession(sessionId: string): Promise<
     { title: string; quantity: number; price: number }[]
-    > 
+    > {
+        const connection: PoolConnection = await this._db.openConnection();
+
+        try {
+            const [rows] = await connection.query(
+                `
+                SELECT g.title, ci.quantity, ci.price
+                FROM cart_item ci
+                JOIN games g ON ci.game_id = g.id
+                WHERE ci.session_id = ?
+                `,
+                [sessionId]
+            );
+            return rows as { title: string; quantity: number; price: number }[];
+        }
+    }
         
      
 }

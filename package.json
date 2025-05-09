@@ -26,11 +26,7 @@
         "typedoc": "0.28.1",
         "typescript": "5.7.3",
         "vite-tsconfig-paths": "5.1.4",
-<<<<<<< HEAD
         "vitest": "^3.1.1",
-=======
-        "vitest": "3.1.1",
->>>>>>> beb29b5e9a8dbbbfef4fd637e7c119ff04313596
         "vitest-fetch-mock": "0.4.5",
         "vitest-mock-extended": "3.1.0"
     },

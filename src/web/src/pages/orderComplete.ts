@@ -5,6 +5,7 @@ export class OrderConfirmationComponent extends HTMLElement {
         // eslint-disable-next-line @typescript-eslint/typedef
         const shadow = this.attachShadow({ mode: "open" });
 
+        // eslint-disable-next-line @typescript-eslint/typedef
         const container = document.createElement("div");
         container.classList.add("order-wrapper");
 

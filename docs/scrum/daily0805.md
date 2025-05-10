@@ -15,6 +15,18 @@
 
 ---
 
+## 👤 Nabil
+- **Wat heb je gedaan?**  
+  - Learning journey
+  - Docker installeren/les
+
+- **Wat ga je doen?**  
+  - Alvast begin maken aan interne documentatie opstellen voor voortgang evaluatie.
+
+- **Zijn er blokkades?**  
+  - Geen
+---
+
 ## 👤 Sem
 - **Wat heb je gedaan?**  
     - Aan mijn LJ gewerkt
@@ -51,14 +63,4 @@
 - **Zijn er blokkades?**  
   - 
 
-## 👤 Nabil
-- **Wat heb je gedaan?**  
-  - 
-  - 
 
-- **Wat ga je doen?**  
-  - 
-
-- **Zijn er blokkades?**  
-  - 
----

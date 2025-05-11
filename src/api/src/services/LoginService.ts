@@ -2,6 +2,10 @@ import { DatabaseService } from "./DatabaseService";
 import { RowDataPacket } from "mysql2";
 import { PoolConnection } from "mysql2/promise";
 
+/**
+ * Interface die de gebruikersgegevens definieert vanuit de database
+ * Inclusief het veld is_logged_in dat gebruikt wordt voor de "onthoud mij" functionaliteit
+ */
 export interface UserData extends RowDataPacket {
     id: number;
     username: string;
@@ -10,6 +14,10 @@ export interface UserData extends RowDataPacket {
     is_logged_in: number;
 }
 
+/**
+ * Service voor het afhandelen van authenticatie en login status
+ * Bevat de businesslogica voor het valideren van gebruikers en het bijhouden van hun inlogstatus
+ */
 export class LoginService {
     private databaseService: DatabaseService;
 
@@ -17,6 +25,13 @@ export class LoginService {
         this.databaseService = new DatabaseService();
     }
 
+    /**
+     * Valideert de inloggegevens van een gebruiker
+     * 
+     * @param loginIdentifier - De gebruikersnaam of e-mailadres
+     * @param password - Het wachtwoord
+     * @returns Een Promise met het gebruikersobject als de inloggegevens geldig zijn, anders null
+     */
     public async validateUser(loginIdentifier: string, password: string): Promise<UserData | null> {
         const connection: PoolConnection = await this.databaseService.openConnection();
 
@@ -41,6 +56,13 @@ export class LoginService {
         }
     }
 
+    /**
+     * Werkt de inlogstatus van een gebruiker bij in de database
+     * Deze methode wordt gebruikt om de "onthoud mij" functionaliteit te implementeren
+     * 
+     * @param userId - De ID van de gebruiker
+     * @param loggedIn - De gewenste inlogstatus (true voor ingelogd, false voor uitgelogd)
+     */
     public async updateLoginStatus(userId: number, loggedIn: boolean): Promise<void> {
         const connection: PoolConnection = await this.databaseService.openConnection();
 

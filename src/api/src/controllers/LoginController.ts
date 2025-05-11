@@ -1,12 +1,20 @@
 import { Request, Response } from "express";
 import { LoginService, UserData } from "../services/LoginService";
 
+/**
+ * Interface die de structuur van het login request definieert
+ * Bevat de inloggegevens en "onthoud mij" voorkeur van de gebruiker
+ */
 interface LoginRequest {
     loginIdentifier: string;
     password: string;
     rememberMe?: boolean;
 }
 
+/**
+ * Controller voor het afhandelen van login requests
+ * Handelt authenticatie en "onthoud mij" functionaliteit af
+ */
 export class LoginController {
     private loginService: LoginService;
 
@@ -14,6 +22,14 @@ export class LoginController {
         this.loginService = new LoginService();
     }
 
+    /**
+     * Handelt het login request af
+     * Valideert de gebruikersinvoer, controleert de inloggegevens en 
+     * implementeert de "onthoud mij" functionaliteit
+     * 
+     * @param req - Het Express Request object met de inloggegevens
+     * @param res - Het Express Response object voor het terugsturen van de response
+     */
     public async login(req: Request, res: Response): Promise<void> {
         try {
             const { loginIdentifier, password, rememberMe }: LoginRequest = req.body as LoginRequest;

@@ -1,3 +1,6 @@
+/**
+ * Interface die de structuur van het response van de login API endpoint beschrijft
+ */
 interface LoginResponse {
     success: boolean;
     message: string;
@@ -9,6 +12,11 @@ interface LoginResponse {
     sessionId?: string;
 }
 
+/**
+ * Login Component
+ * Een webcomponent die een loginformulier implementeert met "onthoud mij" functionaliteit
+ * @element login-form
+ */
 export class LoginComponent extends HTMLElement {
     // We declareren deze variabelen maar gebruiken ze niet direct in de code
     // Ze worden gebruikt in andere contexten zoals event handlers
@@ -22,11 +30,19 @@ export class LoginComponent extends HTMLElement {
         // this.attachShadow({ mode: "open" });
     }
 
+    /**
+     * Wordt aangeroepen wanneer het element aan de DOM wordt toegevoegd
+     * Initialiseert de component door de render en setupEventListeners methoden aan te roepen
+     */
     public connectedCallback(): void {
         this.render();
         this.setupEventListeners();
     }
 
+    /**
+     * Maakt de error message container aan en voegt deze toe aan het formulier
+     * @private
+     */
     private render(): void {
         // Voeg alleen het error message element toe
         const errorDiv: HTMLDivElement = document.createElement("div");
@@ -42,6 +58,11 @@ export class LoginComponent extends HTMLElement {
         this._errorMessage = errorDiv;
     }
 
+    /**
+     * Initialiseert de event listeners voor het formulier, inclusief de submit button
+     * en de remember me checkbox
+     * @private
+     */
     private setupEventListeners(): void {
         this._rememberMeCheckbox = this.querySelector("input[type='checkbox']");
 
@@ -51,6 +72,12 @@ export class LoginComponent extends HTMLElement {
         }
     }
 
+    /**
+     * Handelt de submit event van het login formulier af
+     * Valideert de input, stuurt de login request naar de server en handelt de response af
+     * @param e - Het form submit event
+     * @private
+     */
     private async handleSubmit(e: Event): Promise<void> {
         e.preventDefault();
 
@@ -124,6 +151,11 @@ export class LoginComponent extends HTMLElement {
         }
     }
 
+    /**
+     * Toont een foutmelding in de error message container
+     * @param message - De foutmelding die getoond moet worden
+     * @private
+     */
     private showError(message: string): void {
         if (this._errorMessage) {
             // Eerst de foutmelding verbergen
@@ -139,6 +171,12 @@ export class LoginComponent extends HTMLElement {
         }
     }
 
+    /**
+     * Haalt een sessie op, eerst uit localStorage (voor remember me functionaliteit)
+     * of anders door een nieuwe sessie aan te vragen bij de server
+     * @returns Een Promise die resolvet naar een sessie ID string
+     * @private
+     */
     private async getSession(): Promise<string> {
         // Probeer eerst uit localStorage (voor 'remember me')
         const storedSession: string | null = localStorage.getItem("sessionId");
@@ -157,7 +195,12 @@ export class LoginComponent extends HTMLElement {
         throw new Error("Kon geen sessie krijgen");
     }
 
-    // Methode om invoervelden visueel te markeren bij een fout
+    /**
+     * Markeert invoervelden visueel om aan te geven dat er een fout is opgetreden
+     * @param emailInput - Het email/username input element
+     * @param passwordComponent - Het password component element
+     * @private
+     */
     private highlightErrorFields(emailInput: HTMLInputElement | null, passwordComponent: Element | null): void {
         // Voeg een rode border toe aan de invoervelden
         if (emailInput) {
@@ -186,4 +229,5 @@ export class LoginComponent extends HTMLElement {
     }
 }
 
+// Registreer de component als HTML element
 window.customElements.define("login-form", LoginComponent);

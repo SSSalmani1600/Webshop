@@ -15,12 +15,22 @@
 - Full-width login velden en knop
 - Navigatiebalk bovenaan met LucaStars logo
 
+#### Figma Ontwerp Screenshot
+![Figma Login Ontwerp](login_design.png)
+*Figuur 1: Oorspronkelijk Figma ontwerp van de login pagina*
+
+
 #### Implementatie
 - Implementatie volgt grotendeels het ontwerp
 - Login-formulier is duidelijk gecentreerd in een container met licht afgeronde hoeken
 - Wachtwoordveld heeft passende styling
 - "Onthoud mij" functionaliteit is geïmplementeerd
 - Navigatiebalk en logo correct geïmplementeerd
+
+#### Implementatie Screenshot
+![Daadwerkelijke Implementatie](login_implementation.png)
+*Figuur 2: De werkelijke implementatie van de login pagina*
+
 
 ### Testresultaten per gebruiker
 

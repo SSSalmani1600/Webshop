@@ -42,13 +42,15 @@
 
 ## 👤 Nedzhat
 - **Wat heb je gedaan?**  
-  - 
+  - Gewrkt aan mijn order complete pagina
+  - Gekeken naar learning journey
 
 - **Wat ga je doen?**  
-  - 
+  - Aan mijn learning journey
+  - Verder aan mijn code
 
 - **Zijn er blokkades?**  
-  - 
+  - Tot nu toe niet echt
 
 ---
 

@@ -14,11 +14,13 @@
 
 ## 👤 Nabil
 - **Wat heb je gedaan?**  
+feedback gevraagd SMART doelen en learning journey. en gewerkt aan documentatie
 
 - **Wat ga je doen?**  
+moet feedback vragen en verder werken aan de documentatie.
 
 - **Zijn er blokkades?**  
-
+Nee
 ---
 
 ## 👤 Sem

@@ -25,10 +25,12 @@ Nee
 
 ## 👤 Sem
 - **Wat heb je gedaan?**  
-
+    - Met Bas gepraat over retro's en SMART leerdoelen besproken
 - **Wat ga je doen?**  
+    - SMART leerdoelen aanpassen
 
 - **Zijn er blokkades?**  
+  - n.v.t
 
 ---
 

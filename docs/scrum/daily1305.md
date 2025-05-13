@@ -8,7 +8,7 @@
     - Nu goed verder werken aan het project en aan mijn userstories
 
 - **Zijn er blokkades?**  
-    - Tot nu toe niet
+    - Tot nu Stoe niet
 
 ---
 
@@ -25,10 +25,12 @@
 
 ## 👤 Sem
 - **Wat heb je gedaan?**  
-
+    - Ik heb mijn LJ gedocumenteerd en finishing touches gemaakt.
 - **Wat ga je doen?**  
+    - Userstory globaal idee schetsen
 
 - **Zijn er blokkades?**  
+    - nog niet momenteel
 
 ---
 

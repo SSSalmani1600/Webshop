@@ -13,18 +13,20 @@
 
       <div class="checkout-section">
         <h3>Verzendadres</h3>
-        <form>
+        <form action="/address" method="POST">
           <label>Naam <span class="required">*</span></label>
-          <input type="text" placeholder="Naam" required>
+          <input type="text" name="naam" placeholder="Naam" required>
 
           <label>Straat + Huisnummer <span class="required">*</span></label>
-          <input type="text" placeholder="Straat + Huisnummer" required>
+          <input type="text" name="straat_huisnummer" placeholder="Straat + Huisnummer" required>
 
           <label>Postcode + Plaats <span class="required">*</span></label>
-          <input type="text" placeholder="Postcode + Plaats" required>
+          <input type="text" name="postcode_plaats" placeholder="Postcode + Plaats" required>
 
           <label>Telefoonnummer <span class="required">*</span></label>
-          <input type="text" placeholder="Telefoonnummer" required>
+          <input type="text" name="telefoonnummer" placeholder="Telefoonnummer" required>
+
+          <button type="submit">Adres opslaan</button>
         </form>
       </div>
     </section>

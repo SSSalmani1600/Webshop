@@ -5,13 +5,10 @@ import { requireValidSessionMiddleware, sessionMiddleware } from "./middleware/s
 import { CartController } from "./controllers/CartController";
 import { ProductController } from "./controllers/ProductController";
 import { LoginController } from "./controllers/LoginController";
-
-
+import { AddressController } from "./controllers/AddressController"; 
 
 export const router: Router = Router();
 
-router.get("/", (_, res) => {
-// Setup endpoints
 router.get("/", (_: Request, res: Response) => {
     res.send("Welcome to the API!");
 });
@@ -33,7 +30,9 @@ router.delete("/session/expired", (req: Request, res: Response) => welcomeContro
 router.get("/welcome", (req: Request, res: Response) => welcomeController.getWelcome(req, res));
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
 
+// ✅ Adres opslaan - alleen voor ingelogde gebruikers
 router.use(requireValidSessionMiddleware);
+router.post("/address", (req: Request, res: Response) => AddressController.postAddress(req, res));
 
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));
 
@@ -41,6 +40,7 @@ router.post("/order/complete", (req: Request, res: Response) => orderController.
 
 router.get("/products", (_req, _res) => productController.getAllGames(_req, _res));
 router.get("/product-prices/:id", (req, res) => productController.getGamePrice(req, res));
+
 // TODO: The following endpoints have to be implemented in their own respective controller
 router.get("/products", (req: Request, res: Response) => productController.getAllGames(req, res));
 router.get("/product-prices/:id", (req: Request, res: Response) => productController.getGamePrice(req, res));
@@ -52,5 +52,3 @@ router.get("/products/:id", (_req: Request, _res: Response) => {
 router.post("/cart/add", (_req, _res) => {
     throw new Error("Add a product to the cart");
 });
-
-})

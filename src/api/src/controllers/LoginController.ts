@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { LoginService, UserData } from "../services/LoginService";
+import { SessionService } from "../services/SessionService";
 
 interface LoginRequest {
     loginIdentifier: string;
@@ -9,16 +10,17 @@ interface LoginRequest {
 
 export class LoginController {
     private loginService: LoginService;
+    private sessionService: SessionService;
 
     public constructor() {
         this.loginService = new LoginService();
+        this.sessionService = new SessionService();
     }
 
     public async login(req: Request, res: Response): Promise<void> {
         try {
             const { loginIdentifier, password, rememberMe }: LoginRequest = req.body as LoginRequest;
 
-            // Valideer invoer
             if (!loginIdentifier || !password) {
                 res.status(400).json({
                     success: false,
@@ -27,7 +29,6 @@ export class LoginController {
                 return;
             }
 
-            // Valideer login
             const user: UserData | null = await this.loginService.validateUser(loginIdentifier, password);
 
             if (!user) {
@@ -38,13 +39,33 @@ export class LoginController {
                 return;
             }
 
-            // Update login status als 'remember me' is aangevinkt
             if (rememberMe) {
                 await this.loginService.updateLoginStatus(user.id, true);
             }
 
-            // Stuur sessie-ID terug
-            const sessionId: string = req.headers["x-session"] as string;
+            const sessionId: string | undefined = await this.sessionService.createSession(user.id);
+
+            if (!sessionId) {
+                res.status(500).json({
+                    success: false,
+                    message: "Kon geen sessie aanmaken",
+                });
+                return;
+            }
+
+            res.cookie("session", sessionId, {
+                httpOnly: false,
+                secure: false,
+                sameSite: "lax",
+                maxAge: 60 * 60 * 1000,
+            });
+
+            res.cookie("user", user.id.toString(), {
+                httpOnly: false,
+                secure: false,
+                sameSite: "lax",
+                maxAge: 60 * 60 * 1000,
+            });
 
             res.status(200).json({
                 success: true,

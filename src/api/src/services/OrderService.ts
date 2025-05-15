@@ -35,7 +35,7 @@ export class OrderService {
     }
 
     public async getCartItemsBySession(sessionId: string): Promise<
-    { title: string; quantity: number; price: number }[]
+        { title: string; quantity: number; price: number }[]
     > {
         const connection: PoolConnection = await this._db.openConnection();
 
@@ -50,11 +50,12 @@ export class OrderService {
                 [sessionId]
             );
             return rows as { title: string; quantity: number; price: number }[];
-        } catch (e) {
+        }
+        catch (e) {
             throw new Error(`Kan cart items niet ophalen: ${e}`);
-        } finally {
+        }
+        finally {
             connection.release();
         }
-    } 
-            
+    }
 }

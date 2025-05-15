@@ -4,6 +4,7 @@ import { OrderController } from "./controllers/OrderContoller";
 import { requireValidSessionMiddleware, sessionMiddleware } from "./middleware/sessionMiddleware";
 import { CartController } from "./controllers/CartController";
 import { ProductController } from "./controllers/ProductController";
+import { GameDetailController } from "./controllers/ProductDetailController";
 
 // Create a router
 export const router: Router = Router();
@@ -16,6 +17,7 @@ router.get("/", (_, res) => {
 // Forward endpoints to other routers
 const welcomeController: WelcomeController = new WelcomeController();
 const orderController: OrderController = new OrderController();
+const gameDetailController: GameDetailController = new GameDetailController();
 const cartController: CartController = new CartController();
 const productController: ProductController = new ProductController();
 
@@ -36,6 +38,8 @@ router.get("/secret", (req, res) => welcomeController.getSecret(req, res));
 
 router.post("/order/complete", (req, res) => orderController.createOrder(req, res));
 router.get("/order/complete", (req, res) => orderController.getBoughtGames(req, res));
+
+router.get("/game", (req, res) => gameDetailController.getGameById(req, res));
 
 // TODO: The following endpoints have to be implemented in their own respective controller
 router.get("/products", (_req, _res) => productController.getAllGames(_req, _res));

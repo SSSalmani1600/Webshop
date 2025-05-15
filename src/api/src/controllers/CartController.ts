@@ -3,25 +3,27 @@ import { CartService, CartItem } from "../services/CartService";
 
 const cartService: CartService = new CartService();
 
-function getSessionIdFromCookie(req: Request): string | null {
-    const cookie: string | undefined = req.headers.cookie;
-    if (!cookie) return null;
+function getUserIdFromCookie(req: Request): number | null {
+    const cookieHeader: string | undefined = req.headers.cookie;
+    console.log("COOKIE HEADER:", cookieHeader); // DEBUG
 
-    const match: RegExpMatchArray | null = cookie.match(/session=([^;]+)/);
-    return match ? match[1] : null;
+    if (!cookieHeader) return null;
+
+    const match: RegExpMatchArray | null = cookieHeader.match(/(?:^|;\s*)user=(\d+)/);
+    return match ? parseInt(match[1], 10) : null;
 }
 
 export class CartController {
     public async getCart(req: Request, res: Response): Promise<void> {
         try {
-            const sessionId: string | null = getSessionIdFromCookie(req);
+            const userId: number | null = getUserIdFromCookie(req);
 
-            if (!sessionId) {
-                res.status(401).json({ error: "Geen geldige sessie" });
+            if (!userId) {
+                res.status(401).json({ error: "Geen geldige gebruiker in cookie" });
                 return;
             }
 
-            const items: CartItem[] = await cartService.getCartItems(sessionId);
+            const items: CartItem[] = await cartService.getCartItemsByUser(userId);
             res.json({ cart: items });
         }
         catch (error) {

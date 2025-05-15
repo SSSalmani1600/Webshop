@@ -11,10 +11,16 @@ export class GameDetailService {
 
         if (!gameId) {
            res.status(400).json({ error: "Game ID ontbreekt."})
+           return;
         }
 
-        try {
+        try { 
+            const game: Game | null = await this._gameDetailService.getGameById(gameId);
 
+            if (!game) { 
+                res.status(404).json({error: "Game niet gevonden"})
+                return;               
+            }
         }
     }
 }

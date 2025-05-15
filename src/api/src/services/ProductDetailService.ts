@@ -9,17 +9,21 @@ export class GameService {
         const connection: PoolConnection = await this._db.openConnection();
 
         try {
-            const [rows] = await connection.query<Game[]>(
-            `
-            SELECT id, title, thumbnail, descriptionHtml
-            FROM games
-            WHERE id = ?
-            `,
-            [gameId]
+            const [rows] = await connection.query(
+        `
+        SELECT id, title, thumbnail, descriptionHtml
+        FROM games
+        WHERE id = ?
+        `,
+        [gameId]
             );
 
-            const game: Game | undefined = rows[0];
-            return game || null;
+            if (!Array.isArray(rows) || rows.length === 0) {
+                return null;
+            }
+
+            const game: Game = rows[0] as Game;
+            return game;
         }
         catch (e) {
             throw new Error(`Kan game niet ophalen: ${e}`);

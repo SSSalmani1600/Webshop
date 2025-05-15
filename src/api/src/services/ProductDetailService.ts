@@ -2,7 +2,7 @@ import { DatabaseService } from "./DatabaseService";
 import { PoolConnection } from "mysql2/promise";
 import { Game } from "@api/types/Game";
 
-export class GameService {
+export class GameDetailService {
     private readonly _db: DatabaseService = new DatabaseService();
 
     public async getGameById(gameId: string): Promise<Game | null> {

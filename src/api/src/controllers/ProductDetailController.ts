@@ -3,7 +3,7 @@ import { GameDetailService } from "@api/services/ProductDetailService";
 import { Game } from "@api/types/Game";
 
 
-export class GameDetailService {
+export class GameDetailController {
     private readonly _gameDetailService: GameDetailService = new GameDetailService();
 
     public async getGameById(req: Request, res: Response): Promise<void> {

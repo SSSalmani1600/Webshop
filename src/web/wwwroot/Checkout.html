@@ -13,7 +13,7 @@
 
       <div class="checkout-section">
         <h3>Verzendadres</h3>
-        <form action="/address" method="POST">
+        <form id="adresForm">
           <label>Naam <span class="required">*</span></label>
           <input type="text" name="naam" placeholder="Naam" required>
 
@@ -26,7 +26,7 @@
           <label>Telefoonnummer <span class="required">*</span></label>
           <input type="text" name="telefoonnummer" placeholder="Telefoonnummer" required>
 
-          <button type="submit">Adres opslaan</button>
+          <button type="submit" class="checkout-btn">Bestelling plaatsen</button>
         </form>
       </div>
     </section>
@@ -45,10 +45,45 @@
         <p>Verzendkosten: €0,00</p>
         <p><strong>Totaal: €0,00</strong></p>
       </div>
-      <button class="checkout-btn">Bestelling plaatsen</button>
     </aside>
   </main>
 
-  <script type="module" src="/src/pages/Checkout.ts" defer></script>
+  <script>
+    const form = document.getElementById("adresForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const payload = {
+        naam: formData.get("naam"),
+        straat_huisnummer: formData.get("straat_huisnummer"),
+        postcode_plaats: formData.get("postcode_plaats"),
+        telefoonnummer: formData.get("telefoonnummer"),
+      };
+
+      try {
+        const response = await fetch("http://localhost:3001/address", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // ✅ stuur sessiecookie mee
+          body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+          alert("Adres succesvol opgeslagen!");
+          // window.location.href = "/bedankt.html"; // optioneel redirect
+        } else {
+          const err = await response.json();
+          alert("Fout: " + err.error);
+        }
+      } catch (error) {
+        console.error("Fout bij verzenden:", error);
+        alert("Er ging iets mis bij het opslaan.");
+      }
+    });
+  </script>
 </body>
 </html>

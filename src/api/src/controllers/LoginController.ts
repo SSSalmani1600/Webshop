@@ -24,9 +24,9 @@ export class LoginController {
 
     /**
      * Handelt het login request af
-     * Valideert de gebruikersinvoer, controleert de inloggegevens en 
+     * Valideert de gebruikersinvoer, controleert de inloggegevens en
      * implementeert de "onthoud mij" functionaliteit
-     * 
+     *
      * @param req - Het Express Request object met de inloggegevens
      * @param res - Het Express Response object voor het terugsturen van de response
      */

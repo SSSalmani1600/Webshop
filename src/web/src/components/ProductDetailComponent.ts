@@ -1,3 +1,5 @@
+import type { Game } from "@api/types/Game"; // or correct path
+
 export class GameDetailComponent extends HTMLElement {
     private shadow: ShadowRoot;
 
@@ -16,7 +18,7 @@ export class GameDetailComponent extends HTMLElement {
     }
 
     private async loadGame(): Promise<void> {
-        const urlParams = new URLSearchParams(window.location.search);
+        const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
         const gameId: string | null = urlParams.get("id");
 
         if (!gameId) {
@@ -25,10 +27,10 @@ export class GameDetailComponent extends HTMLElement {
         }
 
         try {
-            const response = await fetch(`/api/game?id=${gameId}`);
+            const response: Response = await fetch(`/api/game?id=${gameId}`);
             if (!response.ok) throw new Error("Kon game niet ophalen.");
 
-            const game = await response.json();
+            const game: Game = await response.json() as Game;
             this.renderGame(game);
         }
         catch (error) {
@@ -42,7 +44,9 @@ export class GameDetailComponent extends HTMLElement {
         descriptionHtml: string;
         price?: number | null;
     }): void {
-        const price = game.price !== undefined && game.price !== null ? `$${game.price}` : "N/B";
+        const price: string = game.price !== undefined && game.price !== null
+            ? `$${game.price}`
+            : "N/B";
 
         this.shadow.innerHTML = `
             <style>

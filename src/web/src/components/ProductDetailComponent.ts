@@ -1,5 +1,5 @@
 export class GameDetailComponent extends HTMLElement {
-        private shadow: ShadowRoot;
+    private shadow: ShadowRoot;
 
     public constructor() {
         super();
@@ -43,7 +43,5 @@ export class GameDetailComponent extends HTMLElement {
         price?: number | null;
     }): void {
         const price = game.price !== undefined && game.price !== null ? `$${game.price}` : "N/B";
+    }
 }
-
-
-

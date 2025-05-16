@@ -8,7 +8,7 @@ export class GameDetailComponent extends HTMLElement {
 
     public connectedCallback(): void {
         this.renderLoading();
-        this.loadGame();
+        void this.loadGame();
     }
 
     private renderLoading(): void {
@@ -43,5 +43,103 @@ export class GameDetailComponent extends HTMLElement {
         price?: number | null;
     }): void {
         const price = game.price !== undefined && game.price !== null ? `$${game.price}` : "N/B";
+
+        this.shadow.innerHTML = `
+            <style>
+        * {
+          box-sizing: border-box;
+        }
+
+        :host {
+          display: block;
+          padding: 40px;
+          background-color: #0f0f0f;
+          color: white;
+          font-family: Arial, sans-serif;
+        }
+
+        h2 {
+          font-size: 32px;
+          margin: 0 0 10px 0;
+        }
+
+        .price-top {
+          position: absolute;
+          top: 40px;
+          right: 40px;
+          color: #ccc;
+          font-size: 16px;
+        }
+
+        img {
+          width: 100%;
+          max-width: 700px;
+          border-radius: 12px;
+          margin: 30px 0;
+          display: block;
+        }
+
+        .info-boxes {
+          display: flex;
+          gap: 20px;
+          margin-top: 20px;
+        }
+
+        .box {
+          border: 1px solid #333;
+          border-radius: 12px;
+          padding: 20px;
+          flex: 1;
+          background-color: #1a1a1a;
+        }
+
+        .box h3 {
+          margin-top: 0;
+        }
+
+        .tags {
+          display: flex;
+          gap: 10px;
+          margin-top: 15px;
+        }
+
+        .tag {
+          background-color: #222;
+          border: 1px solid #444;
+          border-radius: 20px;
+          padding: 6px 12px;
+          font-size: 12px;
+        }
+
+        .bottom-bar {
+          margin-top: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .add-button {
+          background-color: #7f41f5;
+          color: white;
+          border: none;
+          padding: 14px 32px;
+          border-radius: 999px;
+          font-size: 16px;
+          cursor: pointer;
+          transition: background 0.3s;
+        }
+
+        .add-button:hover {
+          background-color: #6936cc;
+        }
+
+        .price-bottom {
+          font-size: 20px;
+        }
+      </style>
+
+      <div class="price-top">Price<br><strong>${price}</strong></div>
+
+        `;
     }
 }

@@ -144,6 +144,29 @@ export class GameDetailComponent extends HTMLElement {
 
       <div class="price-top">Price<br><strong>${price}</strong></div>
 
+            <h2>Game:<br><strong>${game.title}</strong></h2>
+      <img src="${game.thumbnail}" alt="${game.title}" />
+
+      <div class="info-boxes">
+        <div class="box">
+          <h3>Description</h3>
+          ${game.descriptionHtml}
+          <div class="tags">
+            <div class="tag">Single player</div>
+            <div class="tag">Horror</div>
+            <div class="tag">Offline</div>
+          </div>
+        </div>
+        <div class="box">
+          <p><em>${game.title}</em> is a click and point based game.</p>
+        </div>
+      </div>
+
+      <div class="bottom-bar">
+        <button class="add-button">Toevoegen aan winkelmand</button>
+        <div class="price-bottom">${price}</div>
+      </div>
+
         `;
     }
 }

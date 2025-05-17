@@ -127,7 +127,6 @@ export class OrderConfirmationComponent extends HTMLElement {
                 }
               `;
 
-        // eslint-disable-next-line @typescript-eslint/typedef
         container.innerHTML = `
         <div class="order-container">
           <div class="header-bar">
@@ -178,7 +177,8 @@ export class OrderConfirmationComponent extends HTMLElement {
             if (totalPriceElement) {
                 totalPriceElement.textContent = `€${total.toFixed(2)}`;
             }
-        } catch (error) {
+        }
+        catch (error) {
             console.error("Fout bij laden van gekochte games:", error);
         }
     }

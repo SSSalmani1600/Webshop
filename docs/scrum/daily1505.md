@@ -14,13 +14,13 @@
 
 ## 👤 Nabil
 - **Wat heb je gedaan?**  
-
+gewerkt aan de checkout.
 
 - **Wat ga je doen?**  
-
+verder aan user stories
 
 - **Zijn er blokkades?**  
-
+Ja me backend tript voor een of andere reden.
 ---
 
 ## 👤 Sem

@@ -17,6 +17,7 @@ import "dotenv/config";
 import express, { Application } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import session from "express-session"; // ✅ toegevoegde regel
 import "express-async-errors";
 import { router } from "./routes";
 
@@ -33,6 +34,18 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+
+// ✅ Toegevoegde sessieconfiguratie
+app.use(session({
+    secret: "geheime_sleutel",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false,        // want je werkt lokaal zonder HTTPS
+        httpOnly: true,
+        sameSite: "lax"
+    }
+}));
 
 // Voeg statische bestanden toe
 app.use(express.static("./wwwroot"));

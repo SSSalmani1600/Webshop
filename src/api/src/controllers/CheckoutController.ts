@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { AddressService } from "@api/services/CheckoutService";
+import { CheckoutService } from "@api/services/CheckoutService";
 
-const addressService: AddressService = new AddressService();
+const checkoutService: CheckoutService = new CheckoutService();
 
-export class AddressController {
+export class CheckoutController {
     public async createAddress(req: Request, res: Response): Promise<void> {
         try {
             const { userId, naam, straatHuisnummer, postcodePlaats, telefoonnummer } = req.body as {
@@ -20,7 +20,7 @@ export class AddressController {
                 return;
             }
 
-            const addressId: number = await addressService.createAddress(
+            const addressId: number = await checkoutService.createAddress(
                 userId,
                 naam,
                 straatHuisnummer,

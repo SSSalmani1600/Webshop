@@ -5,7 +5,7 @@ import { requireValidSessionMiddleware, sessionMiddleware } from "./middleware/s
 import { CartController } from "./controllers/CartController";
 import { ProductController } from "./controllers/ProductController";
 import { LoginController } from "./controllers/LoginController";
-import { AddressController } from "./controllers/AddressController"; 
+import { CheckoutController } from "./controllers/CheckoutController"; 
 
 export const router: Router = Router();
 
@@ -18,6 +18,7 @@ const orderController: OrderController = new OrderController();
 const cartController: CartController = new CartController();
 const productController: ProductController = new ProductController();
 const loginController: LoginController = new LoginController();
+const checkoutController = new CheckoutController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
@@ -32,7 +33,7 @@ router.get("/cart", (req: Request, res: Response) => cartController.getCart(req,
 
 // ✅ Adres opslaan - alleen voor ingelogde gebruikers
 router.use(requireValidSessionMiddleware);
-router.post("/address", (req: Request, res: Response) => AddressController.postAddress(req, res));
+router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));
 
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));
 

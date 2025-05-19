@@ -1,7 +1,7 @@
 import { DatabaseService } from "./DatabaseService";
 import { PoolConnection, ResultSetHeader } from "mysql2/promise";
 
-export class AddressService {
+export class CheckoutService {
     private readonly _db: DatabaseService = new DatabaseService();
 
     public async createAddress(

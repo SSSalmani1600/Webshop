@@ -49,41 +49,42 @@
   </main>
 
   <script>
-    const form = document.getElementById("adresForm");
+  document.getElementById("adresForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    const userId = 1; // ← tijdelijk hardcoded, vervang met echte user info
 
-      const formData = new FormData(form);
-      const payload = {
-        naam: formData.get("naam"),
-        straat_huisnummer: formData.get("straat_huisnummer"),
-        postcode_plaats: formData.get("postcode_plaats"),
-        telefoonnummer: formData.get("telefoonnummer"),
-      };
+    const formData = new FormData(event.target);
+    const data = {
+      userId: userId,
+      naam: formData.get("naam"),
+      straatHuisnummer: formData.get("straat_huisnummer"),
+      postcodePlaats: formData.get("postcode_plaats"),
+      telefoonnummer: formData.get("telefoonnummer"),
+    };
 
-      try {
-        const response = await fetch("http://localhost:3001/address", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // ✅ stuur sessiecookie mee
-          body: JSON.stringify(payload),
-        });
+    try {
+      const res = await fetch("http://localhost:3001/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify(data)
+      });
 
-        if (response.ok) {
-          alert("Adres succesvol opgeslagen!");
-          // window.location.href = "/bedankt.html"; // optioneel redirect
-        } else {
-          const err = await response.json();
-          alert("Fout: " + err.error);
-        }
-      } catch (error) {
-        console.error("Fout bij verzenden:", error);
-        alert("Er ging iets mis bij het opslaan.");
-      }
-    });
-  </script>
+      if (!res.ok) throw new Error("Kon adres niet opslaan");
+
+      const result = await res.json();
+      alert("Adres opgeslagen! Adres ID: " + result.addressId);
+
+      // Optioneel: doorgaan naar volgende stap, bijv. order plaatsen
+    } catch (err) {
+      console.error(err);
+      alert("Er is een fout opgetreden tijdens het opslaan van het adres.");
+    }
+  });
+</script>
+
 </body>
 </html>

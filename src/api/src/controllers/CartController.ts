@@ -5,8 +5,6 @@ const cartService: CartService = new CartService();
 
 function getUserIdFromCookie(req: Request): number | null {
     const cookieHeader: string | undefined = req.headers.cookie;
-    console.log("COOKIE HEADER:", cookieHeader); // DEBUG
-
     if (!cookieHeader) return null;
 
     const match: RegExpMatchArray | null = cookieHeader.match(/(?:^|;\s*)user=(\d+)/);
@@ -37,6 +35,24 @@ export class CartController {
         }
         catch (error) {
             console.error("Error fetching cart:", error);
+            res.status(500).json({ error: "error" });
+        }
+    }
+
+    public async deleteCartItem(req: Request, res: Response): Promise<void> {
+        const userId: number | null = getUserIdFromCookie(req);
+        const cartItemId: number = parseInt(req.params.id, 10);
+
+        if (!userId || isNaN(cartItemId)) {
+            res.status(400).json({ error: "Ongeldige gebruiker of cart item id" });
+            return;
+        }
+
+        try {
+            await cartService.deleteCartItemById(cartItemId, userId);
+            res.status(204).send();
+        }
+        catch {
             res.status(500).json({ error: "error" });
         }
     }

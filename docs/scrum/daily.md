@@ -50,3 +50,14 @@
   - Geen.
 
 ---
+
+## 👤 Nabil
+- **Wat heb je gedaan?**  
+  - BPMN-diagram gemaakt.
+  - User stories gemaakt
+
+- **Wat ga je doen?**  
+  - Planning maken
+
+- **Zijn er blokkades?**  
+  - Geen.

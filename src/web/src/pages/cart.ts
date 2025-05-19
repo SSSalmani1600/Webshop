@@ -238,7 +238,7 @@ export class CartPageComponent extends HTMLElement {
         const continueShoppingButton: HTMLButtonElement | null = this.shadowRoot?.querySelector(".continue-shopping-button") ?? null;
         if (continueShoppingButton) {
             continueShoppingButton.addEventListener("click", () => {
-                window.location.href = "index.html";
+                window.location.href = "product.html";
             });
         }
     }
@@ -247,7 +247,7 @@ export class CartPageComponent extends HTMLElement {
         try {
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
-                : "https://jouw-live-backend-url.cloud";
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
 
             const res: Response = await fetch(`${API_BASE}/cart`, {
                 credentials: "include",
@@ -267,14 +267,38 @@ export class CartPageComponent extends HTMLElement {
             container.innerHTML = "";
             cart.forEach((item: CartItem) => {
                 const element: CartItemComponent = new CartItemComponent(item);
+
+                element.addEventListener("item-delete", async (event: Event) => {
+                    const customEvent: CustomEvent = event as CustomEvent<{ id: number }>;
+                    const itemId: number = (customEvent.detail as { id: number }).id;
+
+                    await this.deleteCartItem(itemId);
+                    await this.fetchCart();
+                });
+
                 container.appendChild(element);
-                totalDisplay.textContent = `€${total.toFixed(2)}`;
             });
 
             totalDisplay.textContent = `€${total.toFixed(2)}`;
         }
         catch (e) {
             console.error("Fout bij ophalen winkelwagen:", e);
+        }
+    }
+
+    private async deleteCartItem(itemId: number): Promise<void> {
+        try {
+            const API_BASE: string = window.location.hostname.includes("localhost")
+                ? "http://localhost:3001"
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+
+            await fetch(`${API_BASE}/cart/item/${itemId}`, {
+                method: "DELETE",
+                credentials: "include",
+            });
+        }
+        catch (e) {
+            console.error("Fout bij verwijderen item uit winkelwagen:", e);
         }
     }
 }

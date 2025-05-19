@@ -249,8 +249,9 @@ export class CartPageComponent extends HTMLElement {
                 credentials: "include",
             });
 
-            const data: { cart: CartItem[] } = await res.json() as { cart: CartItem[] };
+            const data: { cart: CartItem[]; total: number } = (await res.json()) as { cart: CartItem[]; total: number };
             const cart: CartItem[] = data.cart;
+            const total: number = data.total;
 
             const container: HTMLElement | null = this.shadowRoot ? this.shadowRoot.querySelector("#cart-list") : null;
             const totalDisplay: HTMLElement | null = this.shadowRoot?.querySelector("#total-price") ?? null;
@@ -259,13 +260,11 @@ export class CartPageComponent extends HTMLElement {
                 return;
             }
 
-            let total: number = 0;
             container.innerHTML = "";
             cart.forEach((item: CartItem) => {
                 const element: CartItemComponent = new CartItemComponent(item);
                 container.appendChild(element);
-                const price: number = typeof item.price === "string" ? parseFloat(item.price) : item.price;
-                total += price * item.quantity;
+                totalDisplay.textContent = `€${total.toFixed(2)}`;
             });
 
             totalDisplay.textContent = `€${total.toFixed(2)}`;

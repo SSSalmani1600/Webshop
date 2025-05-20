@@ -1,99 +1,100 @@
 import { CartSummaryComponent } from "../components/CheckoutproductComponent";
 
-function initCheckoutFormStorage(): void {
-  const FORM_KEY = "checkoutFormData";
+export class Checkout extends HTMLElement {
+  connectedCallback(): void {
+    this.innerHTML = `
+      <main class="checkout-container">
+        <section class="checkout-left">
+          <h2>Afrekenen</h2>
 
-  const formInputs = document.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
-    "input[type='text'], input[type='email'], input[type='radio'], select"
-  );
+          <div class="checkout-section">
+            <h3>Verzendadres</h3>
+            <form id="adresForm">
+              <label>Naam <span class="required">*</span></label>
+              <input type="text" name="naam" placeholder="Naam" required>
 
-  // Herstel eerder opgeslagen formulierdata
-  const saved = localStorage.getItem(FORM_KEY);
-  if (saved) {
-    const data = JSON.parse(saved);
-    formInputs.forEach((input) => {
-      const name = input.name;
-      if (!name) return;
+              <label>Straat + Huisnummer <span class="required">*</span></label>
+              <input type="text" name="straat_huisnummer" placeholder="Straat + Huisnummer" required>
 
-      if (input.type === "radio") {
-        input.checked = input.value === data[name];
-        if (input.checked) input.dispatchEvent(new Event("click")); // toon juiste velden
-      } else {
-        input.value = data[name] || "";
-      }
-    });
+              <label>Postcode + Plaats <span class="required">*</span></label>
+              <input type="text" name="postcode_plaats" placeholder="Postcode + Plaats" required>
+
+              <label>Telefoonnummer <span class="required">*</span></label>
+              <input type="text" name="telefoonnummer" placeholder="Telefoonnummer" required>
+
+              <button type="submit" id="place-order" class="checkout-btn">Bestelling plaatsen</button>
+            </form>
+          </div>
+        </section>
+
+        <aside class="checkout-summary">
+          <h3>Winkelwagen</h3>
+          <div class="summary-item">
+            <div>
+              <p>Productnaam</p>
+              <p>€0,00</p>
+            </div>
+          </div>
+          <hr>
+          <div class="summary-total">
+            <p>Subtotaal: €0,00</p>
+            <p>Verzendkosten: €0,00</p>
+            <p><strong>Totaal: €0,00</strong></p>
+          </div>
+        </aside>
+      </main>
+    `;
+
+    this.initCartSummary();
+    this.initOrderSubmission();
   }
 
-  // Opslaan bij wijziging
-  formInputs.forEach((input) => {
-    input.addEventListener("change", () => {
-      const updatedData: Record<string, string> = {};
-      formInputs.forEach((i) => {
-        if (!i.name) return;
-        if (i.type === "radio") {
-          if ((i as HTMLInputElement).checked) {
-            updatedData[i.name] = i.value;
-          }
-        } else {
-          updatedData[i.name] = i.value;
-        }
-      });
-      localStorage.setItem(FORM_KEY, JSON.stringify(updatedData));
-    });
-  });
-}
-
-function initOrderSubmission(): void {
-  const button = document.getElementById("place-order");
-  if (!button) return;
-
-  button.addEventListener("click", async () => {
-    const formInputs = document.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
-      "input[type='text'], input[type='email'], input[type='radio'], select"
-    );
-
-    const orderData: Record<string, string> = {};
-    formInputs.forEach((input) => {
-      if (!input.name) return;
-      if (input.type === "radio") {
-        if ((input as HTMLInputElement).checked) {
-          orderData[input.name] = input.value;
-        }
-      } else {
-        orderData[input.name] = input.value;
-      }
-    });
-
-    try {
-      const res = await fetch("http://localhost:3001/checkout/submit", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
-
-      if (!res.ok) throw new Error("Bestelling verzenden mislukt");
-
-      alert("Bestelling succesvol geplaatst!");
-      localStorage.removeItem("checkoutFormData");
-    } catch (err) {
-      console.error("Fout bij verzenden bestelling:", err);
-      alert("Er is iets misgegaan bij het plaatsen van je bestelling.");
-    }
-  });
-}
-
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
+  private initCartSummary(): void {
     const summary = new CartSummaryComponent(".checkout-summary");
-    await summary.render();
-
-    initCheckoutFormStorage();
-    initOrderSubmission();
-  } catch (error) {
-    console.error("Fout bij laden van cart component:", error);
-    console.error("Fout bij laden van checkout:", error);
+    summary.render();
   }
-});
+
+  private initOrderSubmission(): void {
+    const form = this.querySelector("#adresForm") as HTMLFormElement;
+    if (!form) return;
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const userId = 1;
+
+      const formData = new FormData(form);
+      const data = {
+        userId,
+        naam: (formData.get("naam") || "").toString().trim(),
+        straatHuisnummer: (formData.get("straat_huisnummer") || "").toString().trim(),
+        postcodePlaats: (formData.get("postcode_plaats") || "").toString().trim(),
+        telefoonnummer: (formData.get("telefoonnummer") || "").toString().trim(),
+      };
+
+      console.log("📦 Data naar backend:");
+      console.table(data);
+
+      try {
+        const res = await fetch("http://localhost:3001/checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(data),
+        });
+
+        if (!res.ok) throw new Error("Kon adres niet opslaan");
+
+        const result = await res.json();
+        alert("Adres opgeslagen! Adres ID: " + result.addressId);
+      } catch (err) {
+        console.error("Fout bij opslaan adres:", err);
+        alert("Er is iets misgegaan bij het opslaan van je adres.");
+      }
+    });
+  }
+}
+
+customElements.define("webshop-page-checkout", Checkout);

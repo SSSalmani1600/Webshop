@@ -31,7 +31,7 @@ router.delete("/session/expired", (req: Request, res: Response) => welcomeContro
 router.get("/welcome", (req: Request, res: Response) => welcomeController.getWelcome(req, res));
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
 
-// ✅ Adres opslaan - alleen voor ingelogde gebruikers
+//  Adres opslaan - alleen voor ingelogde gebruikers
 router.use(requireValidSessionMiddleware);
 router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));
 

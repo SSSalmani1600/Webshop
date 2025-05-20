@@ -24,12 +24,12 @@
 
 ## 👤 Sem
 - **Wat heb je gedaan?**  
-    -
+    - A/B presentaties voorbereid
 - **Wat ga je doen?**  
-    -
+    - userstory maken voor "onthoudt mij functie"
 
 - **Zijn er blokkades?**  
-    -
+    - n.v.t alleen stress van VE
 
 ---
 

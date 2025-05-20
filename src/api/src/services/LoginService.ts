@@ -27,7 +27,7 @@ export class LoginService {
 
     /**
      * Valideert de inloggegevens van een gebruiker
-     * 
+     * \
      * @param loginIdentifier - De gebruikersnaam of e-mailadres
      * @param password - Het wachtwoord
      * @returns Een Promise met het gebruikersobject als de inloggegevens geldig zijn, anders null
@@ -59,7 +59,7 @@ export class LoginService {
     /**
      * Werkt de inlogstatus van een gebruiker bij in de database
      * Deze methode wordt gebruikt om de "onthoud mij" functionaliteit te implementeren
-     * 
+     *
      * @param userId - De ID van de gebruiker
      * @param loggedIn - De gewenste inlogstatus (true voor ingelogd, false voor uitgelogd)
      */

@@ -25,12 +25,12 @@ Ja me backend tript voor een of andere reden.
 
 ## 👤 Sem
 - **Wat heb je gedaan?**  
-    -
+    - Aan mijn addtocart gewerkt
 - **Wat ga je doen?**  
-    -
+    - verder aan addtocart
 
 - **Zijn er blokkades?**  
-    -
+    - n.v.t
 
 ---
 

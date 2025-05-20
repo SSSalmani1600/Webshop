@@ -120,13 +120,6 @@ export class AddToCartController {
         }
 
         // Anders proberen van cookies
-        const cookieHeader: string | undefined = req.headers.cookie;
-        if (cookieHeader) {
-            const match: RegExpMatchArray | null = cookieHeader.match(/(?:^|;\s*)user=(\d+)/);
-            if (match) {
-                return parseInt(match[1], 10);
-            }
-        }
 
         return null;
     }

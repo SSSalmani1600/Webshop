@@ -20,16 +20,23 @@ export class CartPageComponent extends HTMLElement {
         }
 
         .continue-shopping-button {
-        margin: 2rem auto 0;
-        padding: 0.8rem 1.5rem;
-        background-color: #222121;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        font-size: 1rem;
-        cursor: pointer;
-        text-align: center;
-    }
+            margin-top: 2rem;
+            padding: 0.8rem 1.5rem;
+            background-color: #222121;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .continue-shopping-button.primary {
+            margin: 2rem auto 0;
+            background-color: #703bf7;
+            display: block;
+        }
 
         .cart-container {
             min-width: 300px;
@@ -172,62 +179,90 @@ export class CartPageComponent extends HTMLElement {
             color: #ccc;
         }
 
-        @media (max-width: 768px) {
-            .cart-content {
+        .empty-message {
+            display: flex;
             flex-direction: column;
-            }
-
-        .cart-item {
-            flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-top: 4rem;
+            gap: 1.5rem;
         }
 
-        .cart-item img {
-            width: 100%;
+        .empty-cart-image {
+            max-width: 200px;
+            height: auto;
+            opacity: 0.8;
+        }
+
+        .empty-cart-text {
+            font-size: 1rem;
+            color: #ccc;
+            max-width: 300px;
+            margin: 0;
+        }
+
+        .empty-cart-image {
+            max-width: 100px;
             height: auto;
         }
+            
 
-        .item-price {
-            text-align: left;
-            padding-top: 0.5rem;
+        @media (max-width: 768px) {
+            .cart-content {
+                flex-direction: column;
+            }
+
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .cart-item img {
+                width: 100%;
+                height: auto;
+            }
+
+            .item-price {
+                text-align: left;
+                padding-top: 0.5rem;
+            }
+
+            .checkout-button {
+                width: 100%;
+            }
+
+            .summary-inner {
+                width: 100%;
+            }
         }
-
-        .checkout-button {
-            width: 100%;
-       }
-
-        .summary-inner {
-            width: 100%;
-        }
-}
-`;
+        `;
 
         const container: HTMLDivElement = document.createElement("div");
         container.innerHTML = `
-    <div class="cart-header">
-        <h2>Winkelwagen</h2>
-        <p>Rond je bestelling af - producten aan je winkelwagen toevoegen betekent geen reservering</p>
-    </div>
-
-    <div class="cart-container">
-        <div class="cart-content">
-            <div id="cart-list"></div>
-
-            <div class="cart-summary">
-                <div class="summary-inner">
-                    <div class="cart-summary-header">
-                        <h3>Totaal</h3>
-                        <p id="total-price">€0,00</p>
-                    </div>
-                    <button class="checkout-button">Ga door naar checkout</button>
-                </div>
+            <div class="cart-header">
+                <h2>Winkelwagen</h2>
+                <p>Rond je bestelling af - producten aan je winkelwagen toevoegen betekent geen reservering</p>
             </div>
-        </div>
 
-        <!-- Verplaats de knop naar de shadow DOM -->
-        <button class="continue-shopping-button">Verder winkelen</button>
-    </div>
-`;
+            <div class="cart-container">
+                <div class="cart-content">
+                    <div id="cart-list"></div>
+
+                    <div class="cart-summary">
+                        <div class="summary-inner">
+                            <div class="cart-summary-header">
+                                <h3>Totaal</h3>
+                                <p id="total-price">€0,00</p>
+                            </div>
+                            <button class="checkout-button">Ga door naar checkout</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="continue-shopping-button">Verder winkelen</button>
+            </div>
+        `;
 
         shadow.append(style, container);
     }
@@ -257,14 +292,59 @@ export class CartPageComponent extends HTMLElement {
             const cart: CartItem[] = data.cart;
             const total: number = data.total;
 
-            const container: HTMLElement | null = this.shadowRoot ? this.shadowRoot.querySelector("#cart-list") : null;
-            const totalDisplay: HTMLElement | null = this.shadowRoot?.querySelector("#total-price") ?? null;
+            const shadow: ShadowRoot = this.shadowRoot!;
+            const cartList: HTMLElement = shadow.querySelector("#cart-list")!;
+            const totalDisplay: HTMLElement = shadow.querySelector("#total-price")!;
+            const summary: HTMLElement = shadow.querySelector(".cart-summary") as HTMLElement;
+            const header: HTMLElement = shadow.querySelector(".cart-header p")!;
+            const continueShopping: HTMLElement = shadow.querySelector(".continue-shopping-button") as HTMLElement;
 
-            if (!container || !totalDisplay) {
+            cartList.innerHTML = "";
+
+            // Winkelwagen is leeg
+            if (cart.length === 0) {
+                header.textContent = "Er zijn geen producten in je winkelmandje.";
+                summary.style.display = "none";
+                continueShopping.style.display = "none";
+
+                const emptyMessage: HTMLDivElement = document.createElement("div");
+                emptyMessage.className = "empty-message";
+
+                const emptyImg: HTMLImageElement = document.createElement("img");
+                emptyImg.src = "./assets/images/cart_empty.png";
+                emptyImg.className = "empty-cart-image";
+
+                const emptyText: HTMLParagraphElement = document.createElement("p");
+                emptyText.textContent = "Je winkelmandje is leeg. Voeg producten toe om te beginnen met shoppen!";
+                emptyText.className = "empty-cart-text";
+
+                const startShoppingBtn: HTMLButtonElement = document.createElement("button");
+                startShoppingBtn.className = "continue-shopping-button primary";
+                startShoppingBtn.textContent = "Begin met winkelen";
+                startShoppingBtn.addEventListener("click", () => {
+                    window.location.href = "product.html";
+                });
+
+                emptyMessage.appendChild(emptyImg);
+                emptyMessage.appendChild(emptyText);
+                emptyMessage.appendChild(startShoppingBtn);
+                cartList.appendChild(emptyMessage);
                 return;
             }
 
-            container.innerHTML = "";
+            // Winkelwagen bevat items
+            summary.style.display = "flex";
+            continueShopping.style.display = "block";
+            header.textContent = "Rond je bestelling af - producten aan je winkelwagen toevoegen betekent geen reservering.";
+
+            continueShopping.classList.remove("primary");
+            continueShopping.classList.add("continue-shopping-button");
+            continueShopping.style.margin = "2rem 0 0 0";
+            continueShopping.style.backgroundColor = "#222121";
+            continueShopping.style.color = "white";
+            continueShopping.style.display = "inline-block";
+            continueShopping.classList.remove("primary");
+
             cart.forEach((item: CartItem) => {
                 const element: CartItemComponent = new CartItemComponent(item);
 
@@ -276,7 +356,7 @@ export class CartPageComponent extends HTMLElement {
                     await this.fetchCart();
                 });
 
-                container.appendChild(element);
+                cartList.appendChild(element);
             });
 
             totalDisplay.textContent = `€${total.toFixed(2)}`;

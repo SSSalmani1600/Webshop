@@ -14,12 +14,12 @@
 
 ## 👤 Nabil
 - **Wat heb je gedaan?**
-
+ verder gewerkt.
 - **Wat ga je doen?**  
-
+verder werken aan userstories.
 
 - **Zijn er blokkades?**  
-
+me backedn geeft de heledeag unauthorized.
 ---
 
 ## 👤 Sem

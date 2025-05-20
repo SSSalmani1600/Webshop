@@ -1,4 +1,4 @@
-import type { Game } from "@api/types/Game"; // or correct path
+import type { Game } from "@api/types/Game";
 
 export class GameDetailComponent extends HTMLElement {
     private shadow: ShadowRoot;

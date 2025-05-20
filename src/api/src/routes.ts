@@ -21,7 +21,6 @@ const gameDetailController: GameDetailController = new GameDetailController();
 const cartController: CartController = new CartController();
 const productController: ProductController = new ProductController();
 
-
 // NOTE: After this line, all endpoints will check for a session.
 router.use(sessionMiddleware);
 

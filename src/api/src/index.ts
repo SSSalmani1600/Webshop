@@ -21,7 +21,7 @@ import "express-async-errors";
 import { router } from "./routes";
 
 // Maak Express applicatie
-const app: Application = express();
+export const app: Application = express();
 
 // Configureer middleware
 app.use(cors({

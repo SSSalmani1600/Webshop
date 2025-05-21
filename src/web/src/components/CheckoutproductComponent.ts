@@ -58,7 +58,7 @@ interface CartItem {
   
       const button = document.createElement("button");
       button.className = "checkout-btn";
-      button.textContent = "Bestelling plaatsen";
+      button.textContent = "Verder naar afrekenen";
       this.container.appendChild(button);
     }
   

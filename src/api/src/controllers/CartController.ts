@@ -24,11 +24,20 @@ export class CartController {
             }
 
             const items: CartItem[] = await cartService.getCartItemsByUser(userId);
-            res.json({ cart: items });
+
+            const total: number = items.reduce((sum, item) => {
+                const price: number = typeof item.price === "string" ? parseFloat(item.price) : item.price;
+                return sum + price * item.quantity;
+            }, 0);
+
+            res.json({
+                cart: items,
+                total,
+            });
         }
         catch (error) {
             console.error("Error fetching cart:", error);
-            res.status(500).json({ error: "Kon winkelwagen niet ophalen" });
+            res.status(500).json({ error: "error" });
         }
     }
 }

@@ -1,5 +1,5 @@
-import "../components/GameDetailComponent";
-import { html } from "../helpers/webComponents";
+import "@web/components/ProductDetailComponent";
+import { html } from "@web/helpers/webComponents";
 
 export class GameDetailPageComponent extends HTMLElement {
     public connectedCallback(): void {

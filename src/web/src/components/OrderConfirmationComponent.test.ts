@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { OrderConfirmationComponent } from "@web/pages/orderComplete";
+import { OrderConfirmationComponent } from "@web/components/OrderCompleteComponent"; // ✅ Correct
 import "@testing-library/jest-dom";
 
 beforeEach(() => {

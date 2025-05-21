@@ -170,3 +170,5 @@ export class GameDetailComponent extends HTMLElement {
         `;
     }
 }
+
+customElements.define("game-detail-page", GameDetailComponent);

@@ -4,35 +4,37 @@ import { Request } from "express";
 
 export type CartItem = {
     id: number;
-    session_id: string;
+    user_id: number;
     game_id: number;
     quantity: number;
     price: number;
+    title: string;
+    thumbnail: string;
 };
 
 export class CartService {
     private readonly _databaseService: DatabaseService = new DatabaseService();
 
-    public async getCartItems(sessionId: string): Promise<CartItem[]> {
+    public async getCartItemsByUser(userId: number): Promise<CartItem[]> {
         const connection: PoolConnection = await this._databaseService.openConnection();
 
         try {
             const result: CartItem[] = await this._databaseService.query<CartItem[]>(
                 connection,
-            `
-            SELECT 
-              ci.id,
-              ci.session_id,
-              ci.game_id,
-              ci.quantity,
-              ci.price,
-              g.Title AS title,
-              g.Thumbnail AS thumbnail
-            FROM cart_items ci
-            JOIN games g ON ci.game_id = g.id
-            WHERE ci.session_id = ?
-            `,
-            sessionId
+                `
+                SELECT 
+                  ci.id,
+                  ci.user_id,
+                  ci.game_id,
+                  ci.quantity,
+                  ci.price,
+                  g.Title AS title,
+                  g.Thumbnail AS thumbnail
+                FROM cart_items ci
+                JOIN games g ON ci.game_id = g.id
+                WHERE ci.user_id = ?
+                `,
+                userId
             );
 
             return result;

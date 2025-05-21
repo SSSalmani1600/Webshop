@@ -1,24 +1,42 @@
 import { Request, Response } from "express";
 import { LoginService, UserData } from "../services/LoginService";
+import { SessionService } from "../services/SessionService";
 
+/**
+ * Interface die de structuur van het login request definieert
+ * Bevat de inloggegevens en "onthoud mij" voorkeur van de gebruiker
+ */
 interface LoginRequest {
     loginIdentifier: string;
     password: string;
     rememberMe?: boolean;
 }
 
+/**
+ * Controller voor het afhandelen van login requests
+ * Handelt authenticatie en "onthoud mij" functionaliteit af
+ */
 export class LoginController {
     private loginService: LoginService;
+    private sessionService: SessionService;
 
     public constructor() {
         this.loginService = new LoginService();
+        this.sessionService = new SessionService();
     }
 
+    /**
+     * Handelt het login request af
+     * Valideert de gebruikersinvoer, controleert de inloggegevens en
+     * implementeert de "onthoud mij" functionaliteit
+     *
+     * @param req - Het Express Request object met de inloggegevens
+     * @param res - Het Express Response object voor het terugsturen van de response
+     */
     public async login(req: Request, res: Response): Promise<void> {
         try {
             const { loginIdentifier, password, rememberMe }: LoginRequest = req.body as LoginRequest;
 
-            // Valideer invoer
             if (!loginIdentifier || !password) {
                 res.status(400).json({
                     success: false,
@@ -27,7 +45,6 @@ export class LoginController {
                 return;
             }
 
-            // Valideer login
             const user: UserData | null = await this.loginService.validateUser(loginIdentifier, password);
 
             if (!user) {
@@ -38,13 +55,33 @@ export class LoginController {
                 return;
             }
 
-            // Update login status als 'remember me' is aangevinkt
             if (rememberMe) {
                 await this.loginService.updateLoginStatus(user.id, true);
             }
 
-            // Stuur sessie-ID terug
-            const sessionId: string = req.headers["x-session"] as string;
+            const sessionId: string | undefined = await this.sessionService.createSession(user.id);
+
+            if (!sessionId) {
+                res.status(500).json({
+                    success: false,
+                    message: "Kon geen sessie aanmaken",
+                });
+                return;
+            }
+
+            res.cookie("session", sessionId, {
+                httpOnly: false,
+                secure: false,
+                sameSite: "lax",
+                maxAge: 60 * 60 * 1000,
+            });
+
+            res.cookie("user", user.id.toString(), {
+                httpOnly: false,
+                secure: false,
+                sameSite: "lax",
+                maxAge: 60 * 60 * 1000,
+            });
 
             res.status(200).json({
                 success: true,

@@ -1,7 +1,11 @@
-import { CartSummaryComponent } from "../components/CheckoutproductComponent";
+// Haalt component op die winkelwagen laat zien
+import { CartSummaryComponent } from "../components/CheckoutproductComponent"
 
+// Maakt nieuwe custom HTML tag aan voor checkout pagina
 export class Checkout extends HTMLElement {
+  // Deze functie draait automatisch als pagina geladen wordt
   connectedCallback(): void {
+    // Zet HTML op het scherm voor afrekenpagina
     this.innerHTML = `
       <main class="checkout-container">
         <section class="checkout-left">
@@ -43,58 +47,74 @@ export class Checkout extends HTMLElement {
           </div>
         </aside>
       </main>
-    `;
+    `
 
-    this.initCartSummary();
-    this.initOrderSubmission();
+    // Start functie die winkelwagen ophaalt en laat zien
+    this.initCartSummary()
+
+    // Start functie die kijkt of formulier is ingevuld en stuurt naar backend
+    this.initOrderSubmission()
   }
 
+  // Deze functie maakt en laat samenvatting van winkelwagen zien
   private initCartSummary(): void {
-    const summary = new CartSummaryComponent(".checkout-summary");
-    summary.render();
+    const summary = new CartSummaryComponent(".checkout-summary")
+    summary.render()
   }
 
+  // Deze functie zorgt dat als je op 'adres opslaan' klikt
+  // het formulier wordt verwerkt en verstuurd naar backend
   private initOrderSubmission(): void {
-    const form = this.querySelector("#adresForm") as HTMLFormElement;
-    if (!form) return;
+    // Pakt het formulier uit de pagina
+    const form = this.querySelector("#adresForm") as HTMLFormElement
+    if (!form) return
 
+    // Als je op 'adres opslaan' klikt gebeurt dit
     form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+      event.preventDefault() // voorkomt dat pagina opnieuw laadt
 
-      const userId = 1;
+      // Tijdelijk test userId gebruiken
+      const userId = 1
 
-      const formData = new FormData(form);
+      // Haalt alle ingevulde data uit het formulier
+      const formData = new FormData(form)
       const data = {
         userId,
         naam: (formData.get("naam") || "").toString().trim(),
         straatHuisnummer: (formData.get("straat_huisnummer") || "").toString().trim(),
         postcodePlaats: (formData.get("postcode_plaats") || "").toString().trim(),
         telefoonnummer: (formData.get("telefoonnummer") || "").toString().trim(),
-      };
+      }
 
-      console.log(" Data naar backend:");
-      console.table(data);
+      // Laat zien wat we sturen naar backend
+      console.log("Data naar backend:")
+      console.table(data)
 
       try {
+        // Verstuur data naar backend via fetch POST request
         const res = await fetch("http://localhost:3001/checkout", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           credentials: "include",
-          body: JSON.stringify(data),
-        });
+          body: JSON.stringify(data)
+        })
 
-        if (!res.ok) throw new Error("Kon adres niet opslaan");
+        // Als backend geen succes teruggeeft laat fout zien
+        if (!res.ok) throw new Error("Kon adres niet opslaan")
 
-        const result = await res.json();
-        alert("Adres opgeslagen! Adres ID: " + result.addressId);
+        // Backend geeft adresId terug dit laten we zien aan gebruiker
+        const result = await res.json()
+        alert("Adres opgeslagen Adres ID " + result.addressId)
       } catch (err) {
-        console.error("Fout bij opslaan adres:", err);
-        alert("Er is iets misgegaan bij het opslaan van je adres.");
+        // Als iets fout gaat in fetch laat foutmelding zien
+        console.error("Fout bij opslaan adres", err)
+        alert("Er is iets misgegaan bij het opslaan van je adres")
       }
-    });
+    })
   }
 }
 
-customElements.define("webshop-page-checkout", Checkout);
+// Registreert deze class als custom element
+customElements.define("webshop-page-checkout", Checkout)

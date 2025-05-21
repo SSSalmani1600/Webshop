@@ -61,13 +61,21 @@ export class AddToCartComponent extends HTMLElement {
         this._button = document.createElement("button");
         this._button.textContent = "Voeg toe aan winkelmandje";
         this._button.className = "add-to-cart-button";
-        this._button.style.backgroundColor = "#4CAF50";
+        this._button.style.backgroundColor = "#6B46C1";
         this._button.style.color = "white";
         this._button.style.padding = "8px 16px";
         this._button.style.border = "none";
         this._button.style.borderRadius = "4px";
         this._button.style.cursor = "pointer";
         this._button.style.margin = "10px 0";
+        this._button.style.transition = "background-color 0.3s ease";
+
+        this._button.addEventListener("mouseover", () => {
+            this._button!.style.backgroundColor = "#553C9A";
+        });
+        this._button.addEventListener("mouseout", () => {
+            this._button!.style.backgroundColor = "#6B46C1";
+        });
 
         this.appendChild(this._button);
     }
@@ -122,29 +130,52 @@ export class AddToCartComponent extends HTMLElement {
      * Toon een notificatie
      */
     private showNotification(message: string, type: "success" | "error"): void {
+        // Verwijder bestaande notificaties eerst
+        const existingNotifications: NodeListOf<Element> = document.querySelectorAll(".cart-notification");
+        existingNotifications.forEach(notification => notification.remove());
+
         const notification: HTMLDivElement = document.createElement("div");
         notification.textContent = message;
+        notification.className = "cart-notification";
         notification.style.position = "fixed";
         notification.style.top = "20px";
         notification.style.right = "20px";
-        notification.style.padding = "10px 20px";
-        notification.style.borderRadius = "4px";
+        notification.style.padding = "15px 25px";
+        notification.style.borderRadius = "8px";
         notification.style.zIndex = "1000";
+        notification.style.transition = "all 0.3s ease";
+        notification.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+        notification.style.fontWeight = "500";
 
         if (type === "success") {
-            notification.style.backgroundColor = "#4CAF50";
+            notification.style.backgroundColor = "#6B46C1"; // Paarse kleur voor success
             notification.style.color = "white";
         }
         else {
-            notification.style.backgroundColor = "#f44336";
+            notification.style.backgroundColor = "#E53E3E"; // Rode kleur voor errors
             notification.style.color = "white";
         }
 
         document.body.appendChild(notification);
 
-        // Verwijder de notificatie na 3 seconden
+        // Voeg een fade-in animatie toe
+        notification.style.opacity = "0";
+        notification.style.transform = "translateY(-20px)";
+        // Trigger de animatie
         setTimeout(() => {
-            document.body.removeChild(notification);
+            notification.style.opacity = "1";
+            notification.style.transform = "translateY(0)";
+        }, 10);
+
+        // Verwijder de notificatie na 3 seconden met een fade-out effect
+        setTimeout(() => {
+            notification.style.opacity = "0";
+            notification.style.transform = "translateY(-20px)";
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
         }, 3000);
     }
 }

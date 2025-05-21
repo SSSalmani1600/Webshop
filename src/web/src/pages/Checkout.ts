@@ -22,7 +22,7 @@ export class Checkout extends HTMLElement {
               <label>Telefoonnummer <span class="required">*</span></label>
               <input type="text" name="telefoonnummer" placeholder="Telefoonnummer" required>
 
-              <button type="submit" id="place-order" class="checkout-btn">Bestelling plaatsen</button>
+              <button type="submit" id="place-order" class="checkout-btn">Adres opslaan</button>
             </form>
           </div>
         </section>
@@ -72,7 +72,7 @@ export class Checkout extends HTMLElement {
         telefoonnummer: (formData.get("telefoonnummer") || "").toString().trim(),
       };
 
-      console.log("📦 Data naar backend:");
+      console.log(" Data naar backend:");
       console.table(data);
 
       try {

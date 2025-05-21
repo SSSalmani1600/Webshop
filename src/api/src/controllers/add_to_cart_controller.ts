@@ -30,9 +30,9 @@ export class AddToCartController {
             }
 
             // Haal game details uit het request body
-            const gameId: number = req.body.game_id;
-            const quantity: number = req.body.quantity || 1;
-            const price: number = req.body.price;
+            const gameId: number = Number((req.body as { game_id: string }).game_id);
+            const quantity: number = Number((req.body as { quantity?: string }).quantity) || 1;
+            const price: number = Number((req.body as { price: string }).price);
 
             console.log("Toevoegen aan winkelmandje:", { userId, gameId, quantity, price });
 

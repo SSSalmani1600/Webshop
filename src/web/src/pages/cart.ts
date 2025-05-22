@@ -328,7 +328,11 @@ export class CartPageComponent extends HTMLElement {
         this.isUpdating = true;
 
         try {
-            const url: URL = new URL(`${VITE_API_URL}cart`);
+            const API_BASE: string = window.location.hostname.includes("localhost")
+                ? "http://localhost:3001"
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+
+            const url: URL = new URL(`${API_BASE}/cart`);
             if (this.currentDiscountCode) {
                 url.searchParams.append("discountCode", this.currentDiscountCode);
             }
@@ -420,8 +424,11 @@ export class CartPageComponent extends HTMLElement {
                 const itemId: number = customEvent.detail.id;
 
                 try {
-                    // Verwijder item
-                    const deleteResponse: Response = await fetch(`${VITE_API_URL}cart/item/${itemId}`, {
+                    const API_BASE: string = window.location.hostname.includes("localhost")
+                        ? "http://localhost:3001"
+                        : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+
+                    const deleteResponse: Response = await fetch(`${API_BASE}/cart/item/${itemId}`, {
                         method: "DELETE",
                         credentials: "include",
                     });

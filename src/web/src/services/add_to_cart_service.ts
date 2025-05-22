@@ -26,8 +26,12 @@ export class AddToCartService {
             const sessionId: string = await this.getSession();
             console.log("Toevoegen aan winkelmandje met sessie:", sessionId);
 
+            const API_BASE: string = window.location.hostname.includes("localhost")
+                ? "http://localhost:3001"
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+
             // Doe een POST-verzoek naar de backend API
-            const response: Response = await fetch("http://localhost:3001/api/cart/add", {
+            const response: Response = await fetch(`${API_BASE}/api/cart/add`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -85,7 +89,11 @@ export class AddToCartService {
 
         // Probeer een nieuwe sessie op te halen
         try {
-            const res: Response = await fetch("http://localhost:3001/session");
+            const API_BASE: string = window.location.hostname.includes("localhost")
+                ? "http://localhost:3001"
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+
+            const res: Response = await fetch(`${API_BASE}/session`);
             if (!res.ok) {
                 throw new Error(`Fout bij het ophalen van sessie: ${res.status}`);
             }

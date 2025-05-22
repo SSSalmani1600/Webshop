@@ -38,21 +38,32 @@ beforeEach(() => {
     vi.resetAllMocks();
 
     global.fetch = vi.fn((url: RequestInfo | URL): Promise<Response> => {
-        if (url === "http://localhost:3001/session") {
+        let urlString: string;
+        if (url instanceof URL) {
+            urlString = url.toString();
+        }
+        else if (typeof url === "string") {
+            urlString = url;
+        }
+        else {
+            urlString = url.url;
+        }
+
+        if (urlString.includes("/session")) {
             return Promise.resolve({
                 ok: true,
                 json: (): Promise<MockSession> => Promise.resolve(mockSession),
             } as Response);
         }
 
-        if (url === "http://localhost:3001/products") {
+        if (urlString.includes("/products")) {
             return Promise.resolve({
                 ok: true,
                 json: (): Promise<Game[]> => Promise.resolve(mockGames),
             } as Response);
         }
 
-        if (url === "http://localhost:3001/product-prices/1") {
+        if (urlString.includes("/product-prices/1")) {
             return Promise.resolve({
                 ok: true,
                 json: (): Promise<GamePrices[]> => Promise.resolve(mockPrices),

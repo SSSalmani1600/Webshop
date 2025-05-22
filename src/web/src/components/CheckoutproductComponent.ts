@@ -65,13 +65,15 @@ export class CartSummaryComponent {
       <p><strong>Totaal: €${totaal.toFixed(2)}</strong></p>
     `
     this.container.appendChild(totaalDiv)
+// Maakt knop om door te gaan naar afrekenen
+const button = document.createElement("button")
+button.className = "checkout-btn"
+button.textContent = "Verder naar afrekenen"
+button.addEventListener("click", () => {
+  window.location.href = "example.html"
+})
+this.container.appendChild(button)
 
-    // Maakt knop om door te gaan naar afrekenen
-    const button = document.createElement("button")
-    button.className = "checkout-btn"
-    button.textContent = "Verder naar afrekenen"
-    this.container.appendChild(button)
-  }
 
   // Haalt winkelwagen op van backend
   private async fetchCartItems(): Promise<CartItem[]> {

@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { OrderConfirmationComponent } from "@web/components/OrderCompleteComponent"; // ✅ Correct
+import { OrderCompleteComponent } from "@web/components/OrderCompleteComponent"; // ✅ Correct
 import "@testing-library/jest-dom";
 
 beforeEach(() => {
     if (customElements.get("order-confirmation")) {
-        customElements.define("order-confirmation", OrderConfirmationComponent);
+        customElements.define("order-confirmation", OrderCompleteComponent);
     }
 
     document.body.innerHTML = "";

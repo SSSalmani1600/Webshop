@@ -420,12 +420,8 @@ export class CartPageComponent extends HTMLElement {
                 const itemId: number = customEvent.detail.id;
 
                 try {
-                    const API_BASE: string = window.location.hostname.includes("localhost")
-                        ? "http://localhost:3001"
-                        : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
-
                     // Verwijder item
-                    const deleteResponse: Response = await fetch(`${API_BASE}/cart/item/${itemId}`, {
+                    const deleteResponse: Response = await fetch(`${VITE_API_URL}cart/item/${itemId}`, {
                         method: "DELETE",
                         credentials: "include",
                     });

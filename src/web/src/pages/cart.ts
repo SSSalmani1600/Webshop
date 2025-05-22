@@ -234,11 +234,6 @@ export class CartPageComponent extends HTMLElement {
             margin: 0;
         }
 
-        .empty-cart-image {
-            max-width: 100px;
-            height: auto;
-        }
-
         @media (max-width: 768px) {
             .cart-content {
                 flex-direction: column;
@@ -290,7 +285,7 @@ export class CartPageComponent extends HTMLElement {
                                 </div>
                             </div>
                             <discount-code-component></discount-code-component>
-                            <button class="checkout-button">Ga door naar checkout</button>
+                            <button class="checkout-button"><a href="/checkout.html" class="login-button">Ga door naar checkout</a></button>
                         </div>
                     </div>
                 </div>
@@ -309,6 +304,13 @@ export class CartPageComponent extends HTMLElement {
         if (continueShoppingButton) {
             continueShoppingButton.addEventListener("click", () => {
                 window.location.href = "product.html";
+            });
+        }
+
+        const checkoutButton: HTMLButtonElement | null = this.shadowRoot?.querySelector(".checkout-button") ?? null;
+        if (checkoutButton) {
+            checkoutButton.addEventListener("click", () => {
+                window.location.href = "checkout.html";
             });
         }
 

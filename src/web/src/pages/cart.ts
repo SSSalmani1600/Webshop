@@ -271,9 +271,34 @@ export class CartPageComponent extends HTMLElement {
 
         const container: HTMLDivElement = document.createElement("div");
         container.innerHTML = `
+<<<<<<< src/web/src/pages/cart.ts
+    <div class="cart-header">
+        <h2>Winkelwagen</h2>
+        <p>Rond je bestelling af - producten aan je winkelwagen toevoegen betekent geen reservering</p>
+    </div>
+
+    <div class="cart-container">
+        <div class="cart-content">
+            <div id="cart-list"></div>
+
+            <div class="cart-summary">
+                <div class="summary-inner">
+                    <div class="cart-summary-header">
+                        <h3>Totaal</h3>
+                        <p id="total-price">€0,00</p>
+                    </div>
+
+            
+                    
+                    <button class="checkout-button"> <a href="/checkout.html" class="login-button">Ga door naar checkout</a></button>
+
+                    
+                </div>
+=======
             <div class="cart-header">
                 <h2>Winkelwagen</h2>
                 <p>Rond je bestelling af - producten aan je winkelwagen toevoegen betekent geen reservering</p>
+>>>>>>> src/web/src/pages/cart.ts
             </div>
 
             <div class="cart-container">
@@ -341,11 +366,26 @@ export class CartPageComponent extends HTMLElement {
                 credentials: "include",
             });
 
+
+
+            const data: { cart: CartItem[]; total: number } = (await res.json()) as { cart: CartItem[]; total: number };
+            const cart: CartItem[] = data.cart;
+            const total: number = data.total;
+
+            
+
+            const container: HTMLElement | null = this.shadowRoot ? this.shadowRoot.querySelector("#cart-list") : null;
+            const totalDisplay: HTMLElement | null = this.shadowRoot?.querySelector("#total-price") ?? null;
+
+            if (!container || !totalDisplay) {
+                return;
+
             interface CartResponse {
                 cart: CartItem[];
                 total: number;
                 subtotal: number;
                 discountPercentage: number;
+
             }
 
             const data: CartResponse = await res.json() as CartResponse;
@@ -467,3 +507,6 @@ export class CartPageComponent extends HTMLElement {
 }
 
 customElements.define("webshop-page-cart", CartPageComponent);
+
+
+ 

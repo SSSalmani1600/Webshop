@@ -5,23 +5,23 @@ import { requireValidSessionMiddleware, sessionMiddleware } from "./middleware/s
 import { CartController } from "./controllers/CartController";
 import { ProductController } from "./controllers/ProductController";
 import { LoginController } from "./controllers/LoginController";
+import { CheckoutController } from "./controllers/CheckoutController"; 
 import { AddToCartController } from "./controllers/add_to_cart_controller";
 import { RegisterController } from "./controllers/RegisterController";
 
-// Create a router
+
 export const router: Router = Router();
 
-// Setup endpoints
 router.get("/", (_: Request, res: Response) => {
     res.send("Welcome to the API!");
 });
 
-// Forward endpoints to other routers
 const welcomeController: WelcomeController = new WelcomeController();
 const orderController: OrderController = new OrderController();
 const cartController: CartController = new CartController();
 const productController: ProductController = new ProductController();
 const loginController: LoginController = new LoginController();
+const checkoutController = new CheckoutController();
 const addToCartController: AddToCartController = new AddToCartController();
 const registerController: RegisterController = new RegisterController();
 
@@ -32,7 +32,6 @@ router.post("/register", (req: Request, res: Response) => {
     return registerController.addNewUser(req, res);
 });
 
-// NOTE: After this line, all endpoints will check for a session.
 router.use(sessionMiddleware);
 
 router.get("/session", (req: Request, res: Response) => welcomeController.getSession(req, res));
@@ -45,12 +44,17 @@ router.delete("/cart/item/:id", (req: Request, res: Response) => cartController.
 // Add to cart endpoint
 router.post("/api/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
 
-// NOTE: After this line, all endpoints will require a valid session.
+//  Adres opslaan - alleen voor ingelogde gebruikers
 router.use(requireValidSessionMiddleware);
+
+router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));
 
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));
 
 router.post("/order/complete", (req: Request, res: Response) => orderController.createOrder(req, res));
+
+router.get("/products", (_req, _res) => productController.getAllGames(_req, _res));
+router.get("/product-prices/:id", (req, res) => productController.getGamePrice(req, res));
 
 // TODO: The following endpoints have to be implemented in their own respective controller
 router.get("/products", (req: Request, res: Response) => productController.getAllGames(req, res));
@@ -58,4 +62,8 @@ router.get("/product-prices/:id", (req: Request, res: Response) => productContro
 
 router.get("/products/:id", (_req: Request, _res: Response) => {
     throw new Error("Return a specific product");
+});
+
+router.post("/cart/add", (_req, _res) => {
+    throw new Error("Add a product to the cart");
 });

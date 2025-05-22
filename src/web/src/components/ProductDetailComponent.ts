@@ -27,7 +27,7 @@ export class GameDetailComponent extends HTMLElement {
         }
 
         try {
-            const response: Response = await fetch(`/api/game?id=${gameId}`);
+            const response: Response = await fetch(`http://localhost:3001/api/game?id=${gameId}`);
             if (!response.ok) throw new Error("Kon game niet ophalen.");
 
             const game: Game = await response.json() as Game;

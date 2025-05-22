@@ -162,6 +162,23 @@ export class GameList extends HTMLElement {
                 color: #333;
                 font-size: 14px;
               }
+
+              .view-button {
+                display: inline-block;
+                margin-top: 10px;
+                padding: 8px 16px;
+                background-color: #7f41f5;
+                color: white;
+                text-decoration: none;
+                border-radius: 8px;
+                font-size: 14px;
+                transition: background 0.3s;
+                }
+
+              .view-button:hover {
+                background-color: #6936cc;
+                }
+                
             </style>
         `;
 
@@ -195,6 +212,8 @@ export class GameList extends HTMLElement {
                         <img class="product-image" src="${imageUrl}" alt="${gameTitle}" />
                         <strong>${gameTitle}</strong>
                         <div class="price">${price}</div>
+
+                        <a class="view-button" href="gameDetail.html?id=3">Bekijk game</a>
                     </div>
                 `;
             })

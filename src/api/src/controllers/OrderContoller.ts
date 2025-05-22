@@ -1,6 +1,13 @@
 import { Request, Response } from "express";
 import { OrderService } from "@api/services/OrderService";
 
+// Zelfde helper als in je CartController
+function getUserIdFromCookie(req: Request): number | null {
+    const raw: unknown = req.cookies.user;
+    const parsed: number = typeof raw === "string" ? parseInt(raw, 10) : NaN;
+    return isNaN(parsed) ? null : parsed;
+}
+
 type OrderRequestBody = {
     orderNumber: string;
     totalPrice: number;
@@ -13,10 +20,10 @@ export class OrderController {
         req: Request<unknown, unknown, OrderRequestBody>,
         res: Response
     ): Promise<void> {
-        const sessionId: string | undefined = req.sessionId;
+        const userId: number | null = getUserIdFromCookie(req);
 
-        if (!sessionId) {
-            res.status(401).json({ error: "Geen geldige sessie" });
+        if (!userId) {
+            res.status(401).json({ error: "Geen geldige gebruiker in cookie" });
             return;
         }
 
@@ -29,7 +36,7 @@ export class OrderController {
 
         try {
             const orderId: number = await this._orderService.createOrder(
-                sessionId,
+                userId,
                 orderNumber,
                 totalPrice
             );
@@ -43,16 +50,16 @@ export class OrderController {
     }
 
     public async getBoughtGames(req: Request, res: Response): Promise<void> {
-        const sessionId: string | undefined = req.sessionId;
+        const userId: number | null = getUserIdFromCookie(req);
 
-        if (!sessionId) {
-            res.status(401).json({ error: "Geen geldige sessie" });
+        if (!userId) {
+            res.status(401).json({ error: "Geen geldige gebruiker in cookie" });
             return;
         }
 
         try {
             const games: { title: string; quantity: number; price: number }[] =
-              await this._orderService.getCartItemsBySession(sessionId);
+        await this._orderService.getCartItemsByUser(userId);
             res.status(200).json(games);
         }
         catch (error) {

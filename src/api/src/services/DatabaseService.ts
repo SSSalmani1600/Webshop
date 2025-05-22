@@ -1,6 +1,5 @@
 import { PoolConnection, Pool, createPool, Connection } from "mysql2/promise";
 
-
 /**
  * Pool of database connections
  *
@@ -16,12 +15,12 @@ let connectionPool: Pool | undefined;
 function getConnectionPool(): Pool {
     if (!connectionPool) {
         connectionPool = createPool({
-            host: 'db.hbo-ict.cloud',
-            port: parseInt('3366' as string),
-            database: 'pb4sea2425_laajoowiicoo13_dev',
-            user: 'pb4sea2425_laajoowiicoo13',
-            password: 'OmzExntBc1EvPHn7',
-            connectionLimit: parseInt('10' as string),
+            host: "db.hbo-ict.cloud",
+            port: parseInt("3366" as string),
+            database: "pb4sea2425_laajoowiicoo13_dev",
+            user: "pb4sea2425_laajoowiicoo13",
+            password: "OmzExntBc1EvPHn7",
+            connectionLimit: parseInt("10" as string),
         });
     }
 

@@ -39,11 +39,11 @@ router.delete("/session/expired", (req: Request, res: Response) => welcomeContro
 router.get("/welcome", (req: Request, res: Response) => welcomeController.getWelcome(req, res));
 
 // Cart endpoints
-router.get("/api/cart", (req: Request, res: Response) => cartController.getCart(req, res));
-router.delete("/api/cart/item/:id", (req: Request, res: Response) => cartController.deleteCartItem(req, res));
+router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
+router.delete("/cart/item/:id", (req: Request, res: Response) => cartController.deleteCartItem(req, res));
 
 // Add to cart endpoint
-router.post("/api/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
+router.post("/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
 
 //  Adres opslaan - alleen voor ingelogde gebruikers
 

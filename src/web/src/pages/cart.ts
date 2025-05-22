@@ -332,12 +332,23 @@ export class CartPageComponent extends HTMLElement {
         try {
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
-            const url: URL = new URL(`${API_BASE}/api/cart`);
+            const url: URL = new URL("cart", `${API_BASE}/`);
             if (this.currentDiscountCode) {
                 url.searchParams.append("discountCode", this.currentDiscountCode);
             }
+
+            console.log("Fetching cart from:", url.toString());
+            console.log("Request details:", {
+                url: url.toString(),
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+            });
 
             const res: Response = await fetch(url.toString(), {
                 method: "GET",
@@ -353,7 +364,7 @@ export class CartPageComponent extends HTMLElement {
                     window.location.href = "/login.html";
                     return;
                 }
-                throw new Error(`Failed to fetch cart: ${res.statusText}`);
+                throw new Error(`Failed to fetch cart: ${res.status} ${res.statusText}`);
             }
 
             interface CartResponse {
@@ -385,9 +396,13 @@ export class CartPageComponent extends HTMLElement {
         try {
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
-            const deleteResponse: Response = await fetch(`${API_BASE}/api/cart/item/${itemId}`, {
+            const deleteUrl: URL = new URL(`cart/item/${itemId}`, `${API_BASE}/`);
+
+            console.log("Deleting cart item from:", deleteUrl.toString());
+
+            const deleteResponse: Response = await fetch(deleteUrl.toString(), {
                 method: "DELETE",
                 credentials: "include",
                 headers: {
@@ -401,7 +416,7 @@ export class CartPageComponent extends HTMLElement {
                     window.location.href = "/login.html";
                     return;
                 }
-                throw new Error(`Failed to delete item: ${deleteResponse.statusText}`);
+                throw new Error(`Failed to delete item: ${deleteResponse.status} ${deleteResponse.statusText}`);
             }
 
             // Update na verwijdering

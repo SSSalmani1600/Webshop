@@ -5,9 +5,16 @@ const cartService: CartService = new CartService();
 
 function getUserIdFromCookie(req: Request): number | null {
     const cookieHeader: string | undefined = req.headers.cookie;
-    if (!cookieHeader) return null;
+    console.log("Cookie header:", cookieHeader);
 
-    const match: RegExpMatchArray | null = cookieHeader.match(/(?:^|;\s*)user=(\d+)/);
+    if (!cookieHeader) {
+        console.log("No cookie header found");
+        return null;
+    }
+
+    const match: RegExpMatchArray | null = cookieHeader.match(/(?:^|;\s*)Authentication=(\d+)/);
+    console.log("Authentication cookie match:", match);
+
     return match ? parseInt(match[1], 10) : null;
 }
 
@@ -15,13 +22,16 @@ export class CartController {
     public async getCart(req: Request, res: Response): Promise<void> {
         try {
             const userId: number | null = getUserIdFromCookie(req);
+            console.log("User ID from cookie:", userId);
 
             if (!userId) {
+                console.log("No valid user ID found in cookie");
                 res.status(401).json({ error: "Geen geldige gebruiker in cookie" });
                 return;
             }
 
             const items: CartItem[] = await cartService.getCartItemsByUser(userId);
+            console.log("Cart items found:", items);
 
             const total: number = items.reduce((sum, item) => {
                 const price: number = typeof item.price === "string" ? parseFloat(item.price) : item.price;

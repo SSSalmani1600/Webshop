@@ -34,6 +34,10 @@ export class RegisterForm extends HTMLElement {
     }
 
     private async handleSubmit(event: SubmitEvent): Promise<void> {
+        const API_BASE: unknown = location.hostname === "localhost"
+            ? "http://localhost:3001"
+            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/";
+
         event.preventDefault();
 
         const form: HTMLFormElement = event.target as HTMLFormElement;
@@ -55,7 +59,7 @@ export class RegisterForm extends HTMLElement {
         }
 
         try {
-            const response: Response = await fetch("http://localhost:3001/register", {
+            const response: Response = await fetch(`${API_BASE}/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(user),

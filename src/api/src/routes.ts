@@ -5,7 +5,9 @@ import { requireValidSessionMiddleware, sessionMiddleware } from "./middleware/s
 import { CartController } from "./controllers/CartController";
 import { ProductController } from "./controllers/ProductController";
 import { LoginController } from "./controllers/LoginController";
+import { AddToCartController } from "./controllers/add_to_cart_controller";
 import { RegisterController } from "./controllers/RegisterController";
+
 
 // Create a router
 export const router: Router = Router();
@@ -21,6 +23,7 @@ const orderController: OrderController = new OrderController();
 const cartController: CartController = new CartController();
 const productController: ProductController = new ProductController();
 const loginController: LoginController = new LoginController();
+const addToCartController: AddToCartController = new AddToCartController();
 const registerController: RegisterController = new RegisterController();
 
 // Authentication endpoints (no session required)
@@ -38,6 +41,9 @@ router.delete("/session", (req: Request, res: Response) => welcomeController.del
 router.delete("/session/expired", (req: Request, res: Response) => welcomeController.deleteExpiredSessions(req, res));
 router.get("/welcome", (req: Request, res: Response) => welcomeController.getWelcome(req, res));
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
+
+// Add to cart endpoint
+router.post("/api/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
 
 // NOTE: After this line, all endpoints will require a valid session.
 router.use(requireValidSessionMiddleware);

@@ -173,6 +173,28 @@ export class GameList extends HTMLElement {
                 margin-top: 5px;
                 color: #333;
                 font-size: 14px;
+                margin-bottom: 10px;
+              }
+              
+              /* Zorg ervoor dat knop styling in de shadow DOM werkt */
+              add-to-cart {
+                display: block;
+                margin: 10px 0;
+              }
+              
+              add-to-cart button {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+                width: 100%;
+                font-size: 14px;
+              }
+              
+              add-to-cart button:hover {
+                background-color: #45a049;
               }
             </style>
         `;
@@ -207,6 +229,7 @@ export class GameList extends HTMLElement {
                         <img class="product-image" src="${imageUrl}" alt="${gameTitle}" />
                         <strong>${gameTitle}</strong>
                         <div class="price">${price}</div>
+                        <add-to-cart game-id="${game.id}" price="${game.price !== null ? game.price : 0}"></add-to-cart>
                     </div>
                 `;
             })

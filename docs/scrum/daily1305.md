@@ -14,13 +14,13 @@
 
 ## 👤 Nabil
 - **Wat heb je gedaan?**  
-
+Laatste punten interne documentatie 
 
 - **Wat ga je doen?**  
-
+Verder aan userstories
 
 - **Zijn er blokkades?**  
-
+no
 ---
 
 ## 👤 Sem

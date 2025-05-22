@@ -1,6 +1,9 @@
 ## ERD
 ![ERD](../img/ERD.png)
 
+## Class diagram
+![CLASS](../img/ClassDiagram.png)
+
 ## UML Use case diagram
 ![UML](../img/UML%20case%20diagram.png)
 

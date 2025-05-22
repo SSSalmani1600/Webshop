@@ -147,7 +147,6 @@ export class DiscountCodeComponent extends HTMLElement {
             this.showMessage(`Kortingscode toegepast: ${data.discountPercentage}% korting`, "success");
             this.discountInput.style.borderColor = "#4CAF50";
 
-            // Dispatch event with both percentage and code
             this.dispatchEvent(new CustomEvent("discount-applied", {
                 detail: {
                     discountPercentage: data.discountPercentage,

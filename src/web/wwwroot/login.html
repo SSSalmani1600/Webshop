@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>LucaStars - Login</title>
+
+    <link href="/assets/css/navbar-login.css" rel="stylesheet">
+    <link href="/assets/css/login.css" rel="stylesheet">
+    <script type="module" src="./../src/pages/login.ts"></script>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <a href="/">
+                <img src="/assets/images/logo.svg" alt="LucaStars" />
+                <span>LucaStars</span>
+            </a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/services">Services</a></li>
+            </ul>
+        </nav>
+        <div class="auth-buttons">
+            <a href="/register" class="btn-register">Registreer</a>
+        </div>
+    </header>
+
+    <main class="login-container">
+        <div class="login-form-container">
+            <div class="logo-center">
+                <img src="/assets/images/logo.svg" alt="LucaStars" />
+                <h1>LucaStars</h1>
+            </div>
+            
+            <h2>Welkom terug!</h2>
+            
+            <login-form id="login-form">
+                <div class="form-group">
+                    <input type="text" id="email" name="username" placeholder="Email of gebruikersnaam" required>
+                </div>
+                
+                <div class="form-group">
+                    <password-input id="password-field"></password-input>
+                </div>
+                
+                <div class="form-footer">
+                    <a href="/forgot-password" class="forgot-password">Wachtwoord vergeten?</a>
+                </div>
+                
+                <button type="submit" class="login-button">Log in</button>
+                
+                <div class="remember-register">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember"> 
+                        <span>Onthoud mij</span>
+                    </label>
+                    <div class="no-account">
+                        Heb je geen account? <a href="/register">Registreer</a>
+                    </div>
+                </div>
+            </login-form>
+        </div>
+    </main>
+</body>
+
+</html> 

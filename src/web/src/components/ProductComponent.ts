@@ -23,7 +23,7 @@ export class GameList extends HTMLElement {
             const sessionId: string = await this.getSession();
 
             // Fetch the list of games
-            const res: Response = await fetch("http://localhost:3001/products", {
+            const res: Response = await fetch(`${VITE_API_URL}/products`, {
                 headers: {
                     "x-session": sessionId,
                 },
@@ -59,7 +59,7 @@ export class GameList extends HTMLElement {
     private async fetchGamePrice(gameId: number): Promise<number | null> {
         try {
             const sessionId: string = await this.getSession();
-            const res: Response = await fetch(`http://localhost:3001/product-prices/${gameId}`, {
+            const res: Response = await fetch(`${VITE_API_URL}/product-prices/${gameId}`, {
                 headers: {
                     "x-session": sessionId,
                 },
@@ -78,7 +78,7 @@ export class GameList extends HTMLElement {
 
     // Retrieve a session ID from the backend
     private async getSession(): Promise<string> {
-        const res: Response = await fetch("http://localhost:3001/session");
+        const res: Response = await fetch(`${VITE_API_URL}/session`);
         const data: unknown = await res.json();
 
         // Validate and return the session ID
@@ -161,6 +161,28 @@ export class GameList extends HTMLElement {
                 margin-top: 5px;
                 color: #333;
                 font-size: 14px;
+                margin-bottom: 10px;
+              }
+              
+              /* Zorg ervoor dat knop styling in de shadow DOM werkt */
+              add-to-cart {
+                display: block;
+                margin: 10px 0;
+              }
+              
+              add-to-cart button {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+                width: 100%;
+                font-size: 14px;
+              }
+              
+              add-to-cart button:hover {
+                background-color: #45a049;
               }
 
               .view-button {
@@ -214,6 +236,7 @@ export class GameList extends HTMLElement {
                         <div class="price">${price}</div>
 
                         <a class="view-button" href="gameDetail.html?id=3">Bekijk game</a>
+                        <add-to-cart game-id="${game.id}" price="${game.price !== null ? game.price : 0}"></add-to-cart>
                     </div>
                 `;
             })

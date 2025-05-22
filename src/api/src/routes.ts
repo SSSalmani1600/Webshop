@@ -46,7 +46,6 @@ router.delete("/api/cart/item/:id", (req: Request, res: Response) => cartControl
 router.post("/api/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
 
 //  Adres opslaan - alleen voor ingelogde gebruikers
-router.use(requireValidSessionMiddleware);
 
 router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));
 

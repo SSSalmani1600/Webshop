@@ -1,6 +1,6 @@
 import type { BoughtGame } from "@api/types/BoughtGames";
 
-export class OrderConfirmationComponent extends HTMLElement {
+export class OrderCompleteComponent extends HTMLElement {
     private shadow: ShadowRoot;
 
     public constructor() {
@@ -20,7 +20,7 @@ export class OrderConfirmationComponent extends HTMLElement {
     private async loadOrder(): Promise<void> {
         try {
             const response: Response = await fetch("http://localhost:3001/order/complete", {
-                credentials: "include", // sends session cookie if you're using sessions
+                credentials: "include",
             });
             if (!response.ok) throw new Error("Kon bestelling niet ophalen");
 
@@ -172,4 +172,4 @@ export class OrderConfirmationComponent extends HTMLElement {
     }
 }
 
-customElements.define("order-confirmation", OrderConfirmationComponent);
+customElements.define("order-confirmation", OrderCompleteComponent);

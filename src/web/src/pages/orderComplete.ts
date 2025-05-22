@@ -1,4 +1,4 @@
-import "@web/components/OrderConfirmationComponent";
+import "@web/components/OrderCompleteComponent";
 import { html } from "@web/helpers/webComponents";
 
 export class OrderCompletePageComponent extends HTMLElement {

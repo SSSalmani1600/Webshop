@@ -6,6 +6,9 @@ import { CartController } from "./controllers/CartController";
 import { ProductController } from "./controllers/ProductController";
 import { LoginController } from "./controllers/LoginController";
 import { CheckoutController } from "./controllers/CheckoutController"; 
+import { AddToCartController } from "./controllers/add_to_cart_controller";
+import { RegisterController } from "./controllers/RegisterController";
+
 
 export const router: Router = Router();
 
@@ -19,9 +22,15 @@ const cartController: CartController = new CartController();
 const productController: ProductController = new ProductController();
 const loginController: LoginController = new LoginController();
 const checkoutController = new CheckoutController();
+const addToCartController: AddToCartController = new AddToCartController();
+const registerController: RegisterController = new RegisterController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
+router.post("/register", (req: Request, res: Response) => {
+    console.log("POST /register ontvangen", req.body);
+    return registerController.addNewUser(req, res);
+});
 
 router.use(sessionMiddleware);
 
@@ -30,6 +39,10 @@ router.delete("/session", (req: Request, res: Response) => welcomeController.del
 router.delete("/session/expired", (req: Request, res: Response) => welcomeController.deleteExpiredSessions(req, res));
 router.get("/welcome", (req: Request, res: Response) => welcomeController.getWelcome(req, res));
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
+router.delete("/cart/item/:id", (req: Request, res: Response) => cartController.deleteCartItem(req, res));
+
+// Add to cart endpoint
+router.post("/api/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
 
 //  Adres opslaan - alleen voor ingelogde gebruikers
 router.use(requireValidSessionMiddleware);

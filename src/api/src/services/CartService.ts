@@ -13,13 +13,12 @@ export type CartItem = {
 };
 
 export class CartService {
-    private readonly _databaseService: DatabaseService = new DatabaseService();
+    private readonly _databaseService = new DatabaseService();
 
     public async getCartItemsByUser(userId: number): Promise<CartItem[]> {
         const connection: PoolConnection = await this._databaseService.openConnection();
-
         try {
-            const result: CartItem[] = await this._databaseService.query<CartItem[]>(
+            return await this._databaseService.query<CartItem[]>(
                 connection,
                 `
                 SELECT 
@@ -36,11 +35,19 @@ export class CartService {
                 `,
                 userId
             );
-
-            return result;
         }
-        catch (e: unknown) {
-            throw new Error(`Failed to fetch cart items: ${e}`);
+        finally {
+            connection.release();
+        }
+    }
+
+    public async deleteCartItemById(cartItemId: number, userId: number): Promise<void> {
+        const connection: PoolConnection = await this._databaseService.openConnection();
+        try {
+            await connection.execute(
+                "DELETE FROM cart_items WHERE id = ? AND user_id = ?",
+                [cartItemId, userId]
+            );
         }
         finally {
             connection.release();

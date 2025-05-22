@@ -16,10 +16,6 @@ export class GameList extends HTMLElement {
 
     // Called when the component is inserted into the DOM
     public async connectedCallback(): Promise<void> {
-        const API_BASE: unknown = location.hostname === "localhost"
-            ? "http://localhost:3001"
-            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
-
         console.log("GameList component is connected.");
 
         try {
@@ -27,7 +23,7 @@ export class GameList extends HTMLElement {
             const sessionId: string = await this.getSession();
 
             // Fetch the list of games
-            const res: Response = await fetch(`${API_BASE}/products`, {
+            const res: Response = await fetch("http://localhost:3001/products", {
                 headers: {
                     "x-session": sessionId,
                 },
@@ -61,13 +57,9 @@ export class GameList extends HTMLElement {
 
     // Fetch the price for a specific game by its ID
     private async fetchGamePrice(gameId: number): Promise<number | null> {
-        const API_BASE: unknown = location.hostname === "localhost"
-            ? "http://localhost:3001"
-            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
-
         try {
             const sessionId: string = await this.getSession();
-            const res: Response = await fetch(`${API_BASE}/product-prices/${gameId}`, {
+            const res: Response = await fetch(`http://localhost:3001/product-prices/${gameId}`, {
                 headers: {
                     "x-session": sessionId,
                 },
@@ -86,11 +78,7 @@ export class GameList extends HTMLElement {
 
     // Retrieve a session ID from the backend
     private async getSession(): Promise<string> {
-        const API_BASE: unknown = location.hostname === "localhost"
-            ? "http://localhost:3001"
-            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
-
-        const res: Response = await fetch(`${API_BASE}/session`);
+        const res: Response = await fetch("http://localhost:3001/session");
         const data: unknown = await res.json();
 
         // Validate and return the session ID

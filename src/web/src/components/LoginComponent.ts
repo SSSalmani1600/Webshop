@@ -97,7 +97,11 @@ export class LoginComponent extends HTMLElement {
 
         try {
             const sessionId: string = await this.getSession();
-            const response: Response = await fetch("http://localhost:3001/auth/login", {
+            const API_BASE: string = window.location.hostname.includes("localhost")
+                ? "http://localhost:3001"
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+
+            const response: Response = await fetch(`${API_BASE}/auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -159,7 +163,11 @@ export class LoginComponent extends HTMLElement {
         const storedSession: string | null = localStorage.getItem("sessionId");
         if (storedSession) return storedSession;
 
-        const res: Response = await fetch("http://localhost:3001/session");
+        const API_BASE: string = window.location.hostname.includes("localhost")
+            ? "http://localhost:3001"
+            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+
+        const res: Response = await fetch(`${API_BASE}/session`);
         const data: { sessionId: string | null } | null = await res.json() as { sessionId: string | null } | null;
 
         if (data && data.sessionId) return data.sessionId;

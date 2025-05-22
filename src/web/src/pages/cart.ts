@@ -3,7 +3,6 @@ import { CartItemComponent } from "../components/CartItemComponent";
 
 export class CartPageComponent extends HTMLElement {
     private currentDiscount: number = 0;
-    private currentDiscountCode: string = "";
     private cartItems: CartItem[] = [];
     private isUpdating: boolean = false;
 
@@ -319,7 +318,6 @@ export class CartPageComponent extends HTMLElement {
             discountComponent.addEventListener("discount-applied", async (event: Event) => {
                 const customEvent: CustomEvent<{ discountPercentage: number; code: string }> = event as CustomEvent<{ discountPercentage: number; code: string }>;
                 this.currentDiscount = customEvent.detail.discountPercentage;
-                this.currentDiscountCode = customEvent.detail.code;
                 await this.fetchCart();
             });
         }
@@ -332,39 +330,14 @@ export class CartPageComponent extends HTMLElement {
         try {
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
 
-            const url: URL = new URL("cart", `${API_BASE}/`);
-            if (this.currentDiscountCode) {
-                url.searchParams.append("discountCode", this.currentDiscountCode);
-            }
-
-            console.log("Fetching cart from:", url.toString());
-            console.log("Request details:", {
-                url: url.toString(),
-                method: "GET",
+            const response: Response = await fetch(`${API_BASE}/cart`, {
                 credentials: "include",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                },
             });
 
-            const res: Response = await fetch(url.toString(), {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (!res.ok) {
-                if (res.status === 401) {
-                    window.location.href = "/login.html";
-                    return;
-                }
-                throw new Error(`Failed to fetch cart: ${res.status} ${res.statusText}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             interface CartResponse {
@@ -372,12 +345,12 @@ export class CartPageComponent extends HTMLElement {
                 total: number;
             }
 
-            const data: CartResponse = await res.json() as CartResponse;
+            const data: CartResponse = await response.json() as CartResponse;
             this.cartItems = data.cart;
             this.updateCartDisplay({ total: data.total, discountPercentage: 0, subtotal: data.total });
         }
-        catch (e) {
-            console.error("Fout bij ophalen winkelwagen:", e);
+        catch (error) {
+            console.error("Fout bij ophalen winkelwagen:", error);
             const cartList: HTMLElement | null = this.shadowRoot?.querySelector("#cart-list") as HTMLElement | null;
             if (cartList) {
                 cartList.innerHTML = `
@@ -396,13 +369,12 @@ export class CartPageComponent extends HTMLElement {
         try {
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
 
-            const deleteUrl: URL = new URL(`cart/item/${itemId}`, `${API_BASE}/`);
+            const deleteUrl: string = `${API_BASE}/cart/item/${itemId}`;
+            console.log("Deleting cart item from:", deleteUrl);
 
-            console.log("Deleting cart item from:", deleteUrl.toString());
-
-            const deleteResponse: Response = await fetch(deleteUrl.toString(), {
+            const deleteResponse: Response = await fetch(deleteUrl, {
                 method: "DELETE",
                 credentials: "include",
                 headers: {
@@ -416,7 +388,8 @@ export class CartPageComponent extends HTMLElement {
                     window.location.href = "/login.html";
                     return;
                 }
-                throw new Error(`Failed to delete item: ${deleteResponse.status} ${deleteResponse.statusText}`);
+                const errorData: unknown = await deleteResponse.json().catch(() => null);
+                throw new Error(`Failed to delete item: ${deleteResponse.status} ${deleteResponse.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ""}`);
             }
 
             // Update na verwijdering
@@ -425,6 +398,24 @@ export class CartPageComponent extends HTMLElement {
         }
         catch (error) {
             console.error("Error deleting item:", error);
+            // Toon error message aan gebruiker
+            const cartList: HTMLElement | null = this.shadowRoot?.querySelector("#cart-list") as HTMLElement | null;
+            if (cartList) {
+                const errorMessage: HTMLDivElement = document.createElement("div");
+                errorMessage.className = "error-message";
+                errorMessage.style.color = "red";
+                errorMessage.style.padding = "1rem";
+                errorMessage.style.marginBottom = "1rem";
+                errorMessage.style.backgroundColor = "#222121";
+                errorMessage.style.borderRadius = "4px";
+                errorMessage.textContent = "Er is een fout opgetreden bij het verwijderen van het item. Probeer het later opnieuw.";
+                cartList.insertBefore(errorMessage, cartList.firstChild);
+
+                // Verwijder error message na 5 seconden
+                setTimeout(() => {
+                    errorMessage.remove();
+                }, 5000);
+            }
             void this.fetchCart();
         }
     }

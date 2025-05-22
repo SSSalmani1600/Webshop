@@ -71,18 +71,16 @@ export class LoginController {
 
             res.cookie("session", sessionId, {
                 httpOnly: false,
-                secure: true,
+                secure: false,
                 sameSite: "lax",
                 maxAge: 60 * 60 * 1000,
-                domain: ".hbo-ict.cloud",
             });
 
-            res.cookie("Authentication", user.id.toString(), {
+            res.cookie("user", user.id.toString(), {
                 httpOnly: false,
-                secure: true,
+                secure: false,
                 sameSite: "lax",
                 maxAge: 60 * 60 * 1000,
-                domain: ".hbo-ict.cloud",
             });
 
             res.status(200).json({

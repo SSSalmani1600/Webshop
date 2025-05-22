@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { WelcomeController } from "./controllers/WelcomeController";
 import { OrderController } from "./controllers/OrderContoller";
-import { requireValidSessionMiddleware, sessionMiddleware } from "./middleware/sessionMiddleware";
+import { sessionMiddleware } from "./middleware/sessionMiddleware";
 import { CartController } from "./controllers/CartController";
 import { ProductController } from "./controllers/ProductController";
 import { LoginController } from "./controllers/LoginController";
@@ -41,29 +41,20 @@ router.get("/welcome", (req: Request, res: Response) => welcomeController.getWel
 // Cart endpoints
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
 router.delete("/cart/item/:id", (req: Request, res: Response) => cartController.deleteCartItem(req, res));
-
-// Add to cart endpoint
 router.post("/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
 
-//  Adres opslaan - alleen voor ingelogde gebruikers
-
+// Checkout endpoint
 router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));
 
+// Secret endpoint
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));
 
+// Order endpoint
 router.post("/order/complete", (req: Request, res: Response) => orderController.createOrder(req, res));
 
-router.get("/products", (_req, _res) => productController.getAllGames(_req, _res));
-router.get("/product-prices/:id", (req, res) => productController.getGamePrice(req, res));
-
-// TODO: The following endpoints have to be implemented in their own respective controller
+// Product endpoints
 router.get("/products", (req: Request, res: Response) => productController.getAllGames(req, res));
 router.get("/product-prices/:id", (req: Request, res: Response) => productController.getGamePrice(req, res));
-
 router.get("/products/:id", (_req: Request, _res: Response) => {
     throw new Error("Return a specific product");
-});
-
-router.post("/cart/add", (_req, _res) => {
-    throw new Error("Add a product to the cart");
 });

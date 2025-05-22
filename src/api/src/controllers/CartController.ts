@@ -1,69 +1,61 @@
 import { Request, Response } from "express";
-import { CartService, CartItem } from "../services/CartService";
-
-const cartService: CartService = new CartService();
-
-function getUserIdFromCookie(req: Request): number | null {
-    const cookieHeader: string | undefined = req.headers.cookie;
-    console.log("Cookie header:", cookieHeader);
-
-    if (!cookieHeader) {
-        console.log("No cookie header found");
-        return null;
-    }
-
-    const match: RegExpMatchArray | null = cookieHeader.match(/(?:^|;\s*)Authentication=(\d+)/);
-    console.log("Authentication cookie match:", match);
-
-    return match ? parseInt(match[1], 10) : null;
-}
+import { CartService } from "../services/CartService";
+import type { CartItem } from "../types/CartItem";
 
 export class CartController {
+    private readonly _cartService: CartService;
+
+    public constructor() {
+        this._cartService = new CartService();
+    }
+
+    private getUserIdFromCookie(req: Request): number | null {
+        const cookieHeader: string | undefined = req.headers.cookie;
+        if (!cookieHeader) return null;
+
+        const match: RegExpMatchArray | null = cookieHeader.match(/user=(\d+)/);
+        return match ? parseInt(match[1], 10) : null;
+    }
+
     public async getCart(req: Request, res: Response): Promise<void> {
         try {
-            const userId: number | null = getUserIdFromCookie(req);
-            console.log("User ID from cookie:", userId);
-
+            const userId: number | null = this.getUserIdFromCookie(req);
             if (!userId) {
-                console.log("No valid user ID found in cookie");
-                res.status(401).json({ error: "Geen geldige gebruiker in cookie" });
+                res.status(401).json({ error: "Niet ingelogd" });
                 return;
             }
 
-            const items: CartItem[] = await cartService.getCartItemsByUser(userId);
-            console.log("Cart items found:", items);
+            const items: CartItem[] = await this._cartService.getCartItemsByUser(userId);
+            const total: number = items.reduce((sum: number, item: CartItem) => sum + (item.price * item.quantity), 0);
 
-            const total: number = items.reduce((sum, item) => {
-                const price: number = typeof item.price === "string" ? parseFloat(item.price) : item.price;
-                return sum + price * item.quantity;
-            }, 0);
-
-            res.json({
-                cart: items,
-                total,
-            });
+            res.json({ cart: items, total });
         }
         catch (error) {
-            console.error("Error fetching cart:", error);
-            res.status(500).json({ error: "error" });
+            console.error("Fout bij ophalen winkelwagen:", error);
+            res.status(500).json({ error: "Fout bij ophalen winkelwagen" });
         }
     }
 
     public async deleteCartItem(req: Request, res: Response): Promise<void> {
-        const userId: number | null = getUserIdFromCookie(req);
-        const cartItemId: number = parseInt(req.params.id, 10);
-
-        if (!userId || isNaN(cartItemId)) {
-            res.status(400).json({ error: "Ongeldige gebruiker of cart item id" });
-            return;
-        }
-
         try {
-            await cartService.deleteCartItemById(cartItemId, userId);
+            const userId: number | null = this.getUserIdFromCookie(req);
+            if (!userId) {
+                res.status(401).json({ error: "Niet ingelogd" });
+                return;
+            }
+
+            const cartItemId: number = parseInt(req.params.id, 10);
+            if (isNaN(cartItemId)) {
+                res.status(400).json({ error: "Ongeldig cart item id" });
+                return;
+            }
+
+            await this._cartService.deleteCartItemById(cartItemId, userId);
             res.status(204).send();
         }
-        catch {
-            res.status(500).json({ error: "error" });
+        catch (error) {
+            console.error("Fout bij verwijderen cart item:", error);
+            res.status(500).json({ error: "Er is een fout opgetreden bij het verwijderen van het item" });
         }
     }
 }

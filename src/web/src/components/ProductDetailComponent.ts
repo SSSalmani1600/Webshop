@@ -1,4 +1,5 @@
 import type { Game } from "@api/types/Game";
+import { SessionResponse } from "@shared/types";
 
 export class GameDetailComponent extends HTMLElement {
     private shadow: ShadowRoot;
@@ -27,7 +28,15 @@ export class GameDetailComponent extends HTMLElement {
         }
 
         try {
-            const response: Response = await fetch(`http://localhost:3001/api/game?id=${gameId}`);
+            // Retrieve session ID
+            const sessionId: string = await this.getSession();
+
+            const response: Response = await fetch(`${VITE_API_URL}game?id=${gameId}`, {
+                headers: {
+                    "x-session": sessionId,
+                },
+            });
+            console.log(response);
             if (!response.ok) throw new Error("Kon game niet ophalen.");
 
             const game: Game = await response.json() as Game;
@@ -36,6 +45,24 @@ export class GameDetailComponent extends HTMLElement {
         catch (error) {
             this.shadow.innerHTML = `<p style="color: red;">Fout: ${(error as Error).message}</p>`;
         }
+    }
+
+    // Retrieve a session ID from the backend
+    private async getSession(): Promise<string> {
+        const res: Response = await fetch(`${VITE_API_URL}session`);
+        const data: unknown = await res.json();
+
+        // Validate and return the session ID
+        if (
+            typeof data === "object" &&
+            data !== null &&
+            "sessionId" in data &&
+            typeof (data as SessionResponse).sessionId === "string"
+        ) {
+            return (data as SessionResponse).sessionId;
+        }
+
+        throw new Error("Invalid session object");
     }
 
     private renderGame(game: {
@@ -50,122 +77,155 @@ export class GameDetailComponent extends HTMLElement {
 
         this.shadow.innerHTML = `
             <style>
-        * {
-          box-sizing: border-box;
-        }
+            * {
+            box-sizing: border-box;
+            }
 
-        :host {
-          display: block;
-          padding: 40px;
-          background-color: #0f0f0f;
-          color: white;
-          font-family: Arial, sans-serif;
-        }
+            :host {
+            display: block;
+            padding: 40px;
+            background-color: #0f0f0f;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            width: 100vw;         /* Full viewport width */
+            min-height: 100vh;    /* Full viewport height */
+            margin: 0;
+            box-sizing: border-box;
+            overflow-x: hidden;   /* Prevent horizontal scroll */
+            }
 
-        h2 {
-          font-size: 32px;
-          margin: 0 0 10px 0;
-        }
+            html, body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f0f0f;
+            overflow-x: hidden;
+            }
 
-        .price-top {
-          position: absolute;
-          top: 40px;
-          right: 40px;
-          color: #ccc;
-          font-size: 16px;
-        }
+            h2 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            }
 
-        img {
-          width: 100%;
-          max-width: 700px;
-          border-radius: 12px;
-          margin: 30px 0;
-          display: block;
-        }
+            .price-top {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            color: #aaa;
+            font-size: 16px;
+            }
 
-        .info-boxes {
-          display: flex;
-          gap: 20px;
-          margin-top: 20px;
-        }
+            img {
+            width: 100%;
+            max-width: 800px;
+            border-radius: 12px;
+            margin: 40px auto 20px auto;
+            display: block;
+            }
 
-        .box {
-          border: 1px solid #333;
-          border-radius: 12px;
-          padding: 20px;
-          flex: 1;
-          background-color: #1a1a1a;
-        }
+            .info-boxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+            }
 
-        .box h3 {
-          margin-top: 0;
-        }
+            .box {
+            background-color: #141414;
+            border: 1px solid #2a2a2a;
+            border-radius: 16px;
+            padding: 20px;
+            flex: 1;
+            min-width: 300px;
+            overflow: visible;        
+            height: auto;              
+            }
 
-        .tags {
-          display: flex;
-          gap: 10px;
-          margin-top: 15px;
-        }
+            .box h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 16px;
+            }
 
-        .tag {
-          background-color: #222;
-          border: 1px solid #444;
-          border-radius: 20px;
-          padding: 6px 12px;
-          font-size: 12px;
-        }
+            .box p {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.5;
+            }
 
-        .bottom-bar {
-          margin-top: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
+            .tags {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            }
 
-        .add-button {
-          background-color: #7f41f5;
-          color: white;
-          border: none;
-          padding: 14px 32px;
-          border-radius: 999px;
-          font-size: 16px;
-          cursor: pointer;
-          transition: background 0.3s;
-        }
+            .tag {
+            background-color: #1c1c1c;
+            border: 1px solid #333;
+            border-radius: 999px;
+            padding: 6px 16px;
+            font-size: 13px;
+            color: #e0e0e0;
+            }
 
-        .add-button:hover {
-          background-color: #6936cc;
-        }
+            .bottom-bar {
+            margin-top: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            }
 
-        .price-bottom {
-          font-size: 20px;
-        }
+            .add-button {
+            background-color: #7f41f5;
+            color: white;
+            border: none;
+            padding: 16px 36px;
+            border-radius: 999px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(127, 65, 245, 0.4);
+            transition: background 0.3s, box-shadow 0.3s;
+            }
+
+            .add-button:hover {
+            background-color: #6936cc;
+            box-shadow: 0 6px 16px rgba(105, 54, 204, 0.6);
+            }
+
+            .price-bottom {
+            font-size: 20px;
+            font-weight: 500;
+            }
+
       </style>
 
-      <div class="price-top">Price<br><strong>${price}</strong></div>
+      <h2>Game:<br><strong>${game.title}</strong></h2>
 
-            <h2>Game:<br><strong>${game.title}</strong></h2>
-      <img src="${game.thumbnail}" alt="${game.title}" />
+        <img src="${game.thumbnail}" alt="${game.title}" />
 
-      <div class="info-boxes">
+        <div class="info-boxes">
         <div class="box">
-          <h3>Description</h3>
-          ${game.descriptionHtml}
-          <div class="tags">
+            <h3>Description</h3>
+            ${game.descriptionHtml}
+            <div class="tags">
             <div class="tag">Single player</div>
             <div class="tag">Horror</div>
             <div class="tag">Offline</div>
-          </div>
+            </div>
         </div>
         <div class="box">
-          <p><em>${game.title}</em> is a click and point based game.</p>
+            <p><em>${game.title}</em> is a click and point based game.</p>
         </div>
-      </div>
+        </div>
 
-      <div class="bottom-bar">
+        <div class="bottom-bar">
         <button class="add-button">Toevoegen aan winkelmand</button>
-        <div class="price-bottom">${price}</div>
-      </div>
+        <div class="price-bottom">${game.price !== undefined && game.price !== null ? `$${game.price}` : "N/B"}</div>
+        </div>
+
+
 
         `;
     }

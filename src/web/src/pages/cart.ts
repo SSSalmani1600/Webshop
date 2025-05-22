@@ -331,8 +331,8 @@ export class CartPageComponent extends HTMLElement {
 
         try {
             const API_BASE: string = window.location.hostname.includes("localhost")
-                ? "http://localhost:3001/api"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+                ? "http://localhost:3001"
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
 
             const url: URL = new URL(`${API_BASE}/cart`);
             if (this.currentDiscountCode) {
@@ -386,8 +386,8 @@ export class CartPageComponent extends HTMLElement {
     private async deleteCartItem(itemId: number): Promise<void> {
         try {
             const API_BASE: string = window.location.hostname.includes("localhost")
-                ? "http://localhost:3001/api"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+                ? "http://localhost:3001"
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
 
             console.log("Deleting cart item from:", `${API_BASE}/cart/item/${itemId}`);
 

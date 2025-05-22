@@ -222,7 +222,7 @@ export class CartPageComponent extends HTMLElement {
         }
 
         .empty-cart-image {
-            max-width: 200px;
+            max-width: 100px;
             height: auto;
             opacity: 0.8;
         }

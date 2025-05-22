@@ -96,12 +96,10 @@ export class LoginComponent extends HTMLElement {
         const rememberMe: boolean = this._rememberMeCheckbox?.checked || false;
 
         try {
-            const sessionId: string = await this.getSession();
             const response: Response = await fetch("http://localhost:3001/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "x-session": sessionId,
                 },
                 body: JSON.stringify({
                     loginIdentifier,
@@ -117,10 +115,6 @@ export class LoginComponent extends HTMLElement {
                 this.showError(data.message || "Inloggen mislukt. Controleer je gegevens en probeer opnieuw.");
                 this.highlightErrorFields(emailInput, passwordComponent);
                 return;
-            }
-
-            if (rememberMe && data.sessionId) {
-                localStorage.setItem("sessionId", data.sessionId);
             }
 
             window.location.href = "/product.html";
@@ -147,24 +141,6 @@ export class LoginComponent extends HTMLElement {
                 }
             }, 100);
         }
-    }
-
-    /**
-     * Haalt een sessie op, eerst uit localStorage (voor remember me functionaliteit)
-     * of anders door een nieuwe sessie aan te vragen bij de server
-     * @returns Een Promise die resolvet naar een sessie ID string
-     * @private
-     */
-    private async getSession(): Promise<string> {
-        const storedSession: string | null = localStorage.getItem("sessionId");
-        if (storedSession) return storedSession;
-
-        const res: Response = await fetch("http://localhost:3001/session");
-        const data: { sessionId: string | null } | null = await res.json() as { sessionId: string | null } | null;
-
-        if (data && data.sessionId) return data.sessionId;
-
-        throw new Error("Kon geen sessie krijgen");
     }
 
     /**

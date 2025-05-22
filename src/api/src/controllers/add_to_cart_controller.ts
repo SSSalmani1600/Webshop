@@ -18,9 +18,7 @@ export class AddToCartController {
         const connection: PoolConnection = await this._databaseService.openConnection();
 
         try {
-            // Haal de gebruiker-ID uit het request
-            const userId: number | null = this.getUserIdFromRequest(req);
-
+            const userId: number | undefined = req.userId;
             if (!userId) {
                 res.status(401).json({
                     success: false,
@@ -56,7 +54,7 @@ export class AddToCartController {
             }
 
             // Controleer of het item al in het winkelmandje zit
-            const existingCartItem: boolean = await this._databaseService.query(
+            const existingCartItem: { id: number }[] = await this._databaseService.query(
                 connection,
                 "SELECT * FROM cart_items WHERE user_id = ? AND game_id = ?",
                 userId,
@@ -108,43 +106,14 @@ export class AddToCartController {
     }
 
     /**
-     * Haal de gebruiker-ID uit het request
-     *
-     * @param req - Express request object
-     * @returns De gebruiker-ID of null als niet gevonden
-     */
-    private getUserIdFromRequest(req: Request): number | null {
-        // Eerst proberen van userId (ingesteld door de sessionMiddleware)
-        if (req.userId) {
-            return req.userId;
-        }
-
-        // Anders proberen van cookies
-        const cookieHeader: string | undefined = req.headers.cookie;
-        if (cookieHeader) {
-            const match: RegExpMatchArray | null = cookieHeader.match(/(?:^|;\s*)user=(\d+)/);
-            if (match) {
-                return parseInt(match[1], 10);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Controleer of een game bestaat in de database
-     *
-     * @param connection - Database connectie
-     * @param gameId - ID van de game om te controleren
-     * @returns Of de game bestaat
+     * Controleer of een game bestaat
      */
     private async checkGameExists(connection: PoolConnection, gameId: number): Promise<boolean> {
-        const result: { count: number }[] = await this._databaseService.query(
+        const result: { id: number }[] = await this._databaseService.query(
             connection,
-            "SELECT COUNT(*) as count FROM games WHERE id = ?",
+            "SELECT id FROM games WHERE id = ?",
             gameId
         );
-
-        return result[0]?.count > 0;
+        return Array.isArray(result) && result.length > 0;
     }
 }

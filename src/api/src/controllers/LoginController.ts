@@ -55,10 +55,6 @@ export class LoginController {
                 return;
             }
 
-            if (rememberMe) {
-                await this.loginService.updateLoginStatus(user.id, true);
-            }
-
             const sessionId: string | undefined = await this.sessionService.createSession(user.id);
 
             if (!sessionId) {
@@ -69,19 +65,36 @@ export class LoginController {
                 return;
             }
 
-            res.cookie("session", sessionId, {
-                httpOnly: false,
-                secure: false,
-                sameSite: "lax",
-                maxAge: 60 * 60 * 1000,
-            });
+            if (rememberMe) {
+                await this.loginService.updateLoginStatus(user.id, true);
+                res.cookie("session", sessionId, {
+                    httpOnly: false,
+                    secure: false,
+                    sameSite: "lax",
+                    maxAge: 60 * 60 * 1000,
+                });
 
-            res.cookie("user", user.id.toString(), {
-                httpOnly: false,
-                secure: false,
-                sameSite: "lax",
-                maxAge: 60 * 60 * 1000,
-            });
+                res.cookie("user", user.id.toString(), {
+                    httpOnly: false,
+                    secure: false,
+                    sameSite: "lax",
+                    maxAge: 60 * 60 * 1000,
+                });
+            }
+            else {
+                // Voor niet-remember me, gebruik session cookies die verlopen bij browser sluiten
+                res.cookie("session", sessionId, {
+                    httpOnly: false,
+                    secure: false,
+                    sameSite: "lax",
+                });
+
+                res.cookie("user", user.id.toString(), {
+                    httpOnly: false,
+                    secure: false,
+                    sameSite: "lax",
+                });
+            }
 
             res.status(200).json({
                 success: true,

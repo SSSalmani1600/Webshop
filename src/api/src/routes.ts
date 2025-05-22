@@ -5,6 +5,7 @@ import { requireValidSessionMiddleware, sessionMiddleware } from "./middleware/s
 import { CartController } from "./controllers/CartController";
 import { ProductController } from "./controllers/ProductController";
 import { LoginController } from "./controllers/LoginController";
+import { RegisterController } from "./controllers/RegisterController";
 
 // Create a router
 export const router: Router = Router();
@@ -20,9 +21,14 @@ const orderController: OrderController = new OrderController();
 const cartController: CartController = new CartController();
 const productController: ProductController = new ProductController();
 const loginController: LoginController = new LoginController();
+const registerController: RegisterController = new RegisterController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
+router.post("/register", (req: Request, res: Response) => {
+    console.log("POST /register ontvangen", req.body);
+    return registerController.addNewUser(req, res);
+});
 
 // NOTE: After this line, all endpoints will check for a session.
 router.use(sessionMiddleware);

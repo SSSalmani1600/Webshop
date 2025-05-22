@@ -6,4 +6,4 @@ export interface CartItem {
     price: number;
     title: string;
     thumbnail: string;
-} 
+}

@@ -8,7 +8,6 @@ import { LoginController } from "./controllers/LoginController";
 import { AddToCartController } from "./controllers/add_to_cart_controller";
 import { RegisterController } from "./controllers/RegisterController";
 
-
 // Create a router
 export const router: Router = Router();
 

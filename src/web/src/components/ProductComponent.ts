@@ -18,7 +18,7 @@ export class GameList extends HTMLElement {
     public async connectedCallback(): Promise<void> {
         const API_BASE: unknown = location.hostname === "localhost"
             ? "http://localhost:3001"
-            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/";
+            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
 
         console.log("GameList component is connected.");
 
@@ -63,7 +63,7 @@ export class GameList extends HTMLElement {
     private async fetchGamePrice(gameId: number): Promise<number | null> {
         const API_BASE: unknown = location.hostname === "localhost"
             ? "http://localhost:3001"
-            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/";
+            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
 
         try {
             const sessionId: string = await this.getSession();
@@ -88,7 +88,7 @@ export class GameList extends HTMLElement {
     private async getSession(): Promise<string> {
         const API_BASE: unknown = location.hostname === "localhost"
             ? "http://localhost:3001"
-            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/";
+            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
 
         const res: Response = await fetch(`${API_BASE}/session`);
         const data: unknown = await res.json();

@@ -12,7 +12,7 @@ interface CartResponse {
 }
 
 // Deze class laat samenvatting van winkelwagen zien op de afrekenpagina
-export class CheckoutproductComponent extends HTMLElement {
+export class CartSummaryComponent extends HTMLElement {
     public constructor() {
         super();
         this.attachShadow({ mode: "open" });
@@ -89,4 +89,4 @@ export class CheckoutproductComponent extends HTMLElement {
     }
 }
 
-customElements.define("checkout-product", CheckoutproductComponent);
+customElements.define("cart-summary", CartSummaryComponent);

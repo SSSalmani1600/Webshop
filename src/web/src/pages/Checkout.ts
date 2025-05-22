@@ -1,120 +1,160 @@
 // Haalt component op die winkelwagen laat zien
-import { CartSummaryComponent } from "../components/CheckoutproductComponent"
+// (CartSummaryComponent is niet gebruikt, dus import verwijderd)
+
+interface Address {
+    id: number;
+    userId: number;
+    name: string;
+    street: string;
+    city: string;
+    phone: string;
+}
+
+interface AddressResponse {
+    addressId: number;
+}
+
+interface SessionResponse {
+    userId: number;
+}
 
 // Maakt nieuwe custom HTML tag aan voor checkout pagina
 export class Checkout extends HTMLElement {
-  // Deze functie draait automatisch als pagina geladen wordt
-  connectedCallback(): void {
-    // Zet HTML op het scherm voor afrekenpagina
-    this.innerHTML = `
-      <main class="checkout-container">
-        <section class="checkout-left">
-          <h2>Afrekenen</h2>
+    public constructor() {
+        super();
+    }
 
-          <div class="checkout-section">
-            <h3>Verzendadres</h3>
-            <form id="adresForm">
-              <label>Naam <span class="required">*</span></label>
-              <input type="text" name="naam" placeholder="Naam" required>
+    // Deze functie draait automatisch als pagina geladen wordt
+    public connectedCallback(): void {
+        this.render();
+    }
 
-              <label>Straat + Huisnummer <span class="required">*</span></label>
-              <input type="text" name="straat_huisnummer" placeholder="Straat + Huisnummer" required>
+    private render(): void {
+        // Zet HTML op het scherm voor afrekenpagina
+        this.innerHTML = `
+            <main class="checkout-container">
+                <section class="checkout-left">
+                    <h2>Afrekenen</h2>
 
-              <label>Postcode + Plaats <span class="required">*</span></label>
-              <input type="text" name="postcode_plaats" placeholder="Postcode + Plaats" required>
+                    <div class="checkout-section">
+                        <h3>Verzendadres</h3>
+                        <form id="adresForm">
+                            <label>Naam <span class="required">*</span></label>
+                            <input type="text" name="naam" placeholder="Naam" required>
 
-              <label>Telefoonnummer <span class="required">*</span></label>
-              <input type="text" name="telefoonnummer" placeholder="Telefoonnummer" required>
+                            <label>Straat + Huisnummer <span class="required">*</span></label>
+                            <input type="text" name="straat_huisnummer" placeholder="Straat + Huisnummer" required>
 
-              <button type="submit" id="place-order" class="checkout-btn">Adres opslaan</button>
-            </form>
-          </div>
-        </section>
+                            <label>Postcode + Plaats <span class="required">*</span></label>
+                            <input type="text" name="postcode_plaats" placeholder="Postcode + Plaats" required>
 
-        <aside class="checkout-summary">
-          <h3>Winkelwagen</h3>
-          <div class="summary-item">
-            <div>
-              <p>Productnaam</p>
-              <p>€0,00</p>
-            </div>
-          </div>
-          <hr>
-          <div class="summary-total">
-            <p>Subtotaal: €0,00</p>
-            <p>Verzendkosten: €0,00</p>
-            <p><strong>Totaal: €0,00</strong></p>
-          </div>
-        </aside>
-      </main>
-    `
+                            <label>Telefoonnummer <span class="required">*</span></label>
+                            <input type="text" name="telefoonnummer" placeholder="Telefoonnummer" required>
 
-    // Start functie die winkelwagen ophaalt en laat zien
-    this.initCartSummary()
+                            <button type="submit" id="place-order" class="checkout-btn">Adres opslaan</button>
+                        </form>
+                    </div>
+                </section>
 
-    // Start functie die kijkt of formulier is ingevuld en stuurt naar backend
-    this.initOrderSubmission()
-  }
+                <aside class="checkout-summary">
+                    <h3>Winkelwagen</h3>
+                    <div class="summary-item">
+                        <div>
+                            <p>Productnaam</p>
+                            <p>€0,00</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="summary-total">
+                        <p>Subtotaal: €0,00</p>
+                        <p>Verzendkosten: €0,00</p>
+                        <p><strong>Totaal: €0,00</strong></p>
+                    </div>
+                </aside>
+            </main>
+        `;
 
-  // Deze functie maakt en laat samenvatting van winkelwagen zien
-  private initCartSummary(): void {
-    const summary = new CartSummaryComponent(".checkout-summary")
-    summary.render()
-  }
+        // Start functie die kijkt of formulier is ingevuld en stuurt naar backend
+        this.initOrderSubmission();
+    }
 
-  // Deze functie zorgt dat als je op 'adres opslaan' klikt
-  // het formulier wordt verwerkt en verstuurd naar backend
-  private initOrderSubmission(): void {
-    // Pakt het formulier uit de pagina
-    const form = this.querySelector("#adresForm") as HTMLFormElement
-    if (!form) return
+    // Deze functie zorgt dat als je op 'adres opslaan' klikt
+    // het formulier wordt verwerkt en verstuurd naar backend
+    private initOrderSubmission(): void {
+        // Pakt het formulier uit de pagina
+        const form: HTMLFormElement | null = this.querySelector("#adresForm");
+        if (!form) {
+            return;
+        }
 
-    // Als je op 'adres opslaan' klikt gebeurt dit
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault() // voorkomt dat pagina opnieuw laadt
+        // Als je op 'adres opslaan' klikt gebeurt dit
+        form.addEventListener("submit", async (event: Event) => {
+            event.preventDefault(); // voorkomt dat pagina opnieuw laadt
 
-      // Tijdelijk test userId gebruiken
-      const userId = 1
+            // Tijdelijk test userId gebruiken
+            const userId: number = await this.getUserId();
 
-      // Haalt alle ingevulde data uit het formulier
-      const formData = new FormData(form)
-      const data = {
-        userId,
-        naam: (formData.get("naam") || "").toString().trim(),
-        straatHuisnummer: (formData.get("straat_huisnummer") || "").toString().trim(),
-        postcodePlaats: (formData.get("postcode_plaats") || "").toString().trim(),
-        telefoonnummer: (formData.get("telefoonnummer") || "").toString().trim(),
-      }
+            // Haalt alle ingevulde data uit het formulier
+            const formData: FormData = new FormData(form);
+            const data: Address = {
+                id: 0,
+                userId,
+                name: this.getFormValue(formData, "naam"),
+                street: this.getFormValue(formData, "straat_huisnummer"),
+                city: this.getFormValue(formData, "postcode_plaats"),
+                phone: this.getFormValue(formData, "telefoonnummer"),
+            };
 
-      // Laat zien wat we sturen naar backend
-      console.log("Data naar backend:")
-      console.table(data)
+            // Laat zien wat we sturen naar backend
+            console.log("Data naar backend:");
+            console.table(data);
 
-      try {
-        // Verstuur data naar backend via fetch POST request
-        const res = await fetch("http://localhost:3001/checkout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          credentials: "include",
-          body: JSON.stringify(data)
-        })
+            try {
+                // Verstuur data naar backend via fetch POST request
+                const res: Response = await fetch("http://localhost:3001/addresses", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                    body: JSON.stringify(data),
+                });
 
-        // Als backend geen succes teruggeeft laat fout zien
-        if (!res.ok) throw new Error("Kon adres niet opslaan")
+                // Als backend geen succes teruggeeft laat fout zien
+                if (!res.ok) {
+                    throw new Error("Kon adres niet opslaan");
+                }
 
-        // Backend geeft adresId terug dit laten we zien aan gebruiker
-        const result = await res.json()
-        alert("Adres opgeslagen Adres ID " + result.addressId)
-      } catch (err) {
-        // Als iets fout gaat in fetch laat foutmelding zien
-        console.error("Fout bij opslaan adres", err)
-        alert("Er is iets misgegaan bij het opslaan van je adres")
-      }
-    })
-  }
+                // Backend geeft adresId terug dit laten we zien aan gebruiker
+                const result: AddressResponse = await res.json() as AddressResponse;
+                window.location.href = `/order-confirmation.html?addressId=${result.addressId}`;
+            }
+            catch (error: unknown) {
+                // Als iets fout gaat in fetch laat foutmelding zien
+                console.error("Fout bij opslaan adres:", error);
+                alert("Er is iets misgegaan bij het opslaan van je adres");
+            }
+        });
+    }
+
+    private getFormValue(formData: FormData, key: string): string {
+        const value: FormDataEntryValue | null = formData.get(key);
+        return typeof value === "string" ? value : "";
+    }
+
+    private async getUserId(): Promise<number> {
+        const res: Response = await fetch("http://localhost:3001/session", {
+            credentials: "include",
+        });
+
+        if (!res.ok) {
+            throw new Error("Not logged in");
+        }
+
+        const data: SessionResponse = await res.json() as SessionResponse;
+        return data.userId;
+    }
 }
 
 // Registreert deze class als custom element
-customElements.define("webshop-page-checkout", Checkout)
+customElements.define("webshop-page-checkout", Checkout);

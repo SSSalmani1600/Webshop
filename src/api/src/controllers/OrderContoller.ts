@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { OrderService } from "@api/services/OrderService";
+import { ParamsDictionary } from "express-serve-static-core";
 
 // Zelfde helper als in je CartController
 function getUserIdFromCookie(req: Request): number | null {
@@ -17,7 +18,7 @@ export class OrderController {
     private readonly _orderService: OrderService = new OrderService();
 
     public async createOrder(
-        req: Request<unknown, unknown, OrderRequestBody>,
+        req: Request<ParamsDictionary, unknown, OrderRequestBody>,
         res: Response
     ): Promise<void> {
         const userId: number | null = getUserIdFromCookie(req);

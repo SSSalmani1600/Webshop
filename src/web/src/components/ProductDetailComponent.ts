@@ -71,10 +71,6 @@ export class GameDetailComponent extends HTMLElement {
         descriptionHtml: string;
         price?: number | null;
     }): void {
-        const price: string = game.price !== undefined && game.price !== null
-            ? `$${game.price}`
-            : "N/B";
-
         this.shadow.innerHTML = `
             <style>
             * {

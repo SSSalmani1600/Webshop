@@ -27,7 +27,7 @@ export class LoginService {
 
     /**
      * Valideert de inloggegevens van een gebruiker
-     * \
+     *
      * @param loginIdentifier - De gebruikersnaam of e-mailadres
      * @param password - Het wachtwoord
      * @returns Een Promise met het gebruikersobject als de inloggegevens geldig zijn, anders null

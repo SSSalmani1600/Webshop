@@ -1,6 +1,5 @@
 import { DatabaseService } from "./DatabaseService";
 import { PoolConnection } from "mysql2/promise";
-import { Request } from "express";
 
 export type CartItem = {
     id: number;

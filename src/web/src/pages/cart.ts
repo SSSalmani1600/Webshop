@@ -285,7 +285,7 @@ export class CartPageComponent extends HTMLElement {
                                 </div>
                             </div>
                             <discount-code-component></discount-code-component>
-                            <button class="checkout-button"><a href="/checkout.html" class="login-button">Ga door naar checkout</a></button>
+                            <button class="checkout-button">Ga door naar checkout</button>
                         </div>
                     </div>
                 </div>

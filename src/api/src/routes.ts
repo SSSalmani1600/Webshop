@@ -5,10 +5,9 @@ import { requireValidSessionMiddleware, sessionMiddleware } from "./middleware/s
 import { CartController } from "./controllers/CartController";
 import { ProductController } from "./controllers/ProductController";
 import { LoginController } from "./controllers/LoginController";
-import { CheckoutController } from "./controllers/CheckoutController"; 
+import { CheckoutController } from "./controllers/CheckoutController";
 import { AddToCartController } from "./controllers/add_to_cart_controller";
 import { RegisterController } from "./controllers/RegisterController";
-
 
 export const router: Router = Router();
 
@@ -21,7 +20,7 @@ const orderController: OrderController = new OrderController();
 const cartController: CartController = new CartController();
 const productController: ProductController = new ProductController();
 const loginController: LoginController = new LoginController();
-const checkoutController = new CheckoutController();
+const checkoutController: CheckoutController = new CheckoutController();
 const addToCartController: AddToCartController = new AddToCartController();
 const registerController: RegisterController = new RegisterController();
 

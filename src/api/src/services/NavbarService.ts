@@ -1,5 +1,7 @@
 import { DatabaseService } from "./DatabaseService";
-import { PoolConnection } from "mysql2/promise";
+import { PoolConnection, RowDataPacket, FieldPacket } from "mysql2/promise";
+
+type CountRow = { count: number | null };
 
 export class NavbarService {
     private readonly _db: DatabaseService = new DatabaseService();
@@ -8,9 +10,9 @@ export class NavbarService {
         const connection: PoolConnection = await this._db.openConnection();
 
         try {
-            const [rows] = await connection.query(
+            const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
                 `
-                SELECT COUNT(*) AS count
+                SELECT SUM(quantity) AS count
                 FROM cart
                 WHERE user_id = ?
                 `,
@@ -21,8 +23,8 @@ export class NavbarService {
                 return 0;
             }
 
-            const count: number = (rows[0] as { count: number }).count;
-            return count;
+            const row: CountRow = rows[0] as CountRow;
+            return row.count ?? 0;
         }
         catch (e) {
             throw new Error(`Kan aantal winkelmand-items niet ophalen: ${e}`);

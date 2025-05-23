@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
-import { DatabaseService } from "../services/DatabaseService";
-import { PoolConnection } from "mysql2/promise";
+import { AddToCartService } from "../services/AddToCartService";
 
 /**
  * Controller die verantwoordelijk is voor het afhandelen van toevoegen aan winkelmandje
  */
 export class AddToCartController {
-    private readonly _databaseService: DatabaseService = new DatabaseService();
+    private readonly _addToCartService: AddToCartService = new AddToCartService();
 
     /**
      * Voeg een game toe aan het winkelmandje
@@ -15,8 +14,6 @@ export class AddToCartController {
      * @param res - Express response object
      */
     public async addToCart(req: Request, res: Response): Promise<void> {
-        const connection: PoolConnection = await this._databaseService.openConnection();
-
         try {
             const userId: number | undefined = req.userId;
             if (!userId) {
@@ -43,55 +40,28 @@ export class AddToCartController {
                 return;
             }
 
-            // Controleer of de game bestaat
-            const gameExists: boolean = await this.checkGameExists(connection, gameId);
-            if (!gameExists) {
-                res.status(404).json({
-                    success: false,
-                    message: "Game niet gevonden",
-                });
-                return;
-            }
-
-            // Controleer of het item al in het winkelmandje zit
-            const existingCartItem: { id: number }[] = await this._databaseService.query(
-                connection,
-                "SELECT * FROM cart_items WHERE user_id = ? AND game_id = ?",
-                userId,
-                gameId
-            );
-
-            // Als het item al bestaat, update de hoeveelheid
-            if (Array.isArray(existingCartItem) && existingCartItem.length > 0) {
-                await this._databaseService.query(
-                    connection,
-                    "UPDATE cart_items SET quantity = quantity + ? WHERE user_id = ? AND game_id = ?",
-                    quantity,
-                    userId,
-                    gameId
-                );
-
-                res.status(200).json({
-                    success: true,
-                    message: "Hoeveelheid bijgewerkt in winkelmandje",
-                });
-                return;
-            }
-
-            // Voeg nieuw item toe aan het winkelmandje
-            await this._databaseService.query(
-                connection,
-                "INSERT INTO cart_items (user_id, game_id, quantity, price) VALUES (?, ?, ?, ?)",
-                userId,
+            // Gebruik de service om het item toe te voegen
+            const result: { success: boolean; message: string } = await this._addToCartService.addToCart({
                 gameId,
                 quantity,
-                price
-            );
-
-            res.status(201).json({
-                success: true,
-                message: "Product toegevoegd aan winkelmandje",
+                price,
+                userId,
             });
+
+            if (result.success) {
+                const statusCode: number = result.message.includes("bijgewerkt") ? 200 : 201;
+                res.status(statusCode).json({
+                    success: true,
+                    message: result.message,
+                });
+            }
+            else {
+                const statusCode: number = result.message === "Game niet gevonden" ? 404 : 400;
+                res.status(statusCode).json({
+                    success: false,
+                    message: result.message,
+                });
+            }
         }
         catch (error) {
             console.error("Fout bij toevoegen aan winkelmandje:", error);
@@ -100,20 +70,5 @@ export class AddToCartController {
                 message: "Er is een fout opgetreden bij het toevoegen aan winkelmandje",
             });
         }
-        finally {
-            connection.release();
-        }
-    }
-
-    /**
-     * Controleer of een game bestaat
-     */
-    private async checkGameExists(connection: PoolConnection, gameId: number): Promise<boolean> {
-        const result: { id: number }[] = await this._databaseService.query(
-            connection,
-            "SELECT id FROM games WHERE id = ?",
-            gameId
-        );
-        return Array.isArray(result) && result.length > 0;
     }
 }

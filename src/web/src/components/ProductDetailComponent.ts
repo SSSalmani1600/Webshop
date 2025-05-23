@@ -89,6 +89,7 @@ export class GameDetailComponent extends HTMLElement {
             box-sizing: border-box;
             overflow-x: hidden;  
             position: relative; 
+            padding-top: 80px;
             }
 
             html, body {
@@ -102,6 +103,53 @@ export class GameDetailComponent extends HTMLElement {
             font-size: 28px;
             font-weight: 600;
             margin: 0 0 10px 0;
+            }
+
+            .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px 30px; 
+            height: 56px;      
+            background-color: #0f0f0f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+            }
+
+            .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            }
+
+            .logo img {
+            height: 24px;
+            width: 24px;
+            }
+
+            .nav-links {
+            display: flex;
+            gap: 20px;
+            }
+
+            .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+            }
+
+            .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
             }
 
             .price-top {
@@ -205,6 +253,19 @@ export class GameDetailComponent extends HTMLElement {
             }
 
       </style>
+
+      <div class="navbar">
+        <div class="logo">
+            <img src="lucastars-logo.png" alt="LucaStars logo" />
+            <span>LucaStars</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="product.html">Games</a>
+            <a href="contact.html">Contact Us</a>
+        </div>
+      </div>
+
 
       <h2>Game:<br><strong>${game.title}</strong></h2>
 

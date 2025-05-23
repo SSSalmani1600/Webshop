@@ -28,7 +28,7 @@ export class AddToCartService {
 
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
             // Doe een POST-verzoek naar de backend API
             const response: Response = await fetch(`${API_BASE}/cart/add`, {
@@ -91,7 +91,7 @@ export class AddToCartService {
         try {
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
             const res: Response = await fetch(`${API_BASE}/session`);
             if (!res.ok) {

@@ -330,7 +330,7 @@ export class CartPageComponent extends HTMLElement {
         try {
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
             const response: Response = await fetch(`${API_BASE}/cart`, {
                 credentials: "include",
@@ -369,7 +369,7 @@ export class CartPageComponent extends HTMLElement {
         try {
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
             const deleteUrl: string = `${API_BASE}/cart/item/${itemId}`;
             console.log("Deleting cart item from:", deleteUrl);

@@ -6,7 +6,7 @@ export class NavbarService {
 
     public async getCartItemCount(userId: number): Promise<number> {
         const connection: PoolConnection = await this._db.openConnection();
-        
+
         try {
             const [rows] = await connection.query(
                 `
@@ -21,7 +21,14 @@ export class NavbarService {
                 return 0;
             }
 
-            const count
+            const count: number = (rows[0] as { count: number }).count;
+            return count;
+        }
+        catch (e) {
+            throw new Error(`Kan aantal winkelmand-items niet ophalen: ${e}`);
+        }
+        finally {
+            connection.release();
         }
     }
 }

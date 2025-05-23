@@ -12,6 +12,9 @@ interface LoginResponse {
     sessionId?: string;
 }
 
+// Declare VITE_API_URL as it comes from environment variables
+declare const VITE_API_URL: string;
+
 /**
  * Login Component
  * Een webcomponent die een loginformulier implementeert met "onthoud mij" functionaliteit
@@ -96,7 +99,7 @@ export class LoginComponent extends HTMLElement {
         const rememberMe: boolean = this._rememberMeCheckbox?.checked || false;
 
         try {
-            const response: Response = await fetch("http://localhost:3001/auth/login", {
+            const response: Response = await fetch(`${VITE_API_URL}auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

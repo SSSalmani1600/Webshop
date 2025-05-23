@@ -149,7 +149,8 @@ export class GameDetailComponent extends HTMLElement {
             }
 
             .nav-links a:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.1);\
+            color: #7f41f5;
             }
 
             .price-top {
@@ -267,7 +268,7 @@ export class GameDetailComponent extends HTMLElement {
       </div>
 
 
-      <h2>Game:<br><strong>${game.title}</strong></h2>
+      <h2><br><strong>${game.title}</strong></h2>
 
         <img src="${game.thumbnail}" alt="${game.title}" />
 
@@ -289,7 +290,10 @@ export class GameDetailComponent extends HTMLElement {
         <div class="bottom-bar">
         <button class="add-button">Toevoegen aan winkelmand</button>
         <div class="price-bottom">${game.price !== undefined && game.price !== null ? `$${game.price}` : "N/B"}</div>
-        <a class="back-button" href="product.html">Ga terug</a>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 30px;">
+        <a href="product.html" class="back-button">← Ga terug</a>
         </div>
 
         `;

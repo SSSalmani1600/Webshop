@@ -1,4 +1,3 @@
-// Zorg dat defineMetadata global beschikbaar is als het niet bestaat
 interface MetadataTarget {
     __metadata?: Record<string, unknown>;
 }

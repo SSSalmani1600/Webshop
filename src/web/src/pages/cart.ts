@@ -3,7 +3,6 @@ import { CartItemComponent } from "../components/CartItemComponent";
 
 export class CartPageComponent extends HTMLElement {
     private currentDiscount: number = 0;
-    private currentDiscountCode: string = "";
     private cartItems: CartItem[] = [];
     private isUpdating: boolean = false;
 
@@ -222,7 +221,7 @@ export class CartPageComponent extends HTMLElement {
         }
 
         .empty-cart-image {
-            max-width: 200px;
+            max-width: 100px;
             height: auto;
             opacity: 0.8;
         }
@@ -232,11 +231,6 @@ export class CartPageComponent extends HTMLElement {
             color: #ccc;
             max-width: 300px;
             margin: 0;
-        }
-
-        .empty-cart-image {
-            max-width: 100px;
-            height: auto;
         }
 
         @media (max-width: 768px) {
@@ -312,12 +306,18 @@ export class CartPageComponent extends HTMLElement {
             });
         }
 
+        const checkoutButton: HTMLButtonElement | null = this.shadowRoot?.querySelector(".checkout-button") ?? null;
+        if (checkoutButton) {
+            checkoutButton.addEventListener("click", () => {
+                window.location.href = "checkout.html";
+            });
+        }
+
         const discountComponent: Element | null = this.shadowRoot?.querySelector("discount-code-component") ?? null;
         if (discountComponent) {
             discountComponent.addEventListener("discount-applied", async (event: Event) => {
                 const customEvent: CustomEvent<{ discountPercentage: number; code: string }> = event as CustomEvent<{ discountPercentage: number; code: string }>;
                 this.currentDiscount = customEvent.detail.discountPercentage;
-                this.currentDiscountCode = customEvent.detail.code;
                 await this.fetchCart();
             });
         }
@@ -330,33 +330,93 @@ export class CartPageComponent extends HTMLElement {
         try {
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
-            const url: URL = new URL(`${API_BASE}/cart`);
-            if (this.currentDiscountCode) {
-                url.searchParams.append("discountCode", this.currentDiscountCode);
-            }
-
-            const res: Response = await fetch(url.toString(), {
+            const response: Response = await fetch(`${API_BASE}/cart`, {
                 credentials: "include",
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
             interface CartResponse {
                 cart: CartItem[];
                 total: number;
-                subtotal: number;
-                discountPercentage: number;
             }
 
-            const data: CartResponse = await res.json() as CartResponse;
+            const data: CartResponse = await response.json() as CartResponse;
             this.cartItems = data.cart;
-            this.updateCartDisplay(data);
+            this.updateCartDisplay({ total: data.total, discountPercentage: 0, subtotal: data.total });
         }
-        catch (e) {
-            console.error("Fout bij ophalen winkelwagen:", e);
+        catch (error) {
+            console.error("Fout bij ophalen winkelwagen:", error);
+            const cartList: HTMLElement | null = this.shadowRoot?.querySelector("#cart-list") as HTMLElement | null;
+            if (cartList) {
+                cartList.innerHTML = `
+                    <div class="empty-message">
+                        <p class="empty-cart-text">Er is een fout opgetreden bij het ophalen van je winkelwagen. Probeer het later opnieuw.</p>
+                    </div>
+                `;
+            }
         }
         finally {
             this.isUpdating = false;
+        }
+    }
+
+    private async deleteCartItem(itemId: number): Promise<void> {
+        try {
+            const API_BASE: string = window.location.hostname.includes("localhost")
+                ? "http://localhost:3001"
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+
+            const deleteUrl: string = `${API_BASE}/cart/item/${itemId}`;
+            console.log("Deleting cart item from:", deleteUrl);
+
+            const deleteResponse: Response = await fetch(deleteUrl, {
+                method: "DELETE",
+                credentials: "include",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!deleteResponse.ok) {
+                if (deleteResponse.status === 401) {
+                    window.location.href = "/login.html";
+                    return;
+                }
+                const errorData: unknown = await deleteResponse.json().catch(() => null);
+                throw new Error(`Failed to delete item: ${deleteResponse.status} ${deleteResponse.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ""}`);
+            }
+
+            // Update na verwijdering
+            this.cartItems = this.cartItems.filter(item => item.id !== itemId);
+            await this.fetchCart();
+        }
+        catch (error) {
+            console.error("Error deleting item:", error);
+            // Toon error message aan gebruiker
+            const cartList: HTMLElement | null = this.shadowRoot?.querySelector("#cart-list") as HTMLElement | null;
+            if (cartList) {
+                const errorMessage: HTMLDivElement = document.createElement("div");
+                errorMessage.className = "error-message";
+                errorMessage.style.color = "red";
+                errorMessage.style.padding = "1rem";
+                errorMessage.style.marginBottom = "1rem";
+                errorMessage.style.backgroundColor = "#222121";
+                errorMessage.style.borderRadius = "4px";
+                errorMessage.textContent = "Er is een fout opgetreden bij het verwijderen van het item. Probeer het later opnieuw.";
+                cartList.insertBefore(errorMessage, cartList.firstChild);
+
+                // Verwijder error message na 5 seconden
+                setTimeout(() => {
+                    errorMessage.remove();
+                }, 5000);
+            }
+            void this.fetchCart();
         }
     }
 
@@ -380,8 +440,9 @@ export class CartPageComponent extends HTMLElement {
             emptyMessage.className = "empty-message";
 
             const emptyImg: HTMLImageElement = document.createElement("img");
-            emptyImg.src = "./assets/images/cart_empty.png";
+            emptyImg.src = "/assets/images/cart_empty.png";
             emptyImg.className = "empty-cart-image";
+            emptyImg.alt = "Lege winkelwagen";
 
             const emptyText: HTMLParagraphElement = document.createElement("p");
             emptyText.textContent = "Je winkelmandje is leeg. Voeg producten toe om te beginnen met shoppen!";
@@ -406,14 +467,6 @@ export class CartPageComponent extends HTMLElement {
         continueShopping.style.display = "block";
         header.textContent = "Rond je bestelling af - producten aan je winkelwagen toevoegen betekent geen reservering.";
 
-        continueShopping.classList.remove("primary");
-        continueShopping.classList.add("continue-shopping-button");
-        continueShopping.style.margin = "2rem 0 0 0";
-        continueShopping.style.backgroundColor = "#222121";
-        continueShopping.style.color = "white";
-        continueShopping.style.display = "inline-block";
-        continueShopping.classList.remove("primary");
-
         // Toon cart items
         this.cartItems.forEach((item: CartItem) => {
             const element: CartItemComponent = new CartItemComponent(item);
@@ -422,29 +475,7 @@ export class CartPageComponent extends HTMLElement {
             element.addEventListener("item-delete", async (event: Event) => {
                 const customEvent: CustomEvent<{ id: number }> = event as CustomEvent<{ id: number }>;
                 const itemId: number = customEvent.detail.id;
-
-                try {
-                    const API_BASE: string = window.location.hostname.includes("localhost")
-                        ? "http://localhost:3001"
-                        : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
-
-                    const deleteResponse: Response = await fetch(`${API_BASE}/cart/item/${itemId}`, {
-                        method: "DELETE",
-                        credentials: "include",
-                    });
-
-                    if (!deleteResponse.ok) {
-                        throw new Error(`Failed to delete item: ${deleteResponse.statusText}`);
-                    }
-
-                    // Update na verwijdering
-                    this.cartItems = this.cartItems.filter(item => item.id !== itemId);
-                    await this.fetchCart();
-                }
-                catch (error) {
-                    console.error("Error deleting item:", error);
-                    void this.fetchCart();
-                }
+                await this.deleteCartItem(itemId);
             });
 
             cartList.appendChild(element);
@@ -453,7 +484,6 @@ export class CartPageComponent extends HTMLElement {
         // Update totaal
         if (data) {
             const originalTotal: HTMLElement = shadow.querySelector("#original-total")!;
-
             if (data.discountPercentage > 0) {
                 originalTotal.textContent = `€${data.subtotal.toFixed(2)}`;
                 totalDisplay.textContent = `€${data.total.toFixed(2)}`;

@@ -143,7 +143,7 @@ export class OrderConfirmationComponent extends HTMLElement {
               <div class="order-item"><span>2× Elden Ring</span><span>€69,99</span></div>
               <div class="order-total"><span>Totaal:</span><span>€129,98</span></div>
             </div>
-            <a class="return-home" href="/">Terug naar Home</a>
+            <a class="return-home" href="/index.html">Terug naar Home</a>
           </div>
         </div>
       `;

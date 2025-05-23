@@ -109,9 +109,17 @@ export class LoginComponent extends HTMLElement {
                 credentials: "include",
             });
 
+            console.log("Login response status:", response.status);
+
+            if (!response.ok) {
+                const errorText: string = await response.text();
+                console.error("Login failed with response:", errorText);
+                throw new Error(`Login failed: ${response.status} ${response.statusText}`);
+            }
+
             const data: LoginResponse = await response.json() as LoginResponse;
 
-            if (!response.ok || !data.success) {
+            if (!data.success) {
                 this.showError(data.message || "Inloggen mislukt. Controleer je gegevens en probeer opnieuw.");
                 this.highlightErrorFields(emailInput, passwordComponent);
                 return;

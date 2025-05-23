@@ -14,10 +14,8 @@ export class WelcomeController {
     private readonly _sessionService: ISessionService = new SessionService();
 
     public async getSession(_req: Request, res: Response): Promise<void> {
-        // Generate a fake userId for demo purposes
-        const sessionId: string | undefined = await this._sessionService.createSession(
-            parseInt((Math.random() * 1000).toFixed(0))
-        );
+        // Create a new session without a user ID
+        const sessionId: string | undefined = await this._sessionService.createSession(0);
 
         res
             .cookie("session", sessionId)

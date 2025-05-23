@@ -267,10 +267,10 @@ export class GameDetailComponent extends HTMLElement {
         </div>
       </div>
 
-
-      <h2><br><strong>${game.title}</strong></h2>
-
+      <div class="box" style="max-width: 1500px; margin: 0 auto 20px auto;">
+        <h2><br><strong>${game.title}</strong></h2>
         <img src="${game.thumbnail}" alt="${game.title}" />
+      </div>
 
         <div class="info-boxes">
         <div class="box">
@@ -278,12 +278,12 @@ export class GameDetailComponent extends HTMLElement {
             ${game.descriptionHtml}
             <div class="tags">
             <div class="tag">Single player</div>
-            <div class="tag">Horror</div>
+            <div class="tag">Interactive</div>
             <div class="tag">Offline</div>
             </div>
         </div>
         <div class="box">
-            <p><em>${game.title}</em> is a click and point based game.</p>
+            <p>Reviews:</p>
         </div>
         </div>
 

@@ -27,12 +27,12 @@
 
 ## 👤 Sem
 - **Wat heb je gedaan?**  
-    - 
+    - Ik heb verder gewerkt aan mijn userstory's en gedeployed
 - **Wat ga je doen?**  
-    - 
+    - Details checken of alles werkt
 
 - **Zijn er blokkades?**  
-    - 
+    - Niet voor mij
 
 ---
 

@@ -83,11 +83,12 @@ export class GameDetailComponent extends HTMLElement {
             background-color: #0f0f0f;
             color: white;
             font-family: 'Inter', sans-serif;
-            width: 100vw;         /* Full viewport width */
-            min-height: 100vh;    /* Full viewport height */
+            width: 100vw;         
+            min-height: 100vh;    
             margin: 0;
             box-sizing: border-box;
-            overflow-x: hidden;   /* Prevent horizontal scroll */
+            overflow-x: hidden;  
+            position: relative; 
             }
 
             html, body {
@@ -166,32 +167,40 @@ export class GameDetailComponent extends HTMLElement {
             }
 
             .bottom-bar {
-            margin-top: 50px;
+            margin-top: 30px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            width: 100%;
+            max-width: 500px;
+            gap: 10px;
             }
 
-            .add-button {
+            .add-button,
+            .back-button {
             background-color: #7f41f5;
             color: white;
             border: none;
-            padding: 16px 36px;
+            padding: 12px 24px;
             border-radius: 999px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(127, 65, 245, 0.4);
             transition: background 0.3s, box-shadow 0.3s;
+            text-decoration: none; /* for anchor styling */
+            display: inline-block;
+            text-align: center;
             }
 
-            .add-button:hover {
+            .add-button:hover,
+            .back-button:hover {
             background-color: #6936cc;
             box-shadow: 0 6px 16px rgba(105, 54, 204, 0.6);
             }
 
             .price-bottom {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 500;
             }
 
@@ -219,9 +228,8 @@ export class GameDetailComponent extends HTMLElement {
         <div class="bottom-bar">
         <button class="add-button">Toevoegen aan winkelmand</button>
         <div class="price-bottom">${game.price !== undefined && game.price !== null ? `$${game.price}` : "N/B"}</div>
+        <a class="back-button" href="product.html">Ga terug</a>
         </div>
-
-
 
         `;
     }

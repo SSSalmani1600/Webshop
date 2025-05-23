@@ -12,7 +12,7 @@ export class GameDetailPageComponent extends HTMLElement {
 
         const element: HTMLElement = html`
     <div>
-      <h1>Game Detail</h1>
+      <h1></h1>
       <game-detail-page></game-detail-page>
     </div>
   `;

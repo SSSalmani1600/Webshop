@@ -55,10 +55,15 @@ export class RegisterForm extends HTMLElement {
         }
 
         try {
-            const response: Response = await fetch(`${VITE_API_URL}register`, {
+            const API_BASE: string = window.location.hostname.includes("localhost")
+                ? "http://localhost:3001"
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+
+            const response: Response = await fetch(`${API_BASE}/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(user),
+                credentials: "include",
             });
 
             if (!response.ok) {

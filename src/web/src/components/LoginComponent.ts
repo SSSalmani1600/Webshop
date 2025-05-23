@@ -99,7 +99,9 @@ export class LoginComponent extends HTMLElement {
             const sessionId: string = await this.getSession();
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+
+            console.log("Attempting login to:", `${API_BASE}/auth/login`);
 
             const response: Response = await fetch(`${API_BASE}/auth/login`, {
                 method: "POST",
@@ -115,9 +117,17 @@ export class LoginComponent extends HTMLElement {
                 credentials: "include",
             });
 
+            console.log("Login response status:", response.status);
+
+            if (!response.ok) {
+                const errorText: string = await response.text();
+                console.error("Login failed with response:", errorText);
+                throw new Error(`Login failed: ${response.status} ${response.statusText}`);
+            }
+
             const data: LoginResponse = await response.json() as LoginResponse;
 
-            if (!response.ok || !data.success) {
+            if (!data.success) {
                 this.showError(data.message || "Inloggen mislukt. Controleer je gegevens en probeer opnieuw.");
                 this.highlightErrorFields(emailInput, passwordComponent);
                 return;
@@ -163,7 +173,13 @@ export class LoginComponent extends HTMLElement {
         const storedSession: string | null = localStorage.getItem("sessionId");
         if (storedSession) return storedSession;
 
-        const res: Response = await fetch("http://localhost:3001/session");
+        const API_BASE: string = window.location.hostname.includes("localhost")
+            ? "http://localhost:3001"
+            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+
+        const res: Response = await fetch(`${API_BASE}/session`, {
+            credentials: "include",
+        });
         const data: { sessionId: string | null } | null = await res.json() as { sessionId: string | null } | null;
 
         if (data && data.sessionId) return data.sessionId;

@@ -110,8 +110,12 @@ export class Checkout extends HTMLElement {
             console.table(data);
 
             try {
+                const API_BASE: string = window.location.hostname.includes("localhost")
+                    ? "http://localhost:3001"
+                    : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+
                 // Verstuur data naar backend via fetch POST request
-                const res: Response = await fetch("http://localhost:3001/addresses", {
+                const res: Response = await fetch(`${API_BASE}/addresses`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -143,7 +147,11 @@ export class Checkout extends HTMLElement {
     }
 
     private async getUserId(): Promise<number> {
-        const res: Response = await fetch("http://localhost:3001/session", {
+        const API_BASE: string = window.location.hostname.includes("localhost")
+            ? "http://localhost:3001"
+            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+
+        const res: Response = await fetch(`${API_BASE}/session`, {
             credentials: "include",
         });
 

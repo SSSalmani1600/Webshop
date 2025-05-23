@@ -8,7 +8,11 @@ import { IWelcomeService } from "@web/interfaces/IWelcomeService";
  */
 export class WelcomeService implements IWelcomeService {
     public async getSession(): Promise<string> {
-        const response: Response = await fetch(`${VITE_API_URL}session`, {
+        const API_BASE: string = window.location.hostname.includes("localhost")
+            ? "http://localhost:3001"
+            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+
+        const response: Response = await fetch(`${API_BASE}/session`, {
             credentials: "include",
         });
 
@@ -18,14 +22,22 @@ export class WelcomeService implements IWelcomeService {
     }
 
     public async deleteSession(): Promise<void> {
-        await fetch(`${VITE_API_URL}session`, {
+        const API_BASE: string = window.location.hostname.includes("localhost")
+            ? "http://localhost:3001"
+            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+
+        await fetch(`${API_BASE}/session`, {
             method: "DELETE",
             credentials: "include",
         });
     }
 
     public async getWelcome(): Promise<string> {
-        const response: Response = await fetch(`${VITE_API_URL}welcome`, {
+        const API_BASE: string = window.location.hostname.includes("localhost")
+            ? "http://localhost:3001"
+            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+
+        const response: Response = await fetch(`${API_BASE}/welcome`, {
             credentials: "include",
         });
 
@@ -35,7 +47,11 @@ export class WelcomeService implements IWelcomeService {
     }
 
     public async getSecret(): Promise<string> {
-        const response: Response = await fetch(`${VITE_API_URL}secret`, {
+        const API_BASE: string = window.location.hostname.includes("localhost")
+            ? "http://localhost:3001"
+            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+
+        const response: Response = await fetch(`${API_BASE}/secret`, {
             credentials: "include",
         });
 

@@ -36,4 +36,4 @@ describe("AddToCartComponent", () => {
             expect(notification?.textContent).toBe("✅ Toegevoegd aan winkelmandje");
         });
     });
-}); 
+});

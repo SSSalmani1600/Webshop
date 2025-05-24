@@ -1,7 +1,7 @@
 export class NavbarComponent {
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
+        this.attachShadow({ mode: "open" });
     }
 
     connectedCallback(): void {
@@ -49,11 +49,37 @@ export class NavbarComponent {
       </nav>        
     `;
 
-        const cart = this.shadowRoot!.getElementById('cart');
+        const cart: HTMLElement | null = this.shadowRoot!.getElementById("cart");
         if (cart) {
-            cart.addEventListener('click', () => {
+            cart.addEventListener("click", () => {
                 window.location.href = "cart.html";
             });
         }
+    }
+
+    public updateCartCount(): void {
+        fetch("/api/cart/count", { credentials: "include" })
+            .then((res: Response) => {
+                if (!res.ok) throw new Error("Cart count ophalen mislukt");
+                return res.json();
+            })
+            .then((data: { count: number }) => {
+                const countSpan: HTMLElement | null = this.shadowRoot!.getElementById("cart-count");
+                if (countSpan) {
+                    countSpan.textContent = data.count.toString();
+                }
+            })
+            .catch((err: unknown) => {
+                if (err instanceof Error) {
+                    console.error("Fout bij ophalen winkelmand teller:", err.message);
+                } else {
+                    console.error("Onbekende fout:", err);
+                }
+
+                const countSpan: HTMLElement | null = this.shadowRoot!.getElementById("cart-count");
+                if (countSpan) {
+                    countSpan.textContent = "0";
+                }
+            });
     }
 }

@@ -32,8 +32,9 @@ Sem, Kevin, Nezdhat, Nabil & Dion.
 ##  Obstakels die we tegenkwamen
 
 - Te laat gedeployed.
-- Mergen
+- Te laat Mergen
 - sommige functies werkte lokaal, niet op de live.
+- De flow van de website kwam te laat bij elkaar 
 
 ---
 

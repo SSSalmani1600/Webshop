@@ -11,7 +11,7 @@ export class DiscountService {
         },
     };
 
-    // Fallback code for when the API is not accessible
+    // third party API werkt alleen op school netwerk, dus fallback code
     private readonly fallbackCode: ThirdPartyDiscountCode = {
         code: "TEST123",
         amount: 15,
@@ -24,7 +24,6 @@ export class DiscountService {
 
     public async validateDiscountCode(code: string): Promise<DiscountValidationResult> {
         try {
-            // First try to get codes from the API
             let allCodes: DiscountCode[];
             try {
                 allCodes = await this.getAllDiscountCodes();
@@ -32,7 +31,8 @@ export class DiscountService {
             }
             catch (error) {
                 console.log("API not accessible, using fallback code:", error);
-                // If API fails, use fallback code
+
+                // ALs API niet bereikbaar is, gebruik de fallback code
                 allCodes = [{
                     code: this.fallbackCode.code,
                     discount: this.fallbackCode.amount,
@@ -119,7 +119,6 @@ export class DiscountService {
         }
         catch (error) {
             console.error("Error fetching discount codes:", error);
-            // Return fallback code instead of throwing
             return [{
                 code: this.fallbackCode.code,
                 discount: this.fallbackCode.amount,

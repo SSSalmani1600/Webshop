@@ -1,3 +1,5 @@
+import { describe, expect, test, beforeEach, afterEach, jest } from "@jest/globals";
+
 interface CartItem {
     id: number;
     game_id: number;
@@ -105,10 +107,13 @@ describe("CartSummaryComponent", () => {
 
     test("should render empty cart message when cart is empty", async () => {
         // Mock fetch to return empty cart
-        global.fetch = jest.fn().mockResolvedValue({
-            ok: true,
-            json: () => Promise.resolve({ cart: [] }),
-        });
+        const mockFetch: jest.Mock = jest.fn().mockImplementation(() =>
+            Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ cart: [] }),
+            })
+        );
+        global.fetch = mockFetch as unknown as typeof fetch;
 
         await component.render();
         expect(mockContainer.innerHTML).toContain("Je winkelwagen is leeg");
@@ -128,13 +133,15 @@ describe("CartSummaryComponent", () => {
         ];
 
         // Mock fetch to return cart items
-        global.fetch = jest.fn().mockResolvedValue({
-            ok: true,
-            json: () => Promise.resolve({ cart: mockCartItems }),
-        });
+        const mockFetch: jest.Mock = jest.fn().mockImplementation(() =>
+            Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ cart: mockCartItems }),
+            })
+        );
+        global.fetch = mockFetch as unknown as typeof fetch;
 
         await component.render();
-
         // Check if cart items are rendered
         expect(mockContainer.innerHTML).toContain("Test Game");
         expect(mockContainer.innerHTML).toContain("€59.98"); // 29.99 * 2
@@ -143,9 +150,12 @@ describe("CartSummaryComponent", () => {
 
     test("should handle fetch error", async () => {
         // Mock fetch to return error
-        global.fetch = jest.fn().mockResolvedValue({
-            ok: false,
-        });
+        const mockFetch: jest.Mock = jest.fn().mockImplementation(() =>
+            Promise.resolve({
+                ok: false,
+            })
+        );
+        global.fetch = mockFetch as unknown as typeof fetch;
 
         await expect(component.render()).rejects.toThrow("Kan cart items niet ophalen");
     });

@@ -14,17 +14,18 @@ Sem, Kevin, Nezdhat, Nabil & Dion.
 ###  Functionaliteit bijna af
 - Wij hebben de functionaliteit van de website bijna af. Iedereen heeft veel gewerkt deze sprint.
 
+### Daily standups
+- we hebben vaak daily standups gedaan en gaan dit voor sprint 6 hopelijk vasthouden.
+
 ---
 
 ##  Wat kon beter?
 
-###  Takenverdeling
 - We mergede laatste moment  waardoor het deployen ook op het laatste moment moest, dit zorgde voor problemen
 - eerder mergen zodat we errors vermijden.
 
 # Deployen
-tenminste 2x per sprint deployen om fouten te voorkomen en zodat we altijd een backup hebben
-
+- tenminste 2x per sprint deployen om fouten te voorkomen en zodat we altijd een backup hebben. Er zijn momenten geweest in sprint 4 en sprint 5 bijvooorbeeld dat functionaliteiten lokaal werkte maar niet op de live omgeving.
 
 ---
 
@@ -32,6 +33,7 @@ tenminste 2x per sprint deployen om fouten te voorkomen en zodat we altijd een b
 
 - Te laat gedeployed.
 - Mergen
+- sommige functies werkte lokaal, niet op de live.
 
 ---
 
@@ -49,10 +51,8 @@ tenminste 2x per sprint deployen om fouten te voorkomen en zodat we altijd een b
 - Verdeel taken aan het begin van de sprint met duidelijke deadlines.
 - Zorg voor gelijke werkverdeling en voorkom stapeling aan het einde van de sprint.
 
-###  Gebruik van GitHub Projectboard/Issues
-- Gebruik GitHub Projects om taken bij te houden.
-- Biedt overzicht en maakt het makkelijker om knelpunten snel te signaleren.
 
 ###  Dagelijkse Check-in
-- Elke werkdag een korte check-in via Discord.
+- Elke werkdag een korte check-in op gitlab (dit is meer voor jezelf en urenregistratie).
 - Even afstemmen of iedereen door kan of ergens vastloopt.
+- Daily standups uitvoeren en documenteren in gezamelijke 

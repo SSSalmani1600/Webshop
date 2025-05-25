@@ -100,4 +100,4 @@ export class AddToCartService {
         );
         return Array.isArray(result) && result.length > 0;
     }
-} 
+}

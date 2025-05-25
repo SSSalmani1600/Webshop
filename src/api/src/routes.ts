@@ -8,6 +8,8 @@ import { LoginController } from "./controllers/LoginController";
 import { CheckoutController } from "./controllers/CheckoutController";
 import { AddToCartController } from "./controllers/add_to_cart_controller";
 import { RegisterController } from "./controllers/RegisterController";
+import { DiscountController } from "./controllers/DiscountController";
+import { DiscountCodeRequestBody } from "./interfaces/IDiscountService";
 
 export const router: Router = Router();
 
@@ -23,6 +25,7 @@ const loginController: LoginController = new LoginController();
 const checkoutController: CheckoutController = new CheckoutController();
 const addToCartController: AddToCartController = new AddToCartController();
 const registerController: RegisterController = new RegisterController();
+const discountController: DiscountController = new DiscountController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
@@ -42,6 +45,10 @@ router.get("/welcome", (req: Request, res: Response) => welcomeController.getWel
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
 router.delete("/cart/item/:id", (req: Request, res: Response) => cartController.deleteCartItem(req, res));
 router.post("/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
+
+// Discount code endpoints
+router.post("/discount/apply", (req: Request<object, object, DiscountCodeRequestBody>, res: Response) => discountController.applyDiscount(req, res));
+router.get("/discount/codes", (req: Request, res: Response) => discountController.getAvailableDiscountCodes(req, res));
 
 // Checkout endpoint
 router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));

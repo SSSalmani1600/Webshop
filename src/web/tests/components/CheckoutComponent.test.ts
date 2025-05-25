@@ -78,3 +78,75 @@ export class CartSummaryComponent {
         return data.cart;
     }
 }
+
+// Test suite
+describe("CartSummaryComponent", () => {
+    let component: CartSummaryComponent;
+    let mockContainer: HTMLElement;
+
+    beforeEach(() => {
+        // Create a mock container
+        mockContainer = document.createElement("div");
+        mockContainer.id = "test-container";
+        document.body.appendChild(mockContainer);
+
+        // Create component instance
+        component = new CartSummaryComponent("#test-container");
+    });
+
+    afterEach(() => {
+        // Clean up
+        document.body.removeChild(mockContainer);
+    });
+
+    test("should initialize with correct container", () => {
+        expect(component).toBeDefined();
+    });
+
+    test("should render empty cart message when cart is empty", async () => {
+        // Mock fetch to return empty cart
+        global.fetch = jest.fn().mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve({ cart: [] }),
+        });
+
+        await component.render();
+        expect(mockContainer.innerHTML).toContain("Je winkelwagen is leeg");
+    });
+
+    test("should render cart items correctly", async () => {
+        // Mock cart data
+        const mockCartItems: CartItem[] = [
+            {
+                id: 1,
+                game_id: 101,
+                quantity: 2,
+                price: "29.99",
+                title: "Test Game",
+                thumbnail: "test.jpg",
+            },
+        ];
+
+        // Mock fetch to return cart items
+        global.fetch = jest.fn().mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve({ cart: mockCartItems }),
+        });
+
+        await component.render();
+
+        // Check if cart items are rendered
+        expect(mockContainer.innerHTML).toContain("Test Game");
+        expect(mockContainer.innerHTML).toContain("€59.98"); // 29.99 * 2
+        expect(mockContainer.innerHTML).toContain("Bestelling plaatsen");
+    });
+
+    test("should handle fetch error", async () => {
+        // Mock fetch to return error
+        global.fetch = jest.fn().mockResolvedValue({
+            ok: false,
+        });
+
+        await expect(component.render()).rejects.toThrow("Kan cart items niet ophalen");
+    });
+});

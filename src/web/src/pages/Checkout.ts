@@ -15,7 +15,6 @@ interface SessionResponse {
     userId: number;
 }
 
-// Maakt nieuwe custom HTML tag aan voor checkout pagina
 export class Checkout extends HTMLElement {
     public constructor() {
         super();
@@ -74,17 +73,17 @@ export class Checkout extends HTMLElement {
 
     private initOrderSubmission(): void {
         const form: HTMLFormElement | null = this.querySelector("#adresForm");
-        if (!form) {
-            return;
-        }
+        if (!form) return;
 
         form.addEventListener("submit", async (event: Event) => {
             event.preventDefault();
 
-            const userId: number = await this.getUserId();
-            console.log("Gebruiker ID:", userId);
-
-            if (!userId || isNaN(userId)) {
+            let userId: number;
+            try {
+                userId = await this.getUserId();
+                console.log("Gebruiker ID:", userId);
+            } catch (error) {
+                console.error("Kon userId niet ophalen:", error);
                 alert("Je bent niet ingelogd. Log in om je adres op te slaan.");
                 return;
             }
@@ -92,13 +91,12 @@ export class Checkout extends HTMLElement {
             const formData: FormData = new FormData(form);
             const data = {
                 userId,
-                naam: this.getFormValue(formData, "naam"),
-                straatHuisnummer: this.getFormValue(formData, "straat_huisnummer"),
-                postcodePlaats: this.getFormValue(formData, "postcode_plaats"),
-                telefoonnummer: this.getFormValue(formData, "telefoonnummer"),
+                naam: this.getFormValue(formData, "naam").trim(),
+                straatHuisnummer: this.getFormValue(formData, "straat_huisnummer").trim(),
+                postcodePlaats: this.getFormValue(formData, "postcode_plaats").trim().toUpperCase(),
+                telefoonnummer: this.getFormValue(formData, "telefoonnummer").trim(),
             };
 
-            console.log("Data naar backend:");
             console.table(data);
 
             try {
@@ -119,9 +117,11 @@ export class Checkout extends HTMLElement {
                     throw new Error("Kon adres niet opslaan");
                 }
 
-                const result: AddressResponse = await res.json() as AddressResponse;
-                window.location.href = `/order-confirmation.html?addressId=${result.addressId}`;
-            } catch (error: unknown) {
+                const result: AddressResponse = await res.json();
+
+                // Geen redirect, maar een bevestiging
+                alert("✅ Je adres is succesvol opgeslagen!");
+            } catch (error) {
                 console.error("Fout bij opslaan adres:", error);
                 alert("Er is iets misgegaan bij het opslaan van je adres");
             }
@@ -138,17 +138,22 @@ export class Checkout extends HTMLElement {
             ? "http://localhost:3001"
             : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
-        const res: Response = await fetch(`${API_BASE}/session`, {
+        const res = await fetch(`${API_BASE}/secret`, {
             credentials: "include",
         });
 
         if (!res.ok) {
-            throw new Error("Not logged in");
+            throw new Error("Niet ingelogd – user cookie ontbreekt");
         }
 
-        const data: SessionResponse = await res.json() as SessionResponse;
+        const data = await res.json();
+        if (!data.userId || data.userId === 0) {
+            throw new Error("Niet ingelogd – ongeldig userId");
+        }
+
         return data.userId;
     }
+
 }
 
 customElements.define("webshop-page-checkout", Checkout);

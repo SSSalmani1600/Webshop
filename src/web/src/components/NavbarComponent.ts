@@ -1,15 +1,15 @@
 export class NavbarComponent {
-    constructor() {
+    public constructor() {
         super();
         this.attachShadow({ mode: "open" });
     }
 
-    connectedCallback(): void {
+    public connectedCallback(): void {
         this.render();
         this.updateCartCount();
     }
 
-    render(): void {
+    private render(): void {
         this.shadowRoot!.innerHTML = `
         <style>
         nav {
@@ -49,36 +49,39 @@ export class NavbarComponent {
       </nav>        
     `;
 
-        const cart: HTMLElement | null = this.shadowRoot!.getElementById("cart");
-        if (cart) {
-            cart.addEventListener("click", () => {
+        const el: Element | null = this.shadowRoot?.getElementById("cart");
+        if (el instanceof HTMLElement) {
+            el.addEventListener("click", () => {
                 window.location.href = "cart.html";
             });
         }
     }
 
     public updateCartCount(): void {
+        // Eerst controleren of shadowRoot bestaat
+        if (!this.shadowRoot) return;
+
         fetch("/api/cart/count", { credentials: "include" })
             .then((res: Response) => {
                 if (!res.ok) throw new Error("Cart count ophalen mislukt");
                 return res.json();
             })
             .then((data: { count: number }) => {
-                const countSpan: HTMLElement | null = this.shadowRoot!.getElementById("cart-count");
-                if (countSpan) {
-                    countSpan.textContent = data.count.toString();
+                const span = this.shadowRoot!.getElementById("cart-count");
+                if (span instanceof HTMLElement) {
+                    span.textContent = data.count.toString();
                 }
             })
             .catch((err: unknown) => {
+                const span = this.shadowRoot!.getElementById("cart-count");
+                if (span instanceof HTMLElement) {
+                    span.textContent = "0";
+                }
+
                 if (err instanceof Error) {
                     console.error("Fout bij ophalen winkelmand teller:", err.message);
                 } else {
                     console.error("Onbekende fout:", err);
-                }
-
-                const countSpan: HTMLElement | null = this.shadowRoot!.getElementById("cart-count");
-                if (countSpan) {
-                    countSpan.textContent = "0";
                 }
             });
     }

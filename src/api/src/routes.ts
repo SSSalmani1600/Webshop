@@ -10,6 +10,7 @@ import { AddToCartController } from "./controllers/add_to_cart_controller";
 import { RegisterController } from "./controllers/RegisterController";
 import { DiscountController } from "./controllers/DiscountController";
 import { DiscountCodeRequestBody } from "./interfaces/IDiscountService";
+import { GameDetailController } from "./controllers/ProductDetailController";
 
 export const router: Router = Router();
 
@@ -19,6 +20,7 @@ router.get("/", (_: Request, res: Response) => {
 
 const welcomeController: WelcomeController = new WelcomeController();
 const orderController: OrderController = new OrderController();
+const gameDetailController: GameDetailController = new GameDetailController();
 const cartController: CartController = new CartController();
 const productController: ProductController = new ProductController();
 const loginController: LoginController = new LoginController();
@@ -58,6 +60,10 @@ router.get("/secret", (req: Request, res: Response) => welcomeController.getSecr
 
 // Order endpoint
 router.post("/order/complete", (req: Request, res: Response) => orderController.createOrder(req, res));
+router.post("/order/complete", (req, res) => orderController.createOrder(req, res));
+router.get("/order/complete", (req, res) => orderController.getBoughtGames(req, res));
+
+router.get("/game", (req, res) => gameDetailController.getGameById(req, res));
 
 // Product endpoints
 router.get("/products", (req: Request, res: Response) => productController.getAllGames(req, res));

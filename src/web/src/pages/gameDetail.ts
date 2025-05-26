@@ -1,7 +1,7 @@
-import "@web/components/OrderCompleteComponent";
+import "@web/components/ProductDetailComponent";
 import { html } from "@web/helpers/webComponents";
 
-export class OrderCompletePageComponent extends HTMLElement {
+export class GameDetailPageComponent extends HTMLElement {
     public connectedCallback(): void {
         this.attachShadow({ mode: "open" });
         this.render();
@@ -11,15 +11,15 @@ export class OrderCompletePageComponent extends HTMLElement {
         if (!this.shadowRoot) return;
 
         const element: HTMLElement = html`
-      <div>
-        <h1>Bedankt voor je bestelling</h1>
-        <order-confirmation></order-confirmation>
-      </div>
-    `;
+    <div>
+      <h1></h1>
+      <game-detail-page></game-detail-page>
+    </div>
+  `;
 
         this.shadowRoot.firstChild?.remove();
         this.shadowRoot.append(element);
     }
 }
 
-window.customElements.define("webshop-page-order-complete", OrderCompletePageComponent);
+window.customElements.define("webshop-page-game-detail", GameDetailPageComponent);

@@ -11,6 +11,7 @@ import { RegisterController } from "./controllers/RegisterController";
 import { DiscountController } from "./controllers/DiscountController";
 import { DiscountCodeRequestBody } from "./interfaces/IDiscountService";
 import { GameDetailController } from "./controllers/ProductDetailController";
+import { ReviewController } from "./controllers/ReviewController";
 
 export const router: Router = Router();
 
@@ -28,6 +29,8 @@ const checkoutController: CheckoutController = new CheckoutController();
 const addToCartController: AddToCartController = new AddToCartController();
 const registerController: RegisterController = new RegisterController();
 const discountController: DiscountController = new DiscountController();
+const reviewController: ReviewController = new ReviewController();
+
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
@@ -54,6 +57,9 @@ router.get("/discount/codes", (req: Request, res: Response) => discountControlle
 
 // Checkout endpoint
 router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));
+
+// Review endpoints
+router.use("/api", reviewController.router);
 
 // Secret endpoint
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));

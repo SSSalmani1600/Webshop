@@ -10,18 +10,41 @@
       height: 100%;
       width: 100%;
       background-color: #0e0e0e;
+      font-family: 'Inter', sans-serif;
+      color: white;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
     }
 
     webshop-page-game-detail {
       display: block;
-      height: 100%;
       width: 100%;
+      max-width: 1000px;
+    }
+
+    review-form {
+      margin-top: 3rem;
+      width: 100%;
+      max-width: 600px;
     }
   </style>
 </head>
 <body>
-  <webshop-page-game-detail></webshop-page-game-detail>
+  <main>
+    <!-- Game detail component -->
+    <webshop-page-game-detail></webshop-page-game-detail>
 
+    <!-- Review form component -->
+    <review-form></review-form>
+  </main>
+
+  <!-- Scripts -->
   <script type="module" src="./../src/pages/gameDetail.ts"></script>
+  <script type="module" src="./../src/components/ReviewformComponent.ts"></script>
 </body>
 </html>

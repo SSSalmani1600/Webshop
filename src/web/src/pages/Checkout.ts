@@ -22,6 +22,7 @@ export class Checkout extends HTMLElement {
 
     public connectedCallback(): void {
         this.render();
+        this.loadCartItems(); // 🆕 games ophalen
     }
 
     private render(): void {
@@ -52,18 +53,7 @@ export class Checkout extends HTMLElement {
 
                 <aside class="checkout-summary">
                     <h3>Winkelwagen</h3>
-                    <div class="summary-item">
-                        <div>
-                            <p>Productnaam</p>
-                            <p>€0,00</p>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="summary-total">
-                        <p>Subtotaal: €0,00</p>
-                        <p>Verzendkosten: €0,00</p>
-                        <p><strong>Totaal: €0,00</strong></p>
-                    </div>
+                    <!-- Hier worden de games toegevoegd via JS -->
                 </aside>
             </main>
         `;
@@ -119,13 +109,60 @@ export class Checkout extends HTMLElement {
 
                 const result: AddressResponse = await res.json();
 
-                // Geen redirect, maar een bevestiging
                 alert("✅ Je adres is succesvol opgeslagen!");
             } catch (error) {
                 console.error("Fout bij opslaan adres:", error);
                 alert("Er is iets misgegaan bij het opslaan van je adres");
             }
         });
+    }
+
+    private async loadCartItems(): Promise<void> {
+        const API_BASE: string = window.location.hostname.includes("localhost")
+            ? "http://localhost:3001"
+            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+
+        try {
+            const res: Response = await fetch(`${API_BASE}/cart`, {
+                credentials: "include",
+            });
+
+            if (!res.ok) throw new Error("Kon winkelwagen niet ophalen");
+
+            const data = await res.json();
+            const cartItems = data.cart;
+            const subtotal = data.subtotal;
+            const total = data.total;
+
+            const summarySection = this.querySelector(".checkout-summary");
+            if (!summarySection) return;
+
+            const itemsHtml = cartItems.map((item: any) => `
+                <div class="summary-item">
+                    <div class="summary-game" style="display: flex; gap: 12px; margin-bottom: 12px;">
+                        <img src="${item.thumbnail}" alt="${item.title}" style="width: 60px; height: auto; border-radius: 8px;">
+                        <div>
+                            <p><strong>${item.title}</strong></p>
+                            <p>Aantal: ${item.quantity}</p>
+                            <p>Prijs per stuk: €${item.price.toFixed(2)}</p>
+                            <p>Totaal: €${(item.price * item.quantity).toFixed(2)}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join("");
+
+            summarySection.innerHTML += `
+                ${itemsHtml}
+                <hr>
+                <div class="summary-total">
+                    <p>Subtotaal: €${subtotal.toFixed(2)}</p>
+                    <p>Verzendkosten: €0,00</p>
+                    <p><strong>Totaal: €${total.toFixed(2)}</strong></p>
+                </div>
+            `;
+        } catch (error) {
+            console.error("❌ Fout bij ophalen winkelwagen:", error);
+        }
     }
 
     private getFormValue(formData: FormData, key: string): string {
@@ -153,7 +190,6 @@ export class Checkout extends HTMLElement {
 
         return data.userId;
     }
-
 }
 
 customElements.define("webshop-page-checkout", Checkout);

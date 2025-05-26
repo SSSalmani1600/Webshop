@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { DiscountService } from "../services/DiscountService";
-import { DiscountCodeRequestBody, DiscountCode, DiscountValidationResult } from "../interfaces/IDiscountService";
+import { DiscountCodeRequestBody, DiscountValidationResult } from "../interfaces/IDiscountService";
 
 export class DiscountController {
     private readonly discountService: DiscountService;
@@ -18,7 +18,7 @@ export class DiscountController {
                 return;
             }
 
-            const validation: DiscountValidationResult = await this.discountService.validateDiscountCode(code);
+            const validation: DiscountValidationResult = await this.discountService.validateDiscountCode(code, 0);
 
             res.json({
                 success: validation.valid,
@@ -29,27 +29,6 @@ export class DiscountController {
         }
         catch (error) {
             console.error("Error applying discount:", error);
-            res.status(500).json({ success: false });
-        }
-    }
-
-    public async getAvailableDiscountCodes(_req: Request, res: Response): Promise<void> {
-        try {
-            const discountCodes: DiscountCode[] = await this.discountService.getAllDiscountCodes();
-
-            res.json({
-                success: true,
-                codes: discountCodes.map(dc => ({
-                    code: dc.code,
-                    discount: dc.discount,
-                    expires_at: dc.expires_at,
-                    valid: dc.valid,
-                    percentage: dc.discount,
-                })),
-            });
-        }
-        catch (error) {
-            console.error("Error fetching discount codes:", error);
             res.status(500).json({ success: false });
         }
     }

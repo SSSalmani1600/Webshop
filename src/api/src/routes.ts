@@ -58,3 +58,8 @@ router.get("/product-prices/:id", (req: Request, res: Response) => productContro
 router.get("/products/:id", (_req: Request, _res: Response) => {
     throw new Error("Return a specific product");
 });
+router.post("/add-product", (req: Request, res: Response) => productController.addProduct(req, res));
+router.post("/add-product", (req: Request, res: Response) => productController.addProduct(req, res));
+router.patch("/products/:id/hidden", (req: Request, res: Response) =>
+    productController.hideProduct(req, res)
+);

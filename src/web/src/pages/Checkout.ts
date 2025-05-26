@@ -1,20 +1,3 @@
-interface Address {
-    id: number;
-    userId: number;
-    name: string;
-    street: string;
-    city: string;
-    phone: string;
-}
-
-interface AddressResponse {
-    addressId: number;
-}
-
-interface SessionResponse {
-    userId: number;
-}
-
 export class Checkout extends HTMLElement {
     public constructor() {
         super();
@@ -111,7 +94,7 @@ export class Checkout extends HTMLElement {
 
                 if (!res.ok) throw new Error("Fout bij opslaan");
 
-                const result: AddressResponse = await res.json();
+                await res.json();
 
                 // als gelukt → melding + doorsturen
                 alert("✅ Je adres is opgeslagen!");

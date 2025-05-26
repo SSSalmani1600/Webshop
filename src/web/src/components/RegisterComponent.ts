@@ -55,11 +55,15 @@ export class RegisterForm extends HTMLElement {
         }
 
         try {
+<<<<<<< HEAD
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
                 : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
             const response: Response = await fetch(`${API_BASE}/register`, {
+=======
+            const response: Response = await fetch(`${VITE_API_URL}register`, {
+>>>>>>> 342cf3aab8be4d40f84e5e61bd765b1fc95fe84b
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(user),

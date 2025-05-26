@@ -40,7 +40,7 @@ export class CartController {
 
             // Als er een kortingscode is, pas toe
             if (discountCode) {
-                const validation: DiscountValidationResult = await discountService.validateDiscountCode(discountCode);
+                const validation: DiscountValidationResult = await discountService.validateDiscountCode(discountCode, userId);
                 if (validation.valid && validation.discountPercentage) {
                     discountPercentage = validation.discountPercentage;
                     const discountAmount: number = subtotal * (discountPercentage / 100);

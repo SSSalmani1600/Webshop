@@ -38,10 +38,10 @@ export class Checkout extends HTMLElement {
                             <input type="text" name="naam" placeholder="Naam" required>
 
                             <label>Straat + Huisnummer <span class="required">*</span></label>
-                            <input type="text" name="straat_huisnummer" placeholder="Straat + Huisnummer" required>
+                            <input type="text" name="straat_huisnummer" placeholder="Bijv. Parklaan 12A" required>
 
                             <label>Postcode + Plaats <span class="required">*</span></label>
-                            <input type="text" name="postcode_plaats" placeholder="Postcode + Plaats" required>
+                            <input type="text" name="postcode_plaats" placeholder="Bijv. 1234 AB Amsterdam" required>
 
                             <label>Telefoonnummer <span class="required">*</span></label>
                             <input type="text" name="telefoonnummer" placeholder="Telefoonnummer" required>
@@ -110,6 +110,7 @@ export class Checkout extends HTMLElement {
                 const result: AddressResponse = await res.json();
 
                 alert("✅ Je adres is succesvol opgeslagen!");
+                window.location.href = "example.html";
             } catch (error) {
                 console.error("Fout bij opslaan adres:", error);
                 alert("Er is iets misgegaan bij het opslaan van je adres");
@@ -140,7 +141,7 @@ export class Checkout extends HTMLElement {
             const itemsHtml = cartItems.map((item: any) => `
                 <div class="summary-item">
                     <div class="summary-game" style="display: flex; gap: 12px; margin-bottom: 12px;">
-                        <img src="${item.thumbnail}" alt="${item.title}" style="width: 60px; height: auto; border-radius: 8px;">
+                        <img src="${item.thumbnail}" alt="${item.title}" style="width: 200px; height: 150px; border-radius: 8px;">
                         <div>
                             <p><strong>${item.title}</strong></p>
                             <p>Aantal: ${item.quantity}</p>
@@ -152,14 +153,15 @@ export class Checkout extends HTMLElement {
             `).join("");
 
             summarySection.innerHTML += `
-                ${itemsHtml}
-                <hr>
-                <div class="summary-total">
-                    <p>Subtotaal: €${subtotal.toFixed(2)}</p>
-                    <p>Verzendkosten: €0,00</p>
-                    <p><strong>Totaal: €${total.toFixed(2)}</strong></p>
-                </div>
-            `;
+    ${itemsHtml}
+    <hr style="border: none; border-top: 1px solid #444; margin: 16px 0;">
+    <div class="summary-total" style="font-size: 14px; color: #eee; line-height: 1.6;">
+        <p style="margin: 4px 0;">Subtotaal: <strong>€${subtotal.toFixed(2)}</strong></p>
+        <p style="margin: 4px 0;">Verzendkosten: <strong>€0,00</strong></p>
+        <p style="margin: 4px 0;"><strong style="font-size: 16px;">Totaal: €${total.toFixed(2)}</strong></p>
+    </div>
+`;
+
         } catch (error) {
             console.error("❌ Fout bij ophalen winkelwagen:", error);
         }

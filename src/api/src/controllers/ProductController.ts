@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { ProductService } from "@api/services/ProductService";
 import type { Game } from "@api/types/Game";
 import { GamePrices } from "@api/types/GamePrices";
+import { NewProduct } from "@api/types/NewProduct";
 
 export class ProductController {
     // Create a private instance of the ProductService for database interaction
@@ -45,6 +46,39 @@ export class ProductController {
             // Log and handle any errors that occur during the fetch
             console.error("Fout bij ophalen van prijs:", error);
             res.status(500).json({ error: "Failed to fetch price." });
+        }
+    }
+
+    public async addProduct(req: Request, res: Response): Promise<void> {
+        try {
+            const newProduct: NewProduct = req.body as NewProduct;
+
+            await this._productService.addProduct(newProduct);
+
+            res.status(201).json({ message: "Product succesvol toegevoegd." });
+        }
+        catch (error) {
+            console.error("❌ Fout in addProduct controller:", error);
+            res.status(500).json({ error: "Failed to add product." });
+        }
+    }
+
+    public async hideProduct(req: Request, res: Response): Promise<void> {
+        try {
+            const gameId: number = parseInt(req.params.id, 10);
+            const { hidden } = req.body as { hidden: boolean };
+
+            if (isNaN(gameId) || typeof hidden !== "boolean") {
+                res.status(400).json({ error: "Ongeldige input" });
+                return;
+            }
+
+            await this._productService.setHidden(gameId, hidden);
+            res.status(200).json({ message: `Product succesvol ${hidden ? "verborgen" : "zichtbaar gemaakt"}.` });
+        }
+        catch (error) {
+            console.error("❌ Fout bij toggelen hidden:", error);
+            res.status(500).json({ error: "Zichtbaarheid wijzigen mislukt." });
         }
     }
 }

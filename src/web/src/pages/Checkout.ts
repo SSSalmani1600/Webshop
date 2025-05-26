@@ -1,6 +1,3 @@
-// Haalt component op die winkelwagen laat zien
-// (CartSummaryComponent is niet gebruikt, dus import verwijderd)
-
 interface Address {
     id: number;
     userId: number;
@@ -24,13 +21,11 @@ export class Checkout extends HTMLElement {
         super();
     }
 
-    // Deze functie draait automatisch als pagina geladen wordt
     public connectedCallback(): void {
         this.render();
     }
 
     private render(): void {
-        // Zet HTML op het scherm voor afrekenpagina
         this.innerHTML = `
             <main class="checkout-container">
                 <section class="checkout-left">
@@ -74,38 +69,35 @@ export class Checkout extends HTMLElement {
             </main>
         `;
 
-        // Start functie die kijkt of formulier is ingevuld en stuurt naar backend
         this.initOrderSubmission();
     }
 
-    // Deze functie zorgt dat als je op 'adres opslaan' klikt
-    // het formulier wordt verwerkt en verstuurd naar backend
     private initOrderSubmission(): void {
-        // Pakt het formulier uit de pagina
         const form: HTMLFormElement | null = this.querySelector("#adresForm");
         if (!form) {
             return;
         }
 
-        // Als je op 'adres opslaan' klikt gebeurt dit
         form.addEventListener("submit", async (event: Event) => {
-            event.preventDefault(); // voorkomt dat pagina opnieuw laadt
+            event.preventDefault();
 
-            // Tijdelijk test userId gebruiken
             const userId: number = await this.getUserId();
+            console.log("Gebruiker ID:", userId);
 
-            // Haalt alle ingevulde data uit het formulier
+            if (!userId || isNaN(userId)) {
+                alert("Je bent niet ingelogd. Log in om je adres op te slaan.");
+                return;
+            }
+
             const formData: FormData = new FormData(form);
-            const data: Address = {
-                id: 0,
+            const data = {
                 userId,
-                name: this.getFormValue(formData, "naam"),
-                street: this.getFormValue(formData, "straat_huisnummer"),
-                city: this.getFormValue(formData, "postcode_plaats"),
-                phone: this.getFormValue(formData, "telefoonnummer"),
+                naam: this.getFormValue(formData, "naam"),
+                straatHuisnummer: this.getFormValue(formData, "straat_huisnummer"),
+                postcodePlaats: this.getFormValue(formData, "postcode_plaats"),
+                telefoonnummer: this.getFormValue(formData, "telefoonnummer"),
             };
 
-            // Laat zien wat we sturen naar backend
             console.log("Data naar backend:");
             console.table(data);
 
@@ -114,8 +106,7 @@ export class Checkout extends HTMLElement {
                     ? "http://localhost:3001"
                     : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
-                // Verstuur data naar backend via fetch POST request
-                const res: Response = await fetch(`${API_BASE}/addresses`, {
+                const res: Response = await fetch(`${API_BASE}/checkout`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -124,17 +115,13 @@ export class Checkout extends HTMLElement {
                     body: JSON.stringify(data),
                 });
 
-                // Als backend geen succes teruggeeft laat fout zien
                 if (!res.ok) {
                     throw new Error("Kon adres niet opslaan");
                 }
 
-                // Backend geeft adresId terug dit laten we zien aan gebruiker
                 const result: AddressResponse = await res.json() as AddressResponse;
                 window.location.href = `/order-confirmation.html?addressId=${result.addressId}`;
-            }
-            catch (error: unknown) {
-                // Als iets fout gaat in fetch laat foutmelding zien
+            } catch (error: unknown) {
                 console.error("Fout bij opslaan adres:", error);
                 alert("Er is iets misgegaan bij het opslaan van je adres");
             }
@@ -164,5 +151,4 @@ export class Checkout extends HTMLElement {
     }
 }
 
-// Registreert deze class als custom element
 customElements.define("webshop-page-checkout", Checkout);

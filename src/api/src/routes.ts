@@ -8,12 +8,9 @@ import { LoginController } from "./controllers/LoginController";
 import { CheckoutController } from "./controllers/CheckoutController";
 import { AddToCartController } from "./controllers/add_to_cart_controller";
 import { RegisterController } from "./controllers/RegisterController";
-<<<<<<< HEAD
 import { DiscountController } from "./controllers/DiscountController";
 import { DiscountCodeRequestBody } from "./interfaces/IDiscountService";
-=======
 import { GameDetailController } from "./controllers/ProductDetailController";
->>>>>>> 342cf3aab8be4d40f84e5e61bd765b1fc95fe84b
 
 export const router: Router = Router();
 
@@ -61,15 +58,12 @@ router.post("/checkout", (req: Request, res: Response) => checkoutController.cre
 // Secret endpoint
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));
 
-<<<<<<< HEAD
 // Order endpoint
 router.post("/order/complete", (req: Request, res: Response) => orderController.createOrder(req, res));
-=======
 router.post("/order/complete", (req, res) => orderController.createOrder(req, res));
 router.get("/order/complete", (req, res) => orderController.getBoughtGames(req, res));
 
 router.get("/game", (req, res) => gameDetailController.getGameById(req, res));
->>>>>>> 342cf3aab8be4d40f84e5e61bd765b1fc95fe84b
 
 // Product endpoints
 router.get("/products", (req: Request, res: Response) => productController.getAllGames(req, res));

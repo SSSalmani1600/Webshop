@@ -5,8 +5,9 @@ export interface Game {
     descriptionMarkdown: string;
     descriptionHtml: string;
     url: string;
-    images: string;
+    images?: string | null;
     authors: string;
     tags: string;
     price?: number | null;
+    hidden: boolean;
 }

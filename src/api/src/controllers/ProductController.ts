@@ -2,49 +2,88 @@ import { Request, Response } from "express";
 import { ProductService } from "@api/services/ProductService";
 import type { Game } from "@api/types/Game";
 import { GamePrices } from "@api/types/GamePrices";
+import { NewProduct } from "@api/types/NewProduct";
 
+/**
+ * Controller class for handling product-related API routes.
+ */
 export class ProductController {
-    // Create a private instance of the ProductService for database interaction
     private readonly _productService: ProductService = new ProductService();
 
-    // Handle GET request to fetch all games
+    /**
+     * Handles GET request to retrieve all games from the database.
+     * @param _req - Express Request object (unused).
+     * @param res - Express Response object to send the list of games.
+     */
     public async getAllGames(_req: Request, res: Response): Promise<void> {
         try {
-            // Use the ProductService to get all games from the database
             const games: Game[] = await this._productService.getAllGames();
-
-            // Respond with the list of games in JSON format
             res.json(games);
         }
-        catch (error) {
-            // Log and handle any errors that occur
-            console.error("Fout bij ophalen van games:", error);
+        catch {
             res.status(500).json({ error: "Failed to fetch games." });
         }
     }
 
-    // Handle GET request to fetch the price of a specific game by ID
+    /**
+     * Handles GET request to retrieve the price information for a specific game.
+     * @param req - Express Request object containing the game ID in params.
+     * @param res - Express Response object to send the price data.
+     */
     public async getGamePrice(req: Request, res: Response): Promise<void> {
-        // Extract the game ID from the request URL parameters
         const gameId: string = req.params.id;
 
         try {
-            // Call an external API to retrieve the price information for the game
             const priceRes: globalThis.Response = await fetch(`http://oege.ie.hva.nl:8889/api/productprices/${gameId}`);
 
-            // If the fetch fails, throw an error
-            if (!priceRes.ok) throw new Error("Price API error");
+            if (!priceRes.ok) {
+                throw new Error("Price API error");
+            }
 
-            // Parse the JSON response and cast it to the expected GamePrices[] type
             const data: GamePrices[] = await priceRes.json() as GamePrices[];
-
-            // Return the data as a JSON response
             res.json(data);
         }
-        catch (error) {
-            // Log and handle any errors that occur during the fetch
-            console.error("Fout bij ophalen van prijs:", error);
+        catch {
             res.status(500).json({ error: "Failed to fetch price." });
+        }
+    }
+
+    /**
+     * Handles POST request to add a new product to the database.
+     * @param req - Express Request object containing new product data in body.
+     * @param res - Express Response object to confirm creation.
+     */
+    public async addProduct(req: Request, res: Response): Promise<void> {
+        try {
+            const newProduct: NewProduct = req.body as NewProduct;
+            await this._productService.addProduct(newProduct);
+            res.status(201).json({ message: "Product succesvol toegevoegd." });
+        }
+        catch {
+            res.status(500).json({ error: "Failed to add product." });
+        }
+    }
+
+    /**
+     * Handles PATCH request to change the visibility (hidden) status of a product.
+     * @param req - Express Request object containing game ID in params and hidden status in body.
+     * @param res - Express Response object to confirm update.
+     */
+    public async hideProduct(req: Request, res: Response): Promise<void> {
+        try {
+            const gameId: number = parseInt(req.params.id, 10);
+            const { hidden } = req.body as { hidden: boolean };
+
+            if (isNaN(gameId) || typeof hidden !== "boolean") {
+                res.status(400).json({ error: "Invalid input" });
+                return;
+            }
+
+            await this._productService.setHidden(gameId, hidden);
+            res.status(200).json({ message: `Product succesvol ${hidden ? "verborgen" : "zichtbaar gemaakt"}.` });
+        }
+        catch {
+            res.status(500).json({ error: "Zichtbaarheid wijzigen mislukt." });
         }
     }
 }

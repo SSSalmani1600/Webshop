@@ -117,16 +117,31 @@ export class DiscountCodeComponent extends HTMLElement {
         try {
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud";
+                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
             const response: Response = await fetch(`${API_BASE}/discount/apply`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Accept": "application/json",
                 },
                 credentials: "include",
                 body: JSON.stringify({ code }),
             });
+
+            if (response.status === 401) {
+                window.location.href = "/login.html";
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+
+            const responseText: string = await response.text();
+            if (!responseText) {
+                throw new Error("Empty response from server");
+            }
 
             interface DiscountResponse {
                 success: boolean;
@@ -134,9 +149,16 @@ export class DiscountCodeComponent extends HTMLElement {
                 discountPercentage?: number;
             }
 
-            const data: DiscountResponse = await response.json() as DiscountResponse;
+            let data: DiscountResponse;
+            try {
+                data = JSON.parse(responseText) as DiscountResponse;
+            }
+            catch (parseError) {
+                console.error("Failed to parse response:", responseText, parseError);
+                throw new Error("Invalid server response");
+            }
 
-            if (!response.ok || !data.success) {
+            if (!data.success) {
                 throw new Error(data.message || "Ongeldige kortingscode");
             }
 

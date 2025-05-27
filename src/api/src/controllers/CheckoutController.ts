@@ -11,6 +11,9 @@ export class CheckoutController {
     // Deze functie voert alles uit als iemand adres invult en opstuurt
     public async createAddress(req: Request, res: Response): Promise<void> {
         try {
+            // ✅ Voeg deze regel toe
+        console.log("REQ BODY:", req.body);
+        
             // Pakt data uit formulier van gebruiker
             const body: Record<string, unknown> = req.body as Record<string, unknown>;
             const userId: number = Number(body.userId);

@@ -187,17 +187,15 @@ export class GameList extends HTMLElement {
             </style>
         `;
 
-        // Fetch the price for each game and merge it into the game object
+        const visibleGames: Game[] = games.filter(game => !game.hidden);
+
         const gamesWithPrices: Game[] = await Promise.all(
-            games.map(async game => {
+            visibleGames.map(async game => {
                 const price: number | null = await this.fetchGamePrice(game.id);
                 return { ...game, price };
             })
         );
 
-        console.log("Games with prices:", gamesWithPrices);
-
-        // Generate HTML content for each game
         const content: string = gamesWithPrices
             .map(game => {
                 const imageUrl: string =
@@ -206,20 +204,18 @@ export class GameList extends HTMLElement {
                         : "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg";
 
                 const gameTitle: string = game.title;
-
-                console.log("Game Price:", game.price);
                 const price: string = game.price !== null && game.price !== undefined
                     ? `€ ${game.price.toFixed(2)}`
                     : "Price unknown";
 
                 return `
-                    <div class="game">
-                        <img class="product-image" src="${imageUrl}" alt="${gameTitle}" />
-                        <strong>${gameTitle}</strong>
-                        <div class="price">${price}</div>
-                        <add-to-cart game-id="${game.id}" price="${game.price !== null ? game.price : 0}"></add-to-cart>
-                    </div>
-                `;
+                <div class="game">
+                    <img class="product-image" src="${imageUrl}" alt="${gameTitle}" />
+                    <strong>${gameTitle}</strong>
+                    <div class="price">${price}</div>
+                    <add-to-cart game-id="${game.id}" price="${game.price ?? 0}"></add-to-cart>
+                </div>
+            `;
             })
             .join("");
 

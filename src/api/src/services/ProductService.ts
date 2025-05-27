@@ -48,7 +48,7 @@ export class ProductService {
                 connection,
                 `
                     INSERT INTO games (title, images, descriptionHtml)
-                    VALUES (?, ?, ?)
+                    VALUES (?)
                 `,
                 [product.title, product.images ?? null, product.descriptionHtml]
             );

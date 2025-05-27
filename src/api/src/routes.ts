@@ -11,6 +11,7 @@ import { RegisterController } from "./controllers/RegisterController";
 import { DiscountController } from "./controllers/DiscountController";
 import { DiscountCodeRequestBody } from "./interfaces/IDiscountService";
 import { GameDetailController } from "./controllers/ProductDetailController";
+import { ShowHomepageGamesController } from "./controllers/ShowHomepageGamesController";
 
 export const router: Router = Router();
 
@@ -28,6 +29,7 @@ const checkoutController: CheckoutController = new CheckoutController();
 const addToCartController: AddToCartController = new AddToCartController();
 const registerController: RegisterController = new RegisterController();
 const discountController: DiscountController = new DiscountController();
+const showHomepageGamesController: ShowHomepageGamesController = new ShowHomepageGamesController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
@@ -71,3 +73,6 @@ router.get("/product-prices/:id", (req: Request, res: Response) => productContro
 router.get("/products/:id", (_req: Request, _res: Response) => {
     throw new Error("Return a specific product");
 });
+
+// Homepage games endpoint
+router.get("/homepage-games", (req: Request, res: Response) => showHomepageGamesController.getHomepageGames(req, res));

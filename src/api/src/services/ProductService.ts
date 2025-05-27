@@ -7,7 +7,11 @@ import { NewProduct } from "@api/types/NewProduct";
  * Service class for performing database operations related to products (games).
  */
 export class ProductService {
-    private readonly _databaseService: DatabaseService = new DatabaseService();
+    private readonly _databaseService: DatabaseService;
+
+    public constructor(databaseService?: DatabaseService) {
+        this._databaseService = databaseService ?? new DatabaseService();
+    }
 
     /**
      * Retrieves all games from the database.

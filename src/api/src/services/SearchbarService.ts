@@ -20,6 +20,11 @@ export class GameSearchService {
 
             return rows as Game[];
         }
+        catch (e) {
+            throw new Error(`Zoeken naar games mislukt: ${e}`);
+        }
+        finally {
+            connection.release();
+        }
     }
-    
 }

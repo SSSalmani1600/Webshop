@@ -15,15 +15,15 @@ export class GameSearchComponent extends HTMLElement {
     }
 
     private renderLoading(): void {
-        this.shadow.innerHTML = "<p style=\"color: white;\">Zoekresultaten worden geladen...\"</p>";
+        this.shadow.innerHTML = "<p style=\"color: white;\">Zoekresultaten worden geladen...</p>";
     }
 
     private async loadSearchResults(): Promise<void> {
         const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
         const query: string | null = urlParams.get("query");
 
-        if (!query) {
-            this.shadow.innerHTML = "<p style=\"color: red;\">Geen zoekterm opgegeven.\"</p>";
+        if (!query || query.trim() === "") {
+            this.shadow.innerHTML = "<p style=\"color: red;\">Geen zoekterm opgegeven.</p>";
             return;
         }
 
@@ -37,8 +37,8 @@ export class GameSearchComponent extends HTMLElement {
 
             if (!response.ok) throw new Error("Kon zoekresultaten niet ophalen.");
 
-            const games: Game = await response.json() as Game;
-            this.renderResults([games], query);
+            const games: Game[] = await response.json() as Game[];
+            this.renderResults(games, query);
         }
         catch (error) {
             this.shadow.innerHTML = `<p style="color: red;">Fout: ${(error as Error).message}</p>`;
@@ -46,8 +46,8 @@ export class GameSearchComponent extends HTMLElement {
     }
 
     private async getSession(): Promise<string> {
-        const res: Response = await fetch(`${VITE_API_URL}session`);
-        const data: unknown = await res.json();
+        const res = await fetch(`${VITE_API_URL}session`);
+        const data = await res.json();
 
         if (
             typeof data === "object" &&
@@ -107,6 +107,8 @@ export class GameSearchComponent extends HTMLElement {
                     width: 100%;
                     border-radius: 8px;
                     margin-bottom: 12px;
+                    max-height: 180px;
+                    object-fit: cover;
                 }
 
                 .game-card h3 {

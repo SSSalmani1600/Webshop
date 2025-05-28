@@ -11,6 +11,7 @@ import { RegisterController } from "./controllers/RegisterController";
 import { DiscountController } from "./controllers/DiscountController";
 import { DiscountCodeRequestBody } from "./interfaces/IDiscountService";
 import { GameDetailController } from "./controllers/ProductDetailController";
+import { NavbarController } from "./controllers/NavbarController";
 
 export const router: Router = Router();
 
@@ -28,6 +29,7 @@ const checkoutController: CheckoutController = new CheckoutController();
 const addToCartController: AddToCartController = new AddToCartController();
 const registerController: RegisterController = new RegisterController();
 const discountController: DiscountController = new DiscountController();
+const navbarController: NavbarController = new NavbarController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
@@ -47,6 +49,7 @@ router.get("/welcome", (req: Request, res: Response) => welcomeController.getWel
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
 router.delete("/cart/item/:id", (req: Request, res: Response) => cartController.deleteCartItem(req, res));
 router.post("/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
+router.get("/api/cart/count", (req: Request, res: Response) => navbarController.getCartCount(req, res));
 
 // Discount code endpoints
 router.post("/discount/apply", (req: Request<object, object, DiscountCodeRequestBody>, res: Response) => discountController.applyDiscount(req, res));

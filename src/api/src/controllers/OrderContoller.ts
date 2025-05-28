@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 import { OrderService } from "@api/services/OrderService";
+import { Request, Response } from "express-serve-static-core";
+import { ParsedQs } from "qs";
 
 const orderService: OrderService = new OrderService();
 
 export class OrderController {
+    getBoughtGames(req: Request<{}, any, any, ParsedQs, Record<string, any>>, res: Response<any, Record<string, any>, number>): void {
+        throw new Error("Method not implemented.");
+    }
     public async createOrder(req: Request, res: Response): Promise<void> {
         try {
             const sessionId: string | undefined = req.sessionId;

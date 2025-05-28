@@ -13,20 +13,16 @@ export class NavbarService {
             const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
                 `
                 SELECT SUM(quantity) AS count
-                FROM cart
+                FROM cart_items
                 WHERE user_id = ?
                 `,
                 [userId]
             );
 
-            if (!Array.isArray(rows) || rows.length === 0) {
-                return 0;
-            }
-
             const row: CountRow = rows[0] as CountRow;
             return row.count ?? 0;
-        }
-        catch (e) {
+        } catch (e) {
+            console.error("Fout bij ophalen winkelmand-teller:", e);
             throw new Error(`Kan aantal winkelmand-items niet ophalen: ${e}`);
         }
         finally {

@@ -28,7 +28,18 @@ export class NavbarComponent extends HTMLElement {
         }
 
         .logo {
-            font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+        }
+
+        .logo img {
+        width: 24px;
+        height: 24px;
+        display: block;
         }
 
         .nav-links {
@@ -78,7 +89,10 @@ export class NavbarComponent extends HTMLElement {
         </style>
 
         <nav>
-        <div class="logo">GameShop</div>
+        <div class="logo">
+            <img src="/assets/images/logo.svg" alt="Logo" />
+            <span>GameShop</span>
+        </div>
 
         <div class="nav-links">
             <a href="index.html">Home</a>

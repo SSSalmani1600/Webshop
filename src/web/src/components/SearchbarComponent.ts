@@ -15,45 +15,45 @@ export class GameSearchComponent extends HTMLElement {
     }
 
     private renderLoading(): void {
-        this.shadow.innerHTML = "<p style="color: white;">Zoekresultaten worden geladen...</p>";
+        this.shadow.innerHTML = "<p style=\"color: white;\">Zoekresultaten worden geladen...\"</p>";
     }
 
     private async loadSearchResults(): Promise<void> {
         const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
         const query: string | null = urlParams.get("query");
 
-        if(!query) {
-            this.shadow.innerHTML = `<p style="color: red;">Geen zoekterm opgegeven.</p>`;
-            return;           
+        if (!query) {
+            this.shadow.innerHTML = "<p style=\"color: red;\">Geen zoekterm opgegeven.\"</p>";
+            return;
         }
 
         try {
-            const sessionId = await this.getSession();
-            const response = await fetch(`${VITE_API_URL}games/search?query=${encodeURIComponent(query)}`, {
+            const sessionId: string = await this.getSession();
+            const response: Response = await fetch(`${VITE_API_URL}games/search?query=${encodeURIComponent(query)}`, {
                 headers: {
-                    "x-session": sessionId
-                }
+                    "x-session": sessionId,
+                },
             });
 
             if (!response.ok) throw new Error("Kon zoekresultaten niet ophalen.");
 
-            const games: Game[] = await response.json();
-            this.renderResults(games, query);                        
-        } 
+            const games: Game = await response.json() as Game;
+            this.renderResults([games], query);
+        }
         catch (error) {
-            this.shadow.innerHTML = `<p style="color: red;">Fout: ${(error as Error).message}</p>`;        
+            this.shadow.innerHTML = `<p style="color: red;">Fout: ${(error as Error).message}</p>`;
         }
     }
 
     private async getSession(): Promise<string> {
         const res: Response = await fetch(`${VITE_API_URL}session`);
-        const data: unknown = await res.json();     
-        
+        const data: unknown = await res.json();
+
         if (
             typeof data === "object" &&
             data !== null &&
             "sessionId" in data &&
-            typeof (data as SessionResponse).sessionId === "string"           
+            typeof (data as SessionResponse).sessionId === "string"
         ) {
             return (data as SessionResponse).sessionId;
         }
@@ -61,10 +61,10 @@ export class GameSearchComponent extends HTMLElement {
         throw new Error("Invalid session object");
     }
 
-    private renderResult(games: Game[], query: string): void {
+    private renderResults(games: Game[], query: string): void {
         if (games.length === 0) {
             this.shadow.innerHTML = `<p style="color: white;">Geen resultaten gevonden voor "<strong>${query}</strong>"</p>`;
-            return;            
+            return;
         }
 
         this.shadow.innerHTML = `
@@ -122,6 +122,19 @@ export class GameSearchComponent extends HTMLElement {
                     font-weight: bold;
                 }
             </style>
-        `;       
+
+            <h2>Zoekresultaten voor "${query}"</h2>
+            <div class="results">
+                ${games.map(game => `
+                    <div class="game-card">
+                        <img src="${game.thumbnail}" alt="${game.title}" />
+                        <h3>${game.title}</h3>
+                        <a href="/product.html?id=${game.id}">Bekijk game</a>
+                    </div>
+                `).join("")}
+            </div>
+        `;
     }
 }
+
+customElements.define("game-search-page", GameSearchComponent);

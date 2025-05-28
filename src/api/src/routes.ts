@@ -63,7 +63,6 @@ router.get("/secret", (req: Request, res: Response) => welcomeController.getSecr
 
 // Order endpoint
 router.post("/order/complete", (req: Request, res: Response) => orderController.createOrder(req, res));
-router.post("/order/complete", (req, res) => orderController.createOrder(req, res));
 router.get("/order/complete", (req, res) => orderController.getBoughtGames(req, res));
 
 router.get("/game", (req, res) => gameDetailController.getGameById(req, res));

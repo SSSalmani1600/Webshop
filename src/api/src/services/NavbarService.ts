@@ -21,7 +21,8 @@ export class NavbarService {
 
             const row: CountRow = rows[0] as CountRow;
             return row.count ?? 0;
-        } catch (e) {
+        }
+        catch (e) {
             console.error("Fout bij ophalen winkelmand-teller:", e);
             throw new Error(`Kan aantal winkelmand-items niet ophalen: ${e}`);
         }

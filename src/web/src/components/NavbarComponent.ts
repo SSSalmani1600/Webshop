@@ -31,25 +31,34 @@ export class NavbarComponent extends HTMLElement {
         }
 
         .cart {
-          position: relative;
-          cursor: pointer;
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        }
+
+        .cart img {
+        width: 24px;
+        height: 24px;
+        display: block;
         }
 
         .cart-count {
-          position: absolute;
-          top: -5px;
-          right: -10px;
-          background-color: red;
-          color: white;
-          border-radius: 50%;
-          padding: 2px 6px;
-          font-size: 0.8rem;
+        position: absolute;
+        top: -6px;
+        right: -10px;
+        background-color: red;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 0.75rem;
         }
       </style>
       <nav>
         <div class="logo">GameShop</div>
         <div class="cart" id="cart">
-          🛒 <span class="cart-count" id="cart-count">0</span>
+        <img src="/assets/images/cart_empty.png" alt="Cart icon" />
+        <span class="cart-count" id="cart-count">0</span>
         </div>
       </nav>        
     `;

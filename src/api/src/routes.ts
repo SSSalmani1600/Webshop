@@ -49,7 +49,7 @@ router.get("/welcome", (req: Request, res: Response) => welcomeController.getWel
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
 router.delete("/cart/item/:id", (req: Request, res: Response) => cartController.deleteCartItem(req, res));
 router.post("/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
-router.get("/api/cart/count", (req: Request, res: Response) => navbarController.getCartCount(req, res));
+router.get("/cart/count", (req: Request, res: Response) => navbarController.getCartCount(req, res));
 
 // Discount code endpoints
 router.post("/discount/apply", (req: Request<object, object, DiscountCodeRequestBody>, res: Response) => discountController.applyDiscount(req, res));

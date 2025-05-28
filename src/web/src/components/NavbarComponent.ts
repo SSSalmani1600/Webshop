@@ -1,3 +1,5 @@
+declare const VITE_API_URL: string;
+
 export class NavbarComponent extends HTMLElement {
     public constructor() {
         super();
@@ -7,6 +9,9 @@ export class NavbarComponent extends HTMLElement {
     public connectedCallback(): void {
         this.render();
         this.updateCartCount();
+        document.addEventListener("cart-updated", () => {
+            this.updateCartCount();
+        });
     }
 
     private render(): void {
@@ -62,7 +67,7 @@ export class NavbarComponent extends HTMLElement {
         // Eerst controleren of shadowRoot bestaat
         if (!this.shadowRoot) return;
 
-        fetch("/api/cart/count", { credentials: "include" })
+        fetch(`${VITE_API_URL}cart/count`, { credentials: "include" })
             .then((res: Response) => {
                 if (!res.ok) throw new Error("Cart count ophalen mislukt");
                 return res.json();

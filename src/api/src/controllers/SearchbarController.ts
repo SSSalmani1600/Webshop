@@ -13,13 +13,15 @@ export class GameSearchController {
             return;
         }
 
+        const cleanQuery: string = query.trim();
+
         try {
-            const games: Game[] = await this._gameSearchService.searchGamesByTitle(query);
+            const games: Game[] = await this._gameSearchService.searchGamesByTitle(cleanQuery);
             res.json(games);
         }
         catch (error) {
             console.error("Fout bij zoeken naar games:", error);
-            res.status(500).json({ error: "Kon games niet zoeken." });
+            res.status(500).json({ error: "Er is iets misgegaan bij het zoeken naar games." });
         }
     }
 }

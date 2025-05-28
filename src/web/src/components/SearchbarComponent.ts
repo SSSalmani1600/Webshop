@@ -37,7 +37,7 @@ export class GameSearchComponent extends HTMLElement {
 
             if (!response.ok) throw new Error("Kon zoekresultaten niet ophalen.");
 
-            const games: Game[] = await response.json() as Game[];
+            const games: Game[] = (await response.json()) as Game[];
             this.renderResults(games, query);
         }
         catch (error) {

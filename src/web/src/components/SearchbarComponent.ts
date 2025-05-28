@@ -48,17 +48,7 @@ export class GameSearchComponent extends HTMLElement {
     private async getSession(): Promise<string> {
         const res: Response = await fetch(`${VITE_API_URL}session`);
         const data: SessionResponse = await res.json() as SessionResponse;
-
-        if (
-            typeof data === "object" &&
-            data !== null &&
-            "sessionId" in data &&
-            typeof (data as SessionResponse).sessionId === "string"
-        ) {
-            return (data as SessionResponse).sessionId;
-        }
-
-        throw new Error("Invalid session object");
+        return data.sessionId;
     }
 
     private renderResults(games: Game[], query: string): void {

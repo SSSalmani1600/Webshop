@@ -8,6 +8,7 @@ interface LoginResponse {
         id: number;
         username: string;
         email: string;
+        is_admin: number;
     };
     sessionId?: string;
 }
@@ -128,7 +129,12 @@ export class LoginComponent extends HTMLElement {
                 return;
             }
 
-            window.location.href = "/product.html";
+            if (data.user?.is_admin === 1) {
+                window.location.href = "/admin.html";
+            }
+            else {
+                window.location.href = "/product.html";
+            }
         }
         catch (error) {
             console.error("Login error:", error);

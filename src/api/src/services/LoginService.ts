@@ -12,6 +12,7 @@ export interface UserData extends RowDataPacket {
     email: string;
     password: string;
     is_logged_in: number;
+    is_admin: number;
 }
 
 /**

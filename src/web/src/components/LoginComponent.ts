@@ -8,9 +8,13 @@ interface LoginResponse {
         id: number;
         username: string;
         email: string;
+        is_admin: number;
     };
     sessionId?: string;
 }
+
+// Declare VITE_API_URL as it comes from environment variables
+declare const VITE_API_URL: string;
 
 /**
  * Login Component
@@ -96,7 +100,7 @@ export class LoginComponent extends HTMLElement {
         const rememberMe: boolean = this._rememberMeCheckbox?.checked || false;
 
         try {
-            const response: Response = await fetch("http://localhost:3001/auth/login", {
+            const response: Response = await fetch(`${VITE_API_URL}auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -125,7 +129,12 @@ export class LoginComponent extends HTMLElement {
                 return;
             }
 
-            window.location.href = "/product.html";
+            if (data.user?.is_admin === 1) {
+                window.location.href = "/admin.html";
+            }
+            else {
+                window.location.href = "/product.html";
+            }
         }
         catch (error) {
             console.error("Login error:", error);

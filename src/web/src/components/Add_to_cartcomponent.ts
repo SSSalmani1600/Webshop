@@ -1,6 +1,8 @@
 import { WebshopEventService } from "../services/WebshopEventService";
-import { AddToCartService } from "../services/add_to_cart_service";
 import { WebshopEvent } from "../enums/WebshopEvent";
+
+// Declare VITE_API_URL as it comes from environment variables
+declare const VITE_API_URL: string;
 
 /**
  * Response van de actie om toe te voegen aan het winkelmandje
@@ -16,7 +18,6 @@ interface AddToCartResult {
 export class AddToCartComponent extends HTMLElement {
     private _gameId: number = 0;
     private _price: number = 0;
-    private _addToCartService: AddToCartService = new AddToCartService();
     private _eventService: WebshopEventService = new WebshopEventService();
     private _button: HTMLButtonElement | null = null;
 
@@ -100,9 +101,32 @@ export class AddToCartComponent extends HTMLElement {
                 return;
             }
 
-            const result: AddToCartResult = await this._addToCartService.addToCart(this._gameId, 1, this._price);
+            const response: Response = await fetch(`${VITE_API_URL}cart/add`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    game_id: this._gameId,
+                    quantity: 1,
+                    price: this._price,
+                }),
+                credentials: "include",
+            });
 
-            if (result.success) {
+            const data: AddToCartResult = await response.json() as AddToCartResult;
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    this.showNotification("Gebruiker niet ingelogd", "error");
+                    window.location.href = "/login.html";
+                    return;
+                }
+                this.showNotification(data.message || `Fout: ${response.statusText}`, "error");
+                return;
+            }
+
+            if (data.success) {
                 this.showNotification("✅ Toegevoegd aan winkelmandje", "success");
                 this._eventService.dispatchEvent(WebshopEvent.AddToCart, {
                     gameId: this._gameId,
@@ -111,13 +135,7 @@ export class AddToCartComponent extends HTMLElement {
                 });
             }
             else {
-                // Als er een foutmelding is, bijvoorbeeld niet ingelogd
-                if (result.message === "User not logged in") {
-                    window.location.href = "/login.html";
-                    return;
-                }
-
-                this.showNotification(result.message || "Er is een fout opgetreden", "error");
+                this.showNotification(data.message || "Er is een fout opgetreden", "error");
             }
         }
         catch (error) {

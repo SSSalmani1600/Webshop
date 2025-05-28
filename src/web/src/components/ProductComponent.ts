@@ -184,20 +184,35 @@ export class GameList extends HTMLElement {
               add-to-cart button:hover {
                 background-color: #45a049;
               }
+
+              .view-button {
+                display: inline-block;
+                margin-top: 10px;
+                padding: 8px 16px;
+                background-color: #7f41f5;
+                color: white;
+                text-decoration: none;
+                border-radius: 8px;
+                font-size: 14px;
+                transition: background 0.3s;
+                }
+
+              .view-button:hover {
+                background-color: #6936cc;
+                }
+                
             </style>
         `;
 
-        // Fetch the price for each game and merge it into the game object
+        const visibleGames: Game[] = games.filter(game => !game.hidden);
+
         const gamesWithPrices: Game[] = await Promise.all(
-            games.map(async game => {
+            visibleGames.map(async game => {
                 const price: number | null = await this.fetchGamePrice(game.id);
                 return { ...game, price };
             })
         );
 
-        console.log("Games with prices:", gamesWithPrices);
-
-        // Generate HTML content for each game
         const content: string = gamesWithPrices
             .map(game => {
                 const imageUrl: string =
@@ -206,20 +221,20 @@ export class GameList extends HTMLElement {
                         : "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg";
 
                 const gameTitle: string = game.title;
-
-                console.log("Game Price:", game.price);
                 const price: string = game.price !== null && game.price !== undefined
                     ? `€ ${game.price.toFixed(2)}`
                     : "Price unknown";
 
                 return `
-                    <div class="game">
-                        <img class="product-image" src="${imageUrl}" alt="${gameTitle}" />
-                        <strong>${gameTitle}</strong>
-                        <div class="price">${price}</div>
-                        <add-to-cart game-id="${game.id}" price="${game.price !== null ? game.price : 0}"></add-to-cart>
-                    </div>
-                `;
+                <div class="game">
+                    <img class="product-image" src="${imageUrl}" alt="${gameTitle}" />
+                    <strong>${gameTitle}</strong>
+                    <div class="price">${price}</div>
+
+                        <a class="view-button" href="gameDetail.html?id=${game.id}">Bekijk game</a>
+                    <add-to-cart game-id="${game.id}" price="${game.price ?? 0}"></add-to-cart>
+                </div>
+            `;
             })
             .join("");
 

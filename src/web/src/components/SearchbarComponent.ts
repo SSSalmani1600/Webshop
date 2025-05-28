@@ -21,5 +21,27 @@ export class GameSearchComponent extends HTMLElement {
     private async loadSearchResults(): Promise<void> {
         const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
         const query: string | null = urlParams.get("query");
+
+        if(!query) {
+            this.shadow.innerHTML = `<p style="color: red;">Geen zoekterm opgegeven.</p>`;
+            return;           
+        }
+
+        try {
+            const sessionId = await this.getSession();
+            const response = await fetch(`${VITE_API_URL}games/search?query=${encodeURIComponent(query)}`, {
+                headers: {
+                    "x-session": sessionId
+                }
+            });
+
+            if (!response.ok) throw new Error("Kon zoekresultaten niet ophalen.");
+
+            const games: Game[] = await response.json();
+            this.renderResults(games, query);                        
+        } 
+        catch (error) {
+            this.shadow.innerHTML = `<p style="color: red;">Fout: ${(error as Error).message}</p>`;        
+        }
     }
 }

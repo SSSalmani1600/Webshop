@@ -18,49 +18,78 @@ export class NavbarComponent extends HTMLElement {
         this.shadowRoot!.innerHTML = `
         <style>
         nav {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1rem;
-          background-color: #222;
-          color: white;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #222;
+            color: white;
+            font-family: 'Inter', sans-serif;
         }
 
         .logo {
-          font-size: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #7f41f5;
         }
 
         .cart {
-        position: relative;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
+            justify-self: end;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
         }
 
         .cart img {
-        width: 24px;
-        height: 24px;
-        display: block;
+            width: 24px;
+            height: 24px;
+            display: block;
         }
 
         .cart-count {
-        position: absolute;
-        top: -6px;
-        right: -10px;
-        background-color: red;
-        color: white;
-        border-radius: 50%;
-        padding: 2px 6px;
-        font-size: 0.75rem;
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.75rem;
         }
-      </style>
-      <nav>
+        </style>
+
+        <nav>
         <div class="logo">GameShop</div>
-        <div class="cart" id="cart">
-        <img src="/assets/images/cart_empty.png" alt="Cart icon" />
-        <span class="cart-count" id="cart-count">0</span>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="product.html">Games</a>
         </div>
-      </nav>        
+
+        <div class="cart" id="cart">
+            <img src="/assets/images/cart_empty.png" alt="Cart icon" />
+            <span class="cart-count" id="cart-count">0</span>
+        </div>
+        </nav>       
     `;
         if (!this.shadowRoot) return;
 

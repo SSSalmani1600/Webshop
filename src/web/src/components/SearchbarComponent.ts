@@ -44,4 +44,21 @@ export class GameSearchComponent extends HTMLElement {
             this.shadow.innerHTML = `<p style="color: red;">Fout: ${(error as Error).message}</p>`;        
         }
     }
+
+    private async getSession(): Promise<string> {
+        const res: Response = await fetch(`${VITE_API_URL}session`);
+        const data: unknown = await res.json();     
+        
+        if (
+            typeof data === "object" &&
+            data !== null &&
+            "sessionId" in data &&
+            typeof (data as SessionResponse).sessionId === "string"           
+        ) {
+            return (data as SessionResponse).sessionId;
+        }
+
+        throw new Error("Invalid session object");
+    }
+
 }

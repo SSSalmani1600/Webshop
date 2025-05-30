@@ -23,4 +23,3 @@ export class OrderCompletePageComponent extends HTMLElement {
 }
 
 window.customElements.define("webshop-page-order-complete", OrderCompletePageComponent);
-

@@ -499,4 +499,6 @@ export class CartPageComponent extends HTMLElement {
 }
 
 customElements.define("webshop-page-cart", CartPageComponent);
-customElements.define("navbar-component", NavbarComponent);
+if (!customElements.get("navbar-component")) {
+    customElements.define("navbar-component", NavbarComponent);
+}

@@ -1,5 +1,6 @@
 import { WishlistItem } from "../../../api/src/types/WishlistItem";
 import { WishlistItemComponent } from "../components/WishlistItemComponent";
+import { NavbarComponent } from "../components/NavbarComponent";
 
 export class WishlistPageComponent extends HTMLElement {
     private wishlistItems: WishlistItem[] = [];
@@ -135,6 +136,7 @@ export class WishlistPageComponent extends HTMLElement {
 
         const container: HTMLDivElement = document.createElement("div");
         container.innerHTML = `
+            <navbar-component></navbar-component>
             <div class="wishlist-header">
                 <h2>Mijn Favorieten</h2>
                 <p>Bekijk je favoriete games</p>
@@ -244,3 +246,4 @@ export class WishlistPageComponent extends HTMLElement {
 }
 
 customElements.define("wishlist-page", WishlistPageComponent);
+customElements.define("navbar-component", NavbarComponent);

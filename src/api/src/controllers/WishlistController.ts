@@ -18,7 +18,7 @@ export class WishlistController {
             const userId: number | null = getUserIdFromCookie(req);
 
             if (!userId) {
-                res.status(401).json({ error: "Geen geldige gebruiker in cookie" });
+                res.status(401).json({ error: "Geen geldige gebruiker" });
                 return;
             }
 
@@ -27,7 +27,7 @@ export class WishlistController {
         }
         catch (error) {
             console.error("Error fetching wishlist:", error);
-            res.status(500).json({ error: "Internal server error" });
+            res.status(500).json({ error: "error" });
         }
     }
 
@@ -36,7 +36,7 @@ export class WishlistController {
         const wishlistItemId: number = parseInt(req.params.id, 10);
 
         if (!userId || isNaN(wishlistItemId)) {
-            res.status(400).json({ error: "Ongeldige gebruiker of wishlist item id" });
+            res.status(400).json({ error: "Ongeldige gebruiker" });
             return;
         }
 
@@ -46,7 +46,7 @@ export class WishlistController {
         }
         catch (error) {
             console.error("Error deleting wishlist item:", error);
-            res.status(500).json({ error: "Internal server error" });
+            res.status(500).json({ error: "error" });
         }
     }
 }

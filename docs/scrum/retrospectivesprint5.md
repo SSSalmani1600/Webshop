@@ -3,6 +3,12 @@
 ## Teamleden
 Sem, Kevin, Nezdhat, Nabil & Dion.
 
+## Aanwezigen
+Sem, Kevin, Nezdhat, Nabil & Dion.
+
+## Datum 
+23-05-2025
+
 ---
 
 ##  Wat ging goed?

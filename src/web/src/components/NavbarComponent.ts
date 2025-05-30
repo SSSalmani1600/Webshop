@@ -116,7 +116,7 @@ export class NavbarComponent extends HTMLElement {
     <nav>
         <div class="logo">
             <img src="/assets/images/logo.svg" alt="Logo" />
-            <span>GameShop</span>
+            <span>LucaStars</span>
         </div>
 
         <div class="nav-links">

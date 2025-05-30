@@ -121,7 +121,7 @@ export class GameSearchComponent extends HTMLElement {
                     <div class="game-card">
                         <img src="${game.thumbnail}" alt="${game.title}" />
                         <h3>${game.title}</h3>
-                        <a href="/product.html?id=${game.id}">Bekijk game</a>
+                        <a href="/gameDetail.html?id=${game.id}">Bekijk game</a>
                     </div>
                 `).join("")}
             </div>

@@ -273,4 +273,6 @@ export class WishlistPageComponent extends HTMLElement {
 }
 
 customElements.define("wishlist-page", WishlistPageComponent);
-customElements.define("navbar-component", NavbarComponent);
+if (!customElements.get("navbar-component")) {
+    customElements.define("navbar-component", NavbarComponent);
+}

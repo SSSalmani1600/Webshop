@@ -11,6 +11,7 @@ import { RegisterController } from "./controllers/RegisterController";
 import { DiscountController } from "./controllers/DiscountController";
 import { DiscountCodeRequestBody } from "./interfaces/IDiscountService";
 import { GameDetailController } from "./controllers/ProductDetailController";
+import { WishlistController } from "./controllers/WishlistController";
 
 export const router: Router = Router();
 
@@ -28,6 +29,7 @@ const checkoutController: CheckoutController = new CheckoutController();
 const addToCartController: AddToCartController = new AddToCartController();
 const registerController: RegisterController = new RegisterController();
 const discountController: DiscountController = new DiscountController();
+const wishlistController: WishlistController = new WishlistController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
@@ -76,3 +78,6 @@ router.post("/add-product", (req: Request, res: Response) => productController.a
 router.patch("/products/:id/hidden", (req: Request, res: Response) =>
     productController.hideProduct(req, res)
 );
+
+// Wishlist endpoints
+router.get("/wishlist", (req: Request, res: Response) => wishlistController.getWishlist(req, res));

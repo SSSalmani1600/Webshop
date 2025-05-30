@@ -176,7 +176,7 @@ export class WishlistPageComponent extends HTMLElement {
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    window.location.href = "/login.html";
+                    this.showLoginMessage();
                     return;
                 }
                 throw new Error(`Failed to fetch wishlist: ${response.statusText}`);
@@ -204,6 +204,33 @@ export class WishlistPageComponent extends HTMLElement {
         finally {
             this.isUpdating = false;
         }
+    }
+
+    private showLoginMessage(): void {
+        const shadow: ShadowRoot = this.shadowRoot!;
+        const wishlistList: HTMLElement = shadow.querySelector("#wishlist-list")!;
+        const header: HTMLElement = shadow.querySelector(".wishlist-header p")!;
+
+        header.textContent = "Log in om je favorieten te bekijken";
+
+        const loginMessage: HTMLDivElement = document.createElement("div");
+        loginMessage.className = "empty-message";
+
+        const loginText: HTMLParagraphElement = document.createElement("p");
+        loginText.textContent = "Je moet ingelogd zijn om je favoriete games te bekijken. Log in om je favorieten op te slaan!";
+        loginText.className = "empty-wishlist-text";
+
+        const loginButton: HTMLButtonElement = document.createElement("button");
+        loginButton.className = "continue-shopping-button primary";
+        loginButton.textContent = "Inloggen";
+        loginButton.addEventListener("click", () => {
+            window.location.href = "login.html";
+        });
+
+        loginMessage.appendChild(loginText);
+        loginMessage.appendChild(loginButton);
+        wishlistList.innerHTML = "";
+        wishlistList.appendChild(loginMessage);
     }
 
     private updateWishlistDisplay(): void {

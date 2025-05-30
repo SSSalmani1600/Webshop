@@ -15,13 +15,13 @@
 
 ## 👤 Nabil
 - **Wat heb je gedaan?**
-    -
+    - verder gewerkt aan documentatie en user stories
 
 - **Wat ga je doen?**  
-    -
+    - verder gewerkt aan documentatie en user stories
 
 - **Zijn er blokkades?**  
-    -
+    - nog niet
 
 ---
 

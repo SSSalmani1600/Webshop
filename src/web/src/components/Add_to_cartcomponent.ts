@@ -128,6 +128,7 @@ export class AddToCartComponent extends HTMLElement {
 
             if (data.success) {
                 this.showNotification("✅ Toegevoegd aan winkelmandje", "success");
+                document.dispatchEvent(new CustomEvent("cart-updated"));
                 this._eventService.dispatchEvent(WebshopEvent.AddToCart, {
                     gameId: this._gameId,
                     quantity: 1,

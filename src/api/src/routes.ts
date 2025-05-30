@@ -12,6 +12,8 @@ import { DiscountController } from "./controllers/DiscountController";
 import { DiscountCodeRequestBody } from "./interfaces/IDiscountService";
 import { GameDetailController } from "./controllers/ProductDetailController";
 import { WishlistController } from "./controllers/WishlistController";
+import { NavbarController } from "./controllers/NavbarController";
+import { GameSearchController } from "./controllers/SearchbarController";
 
 export const router: Router = Router();
 
@@ -30,6 +32,8 @@ const addToCartController: AddToCartController = new AddToCartController();
 const registerController: RegisterController = new RegisterController();
 const discountController: DiscountController = new DiscountController();
 const wishlistController: WishlistController = new WishlistController();
+const navbarController: NavbarController = new NavbarController();
+const gameSearchController: GameSearchController = new GameSearchController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
@@ -49,6 +53,8 @@ router.get("/welcome", (req: Request, res: Response) => welcomeController.getWel
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
 router.delete("/cart/item/:id", (req: Request, res: Response) => cartController.deleteCartItem(req, res));
 router.post("/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
+router.get("/cart/count", (req: Request, res: Response) => navbarController.getCartCount(req, res));
+router.get("/games/search", (req: Request, res: Response) => gameSearchController.searchGamesByTitle(req, res));
 
 // Discount code endpoints
 router.post("/discount/apply", (req: Request<object, object, DiscountCodeRequestBody>, res: Response) => discountController.applyDiscount(req, res));
@@ -62,7 +68,6 @@ router.get("/secret", (req: Request, res: Response) => welcomeController.getSecr
 
 // Order endpoint
 router.post("/order/complete", (req: Request, res: Response) => orderController.createOrder(req, res));
-router.post("/order/complete", (req, res) => orderController.createOrder(req, res));
 router.get("/order/complete", (req, res) => orderController.getBoughtGames(req, res));
 
 router.get("/game", (req, res) => gameDetailController.getGameById(req, res));

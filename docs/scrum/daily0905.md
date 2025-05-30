@@ -1,4 +1,4 @@
-# Daily Stand-up Verslag 08/05
+# Daily Stand-up Verslag 09/05
 
 ## 👤 Kevin
 - **Wat heb je gedaan?**  
@@ -48,13 +48,12 @@ Nee
 
 ## 👤 Dion
 - **Wat heb je gedaan?**  
-  - 
-  - 
+  - Veel feedback gevraagd over mijn learning journey
 
 - **Wat ga je doen?**  
-  - 
+  - De feedback van gisteren toepassen.
 
 - **Zijn er blokkades?**  
-  - 
+  - Nee
 
 

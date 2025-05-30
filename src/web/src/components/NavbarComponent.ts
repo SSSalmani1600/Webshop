@@ -122,6 +122,7 @@ export class NavbarComponent extends HTMLElement {
         <div class="nav-links">
             <a href="index.html">Home</a>
             <a href="product.html">Games</a>
+            <a href="wishlist.html">Favorieten</a>
         </div>
 
         <div class="search">

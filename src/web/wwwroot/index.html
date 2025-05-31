@@ -9,29 +9,12 @@
 
     <link href="/assets/css/default.css" rel="stylesheet">
     <link href="/assets/css/homepage.css" rel="stylesheet">
-    <link href="/assets/css/navbar-login.css" rel="stylesheet">
+    <script type="module" src="/src/components/HomepageNavbarComponent.ts"></script>
    
 </head>
 
 <body>
-    <header class="navbar">
-        <div class="logo">
-            <a href="/index.html">
-                <img src="/assets/images/logo.svg" alt="LucaStars" />
-                <span>LucaStars</span>
-            </a>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="/index.html">Home</a></li>
-                <li><a href="/product.html">Games</a></li>
-                <li><a href="/services.html">Services</a></li>
-            </ul>
-        </nav>
-        <div class="auth-buttons">
-            <a href="/login.html" class="btn-register">Inloggen</a>
-        </div>
-    </header>
+    <homepage-navbar></homepage-navbar>
     
     <webshop-page-index></webshop-page-index>
 

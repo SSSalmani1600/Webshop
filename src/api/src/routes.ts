@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { WelcomeController } from "./controllers/WelcomeController";
+import { WelcomeUserController } from "./controllers/WelcomeUserController";
 import { OrderController } from "./controllers/OrderContoller";
 import { sessionMiddleware } from "./middleware/sessionMiddleware";
 import { CartController } from "./controllers/CartController";
@@ -24,6 +25,7 @@ router.get("/", (_: Request, res: Response) => {
 });
 
 const welcomeController: WelcomeController = new WelcomeController();
+const welcomeUserController: WelcomeUserController = new WelcomeUserController();
 const orderController: OrderController = new OrderController();
 const gameDetailController: GameDetailController = new GameDetailController();
 const cartController: CartController = new CartController();
@@ -53,6 +55,7 @@ router.get("/session", (req: Request, res: Response) => welcomeController.getSes
 router.delete("/session", (req: Request, res: Response) => welcomeController.deleteSession(req, res));
 router.delete("/session/expired", (req: Request, res: Response) => welcomeController.deleteExpiredSessions(req, res));
 router.get("/welcome", (req: Request, res: Response) => welcomeController.getWelcome(req, res));
+router.get("/welcome-user", (req: Request, res: Response) => welcomeUserController.getWelcomeMessage(req, res));
 
 // Cart endpoints
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));

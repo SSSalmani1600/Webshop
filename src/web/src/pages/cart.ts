@@ -352,7 +352,23 @@ export class CartPageComponent extends HTMLElement {
 
             if (!res.ok) {
                 if (res.status === 401) {
-                    window.location.href = "/login.html";
+                    // Toon login melding in plaats van redirect
+                    const cartList: HTMLElement | null = this.shadowRoot?.querySelector("#cart-list") as HTMLElement | null;
+                    const summary: HTMLElement = this.shadowRoot?.querySelector(".cart-summary") as HTMLElement;
+                    const continueShopping: HTMLElement = this.shadowRoot?.querySelector(".continue-shopping-button") as HTMLElement;
+
+                    if (cartList) {
+                        summary.style.display = "none";
+                        continueShopping.style.display = "none";
+
+                        cartList.innerHTML = `
+                            <div class="empty-message">
+                                <img src="/assets/images/cart_empty.png" alt="Login required" class="empty-cart-image">
+                                <p class="empty-cart-text">Log eerst in om je winkelwagen te bekijken</p>
+                                <a href="login.html" class="continue-shopping-button primary">Inloggen</a>
+                            </div>
+                        `;
+                    }
                     return;
                 }
                 throw new Error(`Failed to fetch cart: ${res.statusText}`);
@@ -406,7 +422,23 @@ export class CartPageComponent extends HTMLElement {
 
             if (!deleteResponse.ok) {
                 if (deleteResponse.status === 401) {
-                    window.location.href = "/login.html";
+                    // Toon login melding
+                    const cartList: HTMLElement | null = this.shadowRoot?.querySelector("#cart-list") as HTMLElement | null;
+                    const summary: HTMLElement = this.shadowRoot?.querySelector(".cart-summary") as HTMLElement;
+                    const continueShopping: HTMLElement = this.shadowRoot?.querySelector(".continue-shopping-button") as HTMLElement;
+
+                    if (cartList) {
+                        summary.style.display = "none";
+                        continueShopping.style.display = "none";
+
+                        cartList.innerHTML = `
+                            <div class="empty-message">
+                                <img src="/assets/images/cart_empty.png" alt="Login required" class="empty-cart-image">
+                                <p class="empty-cart-text">Log eerst in om je winkelwagen te bekijken</p>
+                                <a href="login.html" class="continue-shopping-button primary">Inloggen</a>
+                            </div>
+                        `;
+                    }
                     return;
                 }
                 throw new Error(`Failed to delete item: ${deleteResponse.statusText}`);
@@ -499,4 +531,6 @@ export class CartPageComponent extends HTMLElement {
 }
 
 customElements.define("webshop-page-cart", CartPageComponent);
-customElements.define("navbar-component", NavbarComponent);
+if (!customElements.get("navbar-component")) {
+    customElements.define("navbar-component", NavbarComponent);
+}

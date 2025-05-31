@@ -15,6 +15,7 @@ import { WishlistController } from "./controllers/WishlistController";
 import { NavbarController } from "./controllers/NavbarController";
 import { GameSearchController } from "./controllers/SearchbarController";
 import { ReviewController } from "./controllers/ReviewController";
+import { LogoutController } from "./controllers/LogoutController";
 
 export const router: Router = Router();
 
@@ -32,9 +33,15 @@ const checkoutController: CheckoutController = new CheckoutController();
 const addToCartController: AddToCartController = new AddToCartController();
 const registerController: RegisterController = new RegisterController();
 const discountController: DiscountController = new DiscountController();
+const wishlistController: WishlistController = new WishlistController();
+const navbarController: NavbarController = new NavbarController();
+const gameSearchController: GameSearchController = new GameSearchController();
+const logoutController: LogoutController = new LogoutController();
+const reviewController: ReviewController = new ReviewController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
+router.post("/auth/logout", (req: Request, res: Response) => logoutController.logout(req, res));
 router.post("/register", (req: Request, res: Response) => {
     console.log("POST /register ontvangen", req.body);
     return registerController.addNewUser(req, res);
@@ -61,8 +68,9 @@ router.get("/discount/codes", (req: Request, res: Response) => discountControlle
 // Checkout endpoint
 router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));
 
-// Review endpoints
-router.use("/api", reviewController.router);
+// Review endpoints (aangepast pad)
+router.use("/api", sessionMiddleware, reviewController.router);
+
 
 // Secret endpoint
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));

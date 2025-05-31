@@ -48,13 +48,12 @@ no
 
 ## 👤 Dion
 - **Wat heb je gedaan?**  
-  - 
-  - 
+  - LJ helemaal afgerond voor de voortgangevaluatie
 
 - **Wat ga je doen?**  
-  - 
+  - Test schrijven voor de registreren user story
 
 - **Zijn er blokkades?**  
-  - 
+  - Nee
 
 

@@ -47,13 +47,13 @@ me backedn geeft de heledeag unauthorized.
 
 ## 👤 Dion
 - **Wat heb je gedaan?**  
-  - 
-  - 
+  - Ik heb de powerpoint gemaakt voor de A/B testen
+  - Ik heb 2 desings gemaakt voor de A/B testen
 
 - **Wat ga je doen?**  
-  - 
+  - Verder met mijn userstory
 
 - **Zijn er blokkades?**  
-  - 
+  - Nee
 
 

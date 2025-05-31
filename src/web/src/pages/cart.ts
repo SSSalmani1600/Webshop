@@ -1,5 +1,6 @@
 import { CartItem } from "../interfaces/CartItem";
 import { CartItemComponent } from "../components/CartItemComponent";
+import { NavbarComponent } from "../components/NavbarComponent";
 
 export class CartPageComponent extends HTMLElement {
     private currentDiscount: number = 0;
@@ -266,6 +267,7 @@ export class CartPageComponent extends HTMLElement {
 
         const container: HTMLDivElement = document.createElement("div");
         container.innerHTML = `
+            <navbar-component></navbar-component>
             <div class="cart-header">
                 <h2>Winkelwagen</h2>
                 <p>Rond je bestelling af - producten aan je winkelwagen toevoegen betekent geen reservering</p>
@@ -497,3 +499,6 @@ export class CartPageComponent extends HTMLElement {
 }
 
 customElements.define("webshop-page-cart", CartPageComponent);
+if (!customElements.get("navbar-component")) {
+    customElements.define("navbar-component", NavbarComponent);
+}

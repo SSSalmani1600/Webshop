@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { WishlistItemComponent } from "../../components/WishlistItemComponent";
+import { WishlistItemComponent } from "../../src/components/WishlistItemComponent";
 
 // Dit test of de wishlist item component goed werkt
 

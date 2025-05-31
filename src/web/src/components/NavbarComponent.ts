@@ -168,6 +168,75 @@ export class NavbarComponent extends HTMLElement {
                     padding: 2px 6px;
                     font-size: 0.75rem;
                 }
+
+                .modal {
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    z-index: 1000;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .modal.active {
+                    display: flex;
+                }
+
+                .modal-content {
+                    background-color: #222;
+                    padding: 2rem;
+                    border-radius: 8px;
+                    text-align: center;
+                    max-width: 400px;
+                    width: 90%;
+                    font-family: 'Inter', sans-serif;
+                }
+
+                .modal-title {
+                    font-size: 1.2rem;
+                    margin-bottom: 1rem;
+                    color: white;
+                    font-family: 'Inter', sans-serif;
+                }
+
+                .modal-buttons {
+                    display: flex;
+                    gap: 1rem;
+                    justify-content: center;
+                    margin-top: 1.5rem;
+                }
+
+                .modal-button {
+                    padding: 0.5rem 1.5rem;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                    transition: background-color 0.2s;
+                    font-family: 'Inter', sans-serif;
+                }
+
+                .modal-button.cancel {
+                    background-color: #444;
+                    color: white;
+                }
+
+                .modal-button.cancel:hover {
+                    background-color: #555;
+                }
+
+                .modal-button.confirm {
+                    background-color: #703bf7;
+                    color: white;
+                }
+
+                .modal-button.confirm:hover {
+                    background-color: #5a2fd6;
+                }
             </style>
 
             <nav>
@@ -197,6 +266,16 @@ export class NavbarComponent extends HTMLElement {
                     </div>
                 </div>
             </nav>
+
+            <div class="modal" id="logout-modal">
+                <div class="modal-content">
+                    <h3 class="modal-title">Weet je zeker dat je wilt uitloggen?</h3>
+                    <div class="modal-buttons">
+                        <button class="modal-button cancel" id="cancel-logout">Annuleren</button>
+                        <button class="modal-button confirm" id="confirm-logout">Uitloggen</button>
+                    </div>
+                </div>
+            </div>
         `;
 
         this.setupEventListeners();
@@ -204,6 +283,9 @@ export class NavbarComponent extends HTMLElement {
 
     private async updateAuthStatus(): Promise<void> {
         const authButtons: HTMLButtonElement | null = this._shadow.getElementById("auth-buttons") as HTMLButtonElement;
+        const modal: HTMLElement = this._shadow.getElementById("logout-modal") as HTMLElement;
+        const cancelButton: HTMLElement = this._shadow.getElementById("cancel-logout") as HTMLElement;
+        const confirmButton: HTMLElement = this._shadow.getElementById("confirm-logout") as HTMLElement;
 
         try {
             const response: Response = await fetch(`${VITE_API_URL}welcome`, {
@@ -224,32 +306,44 @@ export class NavbarComponent extends HTMLElement {
                 // Add logout event listener
                 const logoutBtn: HTMLButtonElement | null = this._shadow.getElementById("logout-btn") as HTMLButtonElement;
                 if (logoutBtn instanceof HTMLElement) {
-                    logoutBtn.addEventListener("click", async () => {
-                        try {
-                            const response: Response = await fetch(`${VITE_API_URL}auth/logout`, {
-                                method: "POST",
-                                credentials: "include",
-                            });
-
-                            if (response.ok) {
-                                // Clear any client-side session data
-                                localStorage.clear();
-                                sessionStorage.clear();
-
-                                // Update UI immediately to show login/register
-                                authButtons.innerHTML = `
-                                    <a href="login.html">Inloggen/Registreren</a>
-                                `;
-
-                                // Refresh the page
-                                window.location.reload();
-                            }
-                        }
-                        catch (error: unknown) {
-                            console.error("Error during logout:", error);
-                        }
+                    logoutBtn.addEventListener("click", () => {
+                        modal.classList.add("active");
                     });
                 }
+
+                // Add modal event listeners
+                cancelButton.addEventListener("click", () => {
+                    modal.classList.remove("active");
+                });
+
+                confirmButton.addEventListener("click", async () => {
+                    try {
+                        const response: Response = await fetch(`${VITE_API_URL}auth/logout`, {
+                            method: "POST",
+                            credentials: "include",
+                        });
+
+                        if (response.ok) {
+                            // Clear any client-side session data
+                            localStorage.clear();
+                            sessionStorage.clear();
+
+                            // Update UI immediately to show login/register
+                            authButtons.innerHTML = `
+                                <a href="login.html">Inloggen/Registreren</a>
+                            `;
+
+                            // Close modal
+                            modal.classList.remove("active");
+
+                            // Refresh the page
+                            window.location.reload();
+                        }
+                    }
+                    catch (error: unknown) {
+                        console.error("Error during logout:", error);
+                    }
+                });
             }
             else {
                 // User is not logged in

@@ -19,15 +19,20 @@ export class PostreviewService {
         }
     }
 
-    public async getReviewsForGame(gameId: number): Promise<{ rating: number; comment: string }[]> {
+    public async getReviewsForGame(gameId: number): Promise<{ rating: number; comment: string; username: string }[]> {
         const connection: PoolConnection = await this.db.openConnection();
 
         try {
             const [rows] = await connection.query(
-                `SELECT rating, comment FROM review WHERE game_id = ?`,
+                `
+                SELECT r.rating, r.comment, u.username
+                FROM review r
+                JOIN user u ON r.user_id = u.id
+                WHERE r.game_id = ?
+                `,
                 [gameId]
             );
-            return rows as { rating: number; comment: string }[];
+            return rows as { rating: number; comment: string; username: string }[];
         } finally {
             connection.release();
         }

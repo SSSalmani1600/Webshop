@@ -62,3 +62,8 @@ Sem, Kevin, Nezdhat, Nabil & Dion.
 - Elke werkdag een korte check-in op gitlab (dit is meer voor jezelf en urenregistratie).
 - Even afstemmen of iedereen door kan of ergens vastloopt.
 - Daily standups uitvoeren en documenteren in gezamelijke 
+
+## Feedback
+
+Jullie hebben een duidelijke en heldere sprint document gemaakt. Top. Ik mis nog wel datum en wie aanwezig was. Verder, wees concreter in de afspraken die je maakt (vervang bijv “donderdag of vrijdag” voor specifiek tijdstip).<br>
+Voor degene die geen twee userstories hadden opgeleverd. Zorg ervoor dat je voor je zelf helder hebt wat er mis ging en dus volgende keer beter moet. Dit kan ik nog niet goed opmaken uit de retro.

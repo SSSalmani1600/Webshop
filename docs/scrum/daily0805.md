@@ -56,13 +56,13 @@
 
 ## 👤 Dion
 - **Wat heb je gedaan?**  
-  - 
-  - 
+  - Gewerkt aan mijn learning journey
+  - User story aangepast
 
 - **Wat ga je doen?**  
-  - 
+  - Verder met registreren user story
 
 - **Zijn er blokkades?**  
-  - 
+  - Nee
 
 

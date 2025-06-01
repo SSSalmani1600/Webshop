@@ -1,7 +1,7 @@
 import { WishlistService } from "../services/WishlistService";
+import { WishlistItem } from "../../../api/src/types/WishlistItem";
 
 export class WishlistItemComponent extends HTMLElement {
-    protected itemPrice: number;
     protected itemId: number;
     protected itemTitle: string;
     protected itemThumbnail: string;
@@ -15,19 +15,17 @@ export class WishlistItemComponent extends HTMLElement {
             throw new Error("Invalid item passed to WishlistItemComponent");
         }
 
-        const wishlistItem: Record<string, unknown> = item as Record<string, unknown>;
+        const wishlistItem: WishlistItem = item as WishlistItem;
 
         if (
             typeof wishlistItem.id !== "number" ||
             typeof wishlistItem.game_id !== "number" ||
-            (typeof wishlistItem.price !== "number" && typeof wishlistItem.price !== "string") ||
             typeof wishlistItem.title !== "string" ||
             typeof wishlistItem.thumbnail !== "string"
         ) {
             throw new Error("Invalid WishlistItem structure");
         }
 
-        this.itemPrice = typeof wishlistItem.price === "string" ? parseFloat(wishlistItem.price) : wishlistItem.price;
         this.itemId = wishlistItem.id;
         this.itemTitle = wishlistItem.title;
         this.itemThumbnail = wishlistItem.thumbnail;
@@ -35,15 +33,13 @@ export class WishlistItemComponent extends HTMLElement {
     }
 
     private async deleteWishlistItem(event: Event): Promise<void> {
-        event.stopPropagation(); // Prevent navigation when clicking delete
+        event.stopPropagation();
 
         try {
             await this.wishlistService.deleteWishlistItem(this.itemId);
 
-            // Remove the element from DOM
             this.remove();
 
-            // Dispatch event to notify parent that item was deleted
             const customEvent: CustomEvent = new CustomEvent("wishlistItemDeleted", {
                 bubbles: true,
                 composed: true,
@@ -55,6 +51,10 @@ export class WishlistItemComponent extends HTMLElement {
             console.error("Error deleting wishlist item:", error);
             alert("Er is een fout opgetreden bij het verwijderen van het item.");
         }
+    }
+
+    public connectedCallback(): void {
+        this.render();
     }
 
     public render(): void {
@@ -104,13 +104,6 @@ export class WishlistItemComponent extends HTMLElement {
                     text-overflow: ellipsis;
                 }
 
-                .item-price {
-                    font-size: 1.2rem;
-                    font-weight: bold;
-                    color: white;
-                    margin: 0.5rem 0;
-                }
-
                 .delete-button {
                     background-color: #ff4444;
                     color: white;
@@ -120,10 +113,11 @@ export class WishlistItemComponent extends HTMLElement {
                     cursor: pointer;
                     font-size: 0.9rem;
                     margin-top: 0.5rem;
+                    transition: background-color 0.2s ease;
                 }
 
                 .delete-button:hover {
-                    background-color: #ff4444;
+                    background-color: #ff6666;
                 }
 
                 @media (max-width: 768px) {
@@ -133,37 +127,18 @@ export class WishlistItemComponent extends HTMLElement {
                 }
             </style>
 
-            <div class="wishlist-item" data-id="${this.itemId}">
+            <div class="wishlist-item" onclick="window.location.href='gameDetail.html?id=${this.gameId}'">
                 <img src="${this.itemThumbnail}" alt="${this.itemTitle}" loading="lazy">
                 <div class="item-content">
                     <h3 class="item-title">${this.itemTitle}</h3>
-                    <div>
-                        <div class="item-price">€${this.itemPrice.toFixed(2)}</div>
-                        <button class="delete-button">Verwijder van favorieten</button>
-                    </div>
+                    <button class="delete-button" onclick="event.stopPropagation()">Verwijderen</button>
                 </div>
             </div>
         `;
 
-        const wishlistItem: HTMLElement | null = this.querySelector(".wishlist-item");
         const deleteButton: HTMLButtonElement | null = this.querySelector(".delete-button");
-
-        if (wishlistItem) {
-            wishlistItem.addEventListener("click", () => {
-                window.location.href = `gameDetail.html?id=${this.gameId}`;
-            });
-        }
-
-        if (deleteButton) {
-            deleteButton.addEventListener("click", e => void this.deleteWishlistItem(e));
-        }
-    }
-
-    public connectedCallback(): void {
-        this.render();
+        deleteButton?.addEventListener("click", this.deleteWishlistItem.bind(this));
     }
 }
 
-if (!customElements.get("wishlist-item")) {
-    customElements.define("wishlist-item", WishlistItemComponent);
-}
+customElements.define("wishlist-item", WishlistItemComponent);

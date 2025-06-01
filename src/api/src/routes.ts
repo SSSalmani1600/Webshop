@@ -14,7 +14,9 @@ import { GameDetailController } from "./controllers/ProductDetailController";
 import { WishlistController } from "./controllers/WishlistController";
 import { NavbarController } from "./controllers/NavbarController";
 import { GameSearchController } from "./controllers/SearchbarController";
+import { ReviewController } from "./controllers/ReviewController";
 import { LogoutController } from "./controllers/LogoutController";
+import { AddToWishlistController } from "./controllers/AddToWishlistController";
 
 export const router: Router = Router();
 
@@ -36,6 +38,8 @@ const wishlistController: WishlistController = new WishlistController();
 const navbarController: NavbarController = new NavbarController();
 const gameSearchController: GameSearchController = new GameSearchController();
 const logoutController: LogoutController = new LogoutController();
+const reviewController: ReviewController = new ReviewController();
+const addToWishlistController: AddToWishlistController = new AddToWishlistController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
@@ -66,6 +70,9 @@ router.get("/discount/codes", (req: Request, res: Response) => discountControlle
 // Checkout endpoint
 router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));
 
+// Review endpoints (aangepast pad)
+router.use("/api", sessionMiddleware, reviewController.router);
+
 // Secret endpoint
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));
 
@@ -89,3 +96,5 @@ router.patch("/products/:id/hidden", (req: Request, res: Response) =>
 
 // Wishlist endpoints
 router.get("/wishlist", (req: Request, res: Response) => wishlistController.getWishlist(req, res));
+router.post("/wishlist/add", (req: Request, res: Response) => addToWishlistController.addToWishlist(req, res));
+router.delete("/wishlist/:id", (req: Request, res: Response) => wishlistController.deleteWishlistItem(req, res));

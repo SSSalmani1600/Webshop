@@ -7,7 +7,6 @@ import { AddToWishlistService } from "../services/AddToWishlistService";
 export class AddToWishlistController {
     private readonly _addToWishlistService: AddToWishlistService = new AddToWishlistService();
 
-
     public async addToWishlist(req: Request, res: Response): Promise<void> {
         try {
             const userId: number | undefined = req.userId;

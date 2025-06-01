@@ -1,9 +1,12 @@
+import { WishlistService } from "../services/WishlistService";
+
 export class WishlistItemComponent extends HTMLElement {
     protected itemPrice: number;
     protected itemId: number;
     protected itemTitle: string;
     protected itemThumbnail: string;
     protected gameId: number;
+    private readonly wishlistService: WishlistService = new WishlistService();
 
     public constructor(item: unknown) {
         super();
@@ -29,6 +32,29 @@ export class WishlistItemComponent extends HTMLElement {
         this.itemTitle = wishlistItem.title;
         this.itemThumbnail = wishlistItem.thumbnail;
         this.gameId = wishlistItem.game_id;
+    }
+
+    private async deleteWishlistItem(event: Event): Promise<void> {
+        event.stopPropagation(); // Prevent navigation when clicking delete
+
+        try {
+            await this.wishlistService.deleteWishlistItem(this.itemId);
+
+            // Remove the element from DOM
+            this.remove();
+
+            // Dispatch event to notify parent that item was deleted
+            const customEvent: CustomEvent = new CustomEvent("wishlistItemDeleted", {
+                bubbles: true,
+                composed: true,
+                detail: { itemId: this.itemId },
+            });
+            this.dispatchEvent(customEvent);
+        }
+        catch (error) {
+            console.error("Error deleting wishlist item:", error);
+            alert("Er is een fout opgetreden bij het verwijderen van het item.");
+        }
     }
 
     public render(): void {
@@ -85,6 +111,21 @@ export class WishlistItemComponent extends HTMLElement {
                     margin: 0.5rem 0;
                 }
 
+                .delete-button {
+                    background-color: #ff4444;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                    margin-top: 0.5rem;
+                }
+
+                .delete-button:hover {
+                    background-color: #ff4444;
+                }
+
                 @media (max-width: 768px) {
                     .wishlist-item {
                         max-width: 100%;
@@ -96,16 +137,25 @@ export class WishlistItemComponent extends HTMLElement {
                 <img src="${this.itemThumbnail}" alt="${this.itemTitle}" loading="lazy">
                 <div class="item-content">
                     <h3 class="item-title">${this.itemTitle}</h3>
-                    <div class="item-price">€${this.itemPrice.toFixed(2)}</div>
+                    <div>
+                        <div class="item-price">€${this.itemPrice.toFixed(2)}</div>
+                        <button class="delete-button">Verwijder van favorieten</button>
+                    </div>
                 </div>
             </div>
         `;
 
         const wishlistItem: HTMLElement | null = this.querySelector(".wishlist-item");
+        const deleteButton: HTMLButtonElement | null = this.querySelector(".delete-button");
+
         if (wishlistItem) {
             wishlistItem.addEventListener("click", () => {
                 window.location.href = `gameDetail.html?id=${this.gameId}`;
             });
+        }
+
+        if (deleteButton) {
+            deleteButton.addEventListener("click", e => void this.deleteWishlistItem(e));
         }
     }
 

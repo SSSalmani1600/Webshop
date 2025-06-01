@@ -9,6 +9,11 @@ Sem, Kevin, Nezdhat, Nabil & Dion.
 ## Datum 
 23-05-2025
 
+## Aanwezig
+Sem, Kevin, Nezdhat, Nabil & Dion.
+
+## Datum
+23/05/2025
 ---
 
 ##  Wat ging goed?

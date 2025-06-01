@@ -13,6 +13,11 @@ import { DiscountCodeRequestBody } from "./interfaces/IDiscountService";
 import { GameDetailController } from "./controllers/ProductDetailController";
 import { startPayment } from './controllers/StripeController';
 
+import { WishlistController } from "./controllers/WishlistController";
+import { NavbarController } from "./controllers/NavbarController";
+import { GameSearchController } from "./controllers/SearchbarController";
+import { ReviewController } from "./controllers/ReviewController";
+import { LogoutController } from "./controllers/LogoutController";
 
 export const router: Router = Router();
 
@@ -30,9 +35,15 @@ const checkoutController: CheckoutController = new CheckoutController();
 const addToCartController: AddToCartController = new AddToCartController();
 const registerController: RegisterController = new RegisterController();
 const discountController: DiscountController = new DiscountController();
+const wishlistController: WishlistController = new WishlistController();
+const navbarController: NavbarController = new NavbarController();
+const gameSearchController: GameSearchController = new GameSearchController();
+const logoutController: LogoutController = new LogoutController();
+const reviewController: ReviewController = new ReviewController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
+router.post("/auth/logout", (req: Request, res: Response) => logoutController.logout(req, res));
 router.post("/register", (req: Request, res: Response) => {
     console.log("POST /register ontvangen", req.body);
     return registerController.addNewUser(req, res);
@@ -49,6 +60,8 @@ router.get("/welcome", (req: Request, res: Response) => welcomeController.getWel
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
 router.delete("/cart/item/:id", (req: Request, res: Response) => cartController.deleteCartItem(req, res));
 router.post("/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
+router.get("/cart/count", (req: Request, res: Response) => navbarController.getCartCount(req, res));
+router.get("/games/search", (req: Request, res: Response) => gameSearchController.searchGamesByTitle(req, res));
 
 // Discount code endpoints
 router.post("/discount/apply", (req: Request<object, object, DiscountCodeRequestBody>, res: Response) => discountController.applyDiscount(req, res));
@@ -57,8 +70,13 @@ router.get("/discount/codes", (req: Request, res: Response) => discountControlle
 // Checkout endpoint
 router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));
 
+<<<<<<< HEAD
 // Stripe betaling endpoint
 router.post('/betaling', (req: Request, res: Response) => startPayment(req, res));
+=======
+// Review endpoints (aangepast pad)
+router.use("/api", sessionMiddleware, reviewController.router);
+>>>>>>> 7a1ae6830d73268c6ac4b5ab2f18ec7873acdafb
 
 
 // Secret endpoint
@@ -66,7 +84,6 @@ router.get("/secret", (req: Request, res: Response) => welcomeController.getSecr
 
 // Order endpoint
 router.post("/order/complete", (req: Request, res: Response) => orderController.createOrder(req, res));
-router.post("/order/complete", (req, res) => orderController.createOrder(req, res));
 router.get("/order/complete", (req, res) => orderController.getBoughtGames(req, res));
 
 router.get("/game", (req, res) => gameDetailController.getGameById(req, res));
@@ -82,3 +99,6 @@ router.post("/add-product", (req: Request, res: Response) => productController.a
 router.patch("/products/:id/hidden", (req: Request, res: Response) =>
     productController.hideProduct(req, res)
 );
+
+// Wishlist endpoints
+router.get("/wishlist", (req: Request, res: Response) => wishlistController.getWishlist(req, res));

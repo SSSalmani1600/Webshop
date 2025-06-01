@@ -1,5 +1,6 @@
 import "@web/components/ProductComponent";
 import "@web/components/Add_to_cartcomponent";
+import "@web/components/NavbarComponent";
 import { html } from "@web/helpers/webComponents";
 
 export class ProductPageComponent extends HTMLElement {
@@ -13,6 +14,7 @@ export class ProductPageComponent extends HTMLElement {
 
         const element: HTMLElement = html`
             <div>
+                <navbar-component></navbar-component>
                 <h1>Alle games</h1>
                 <game-list></game-list>
             </div>

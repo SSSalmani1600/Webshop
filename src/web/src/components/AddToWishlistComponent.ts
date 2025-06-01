@@ -1,9 +1,6 @@
 // Declare VITE_API_URL as it comes from environment variables
 declare const VITE_API_URL: string;
 
-/**
- * Response van de actie om toe te voegen aan favorieten
- */
 interface AddToWishlistResult {
     success: boolean;
     message?: string;
@@ -21,32 +18,20 @@ export class AddToWishlistComponent extends HTMLElement {
     private _button: HTMLButtonElement | null = null;
     private _isInWishlist: boolean = false;
 
-    /**
-     * Initialiseer het component
-     */
     public constructor() {
         super();
     }
 
-    /**
-     * Wordt aangeroepen als het element aan de DOM wordt toegevoegd
-     */
     public connectedCallback(): void {
         this.render();
         this.setupEventListeners();
         void this.checkWishlistStatus();
     }
 
-    /**
-     * Geeft de te observeren attributen terug
-     */
     public static get observedAttributes(): string[] {
         return ["game-id"];
     }
 
-    /**
-     * Handelt wijzigingen in attributen af
-     */
     public attributeChangedCallback(name: string, _oldValue: string, newValue: string): void {
         if (name === "game-id") {
             this._gameId = parseInt(newValue, 10);
@@ -101,9 +86,6 @@ export class AddToWishlistComponent extends HTMLElement {
         this.updateButtonStyle();
     }
 
-    /**
-     * Update de stijl van de knop
-     */
     private updateButtonStyle(): void {
         if (!this._button) return;
 
@@ -117,9 +99,6 @@ export class AddToWishlistComponent extends HTMLElement {
         }
     }
 
-    /**
-     * Zet event listeners op
-     */
     private setupEventListeners(): void {
         this._button?.addEventListener("click", this.handleAddToWishlist.bind(this));
 
@@ -137,9 +116,6 @@ export class AddToWishlistComponent extends HTMLElement {
         });
     }
 
-    /**
-     * Handelt het klikken op de knop af
-     */
     private async handleAddToWishlist(e: Event): Promise<void> {
         e.preventDefault();
 
@@ -220,16 +196,14 @@ export class AddToWishlistComponent extends HTMLElement {
 
         document.body.appendChild(notification);
 
-        // Voeg een fade-in animatie toe
         notification.style.opacity = "0";
         notification.style.transform = "translateY(-20px)";
-        // Trigger de animatie
+
         setTimeout(() => {
             notification.style.opacity = "1";
             notification.style.transform = "translateY(0)";
         }, 10);
 
-        // Verwijder de notificatie na 3 seconden met een fade-out effect
         setTimeout(() => {
             notification.style.opacity = "0";
             notification.style.transform = "translateY(-20px)";
@@ -242,5 +216,4 @@ export class AddToWishlistComponent extends HTMLElement {
     }
 }
 
-// Registreer het component
 customElements.define("add-to-wishlist", AddToWishlistComponent);

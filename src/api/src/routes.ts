@@ -70,13 +70,10 @@ router.get("/discount/codes", (req: Request, res: Response) => discountControlle
 // Checkout endpoint
 router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));
 
-<<<<<<< HEAD
 // Stripe betaling endpoint
 router.post('/betaling', (req: Request, res: Response) => startPayment(req, res));
-=======
 // Review endpoints (aangepast pad)
 router.use("/api", sessionMiddleware, reviewController.router);
->>>>>>> 7a1ae6830d73268c6ac4b5ab2f18ec7873acdafb
 
 
 // Secret endpoint

@@ -71,7 +71,6 @@ router.post("/checkout", (req: Request, res: Response) => checkoutController.cre
 // Review endpoints (aangepast pad)
 router.use("/api", sessionMiddleware, reviewController.router);
 
-
 // Secret endpoint
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));
 

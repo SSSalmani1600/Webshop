@@ -13,16 +13,19 @@ export class WelcomeController {
     private readonly _welcomeService: IWelcomeService = new WelcomeService();
     private readonly _sessionService: ISessionService = new SessionService();
 
-    public async getSession(_req: Request, res: Response): Promise<void> {
-        // Create a new session without a user ID
-        const sessionId: string | undefined = await this._sessionService.createSession(0);
+    public async getSession(req: Request, res: Response): Promise<void> {
+    const sessionId: string | undefined = await this._sessionService.createSession(req.userId ?? 0);
 
-        res
-            .cookie("session", sessionId)
-            .json({
-                sessionId: sessionId,
-            });
-    }
+    const username: string | undefined = req.username ?? "Anoniem";
+
+    res
+        .cookie("session", sessionId)
+        .json({
+            sessionId,
+            username,
+        });
+}
+
 
     public async deleteSession(req: Request, res: Response): Promise<void> {
         const result: boolean | undefined = await this._sessionService.deleteSession(

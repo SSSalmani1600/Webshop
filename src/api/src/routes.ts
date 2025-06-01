@@ -95,3 +95,4 @@ router.patch("/products/:id/hidden", (req: Request, res: Response) =>
 
 // Wishlist endpoints
 router.get("/wishlist", (req: Request, res: Response) => wishlistController.getWishlist(req, res));
+router.delete("/wishlist/:id", (req: Request, res: Response) => wishlistController.deleteWishlistItem(req, res));

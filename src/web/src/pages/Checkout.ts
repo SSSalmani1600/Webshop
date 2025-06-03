@@ -20,7 +20,7 @@ export class Checkout extends HTMLElement {
                         <h3>Verzendadres</h3>
                         <form id="adresForm">
                             <label>Naam <span class="required">*</span></label>
-                            <input type="text" name="naam" placeholder="Bijv. Nabil Salmani" required>
+                            <input type="text" name="naam" placeholder="Bijv. Henk Biervliet" required>
 
                             <label>Straat + Huisnummer <span class="required">*</span></label>
                             <input type="text" name="straat_huisnummer" placeholder="Bijv. Parklaan 12A" required>
@@ -31,7 +31,7 @@ export class Checkout extends HTMLElement {
                             <label>Telefoonnummer <span class="required">*</span></label>
                             <input type="text" name="telefoonnummer" placeholder="Bijv. 0612345678" required>
 
-                            <button type="submit" id="place-order" class="checkout-btn">Adres opslaan</button>
+                            <button type="submit" id="place-order" class="checkout-btn">Adres opslaan en door naar betaling.</button>
                         </form>
                     </div>
                 </section>

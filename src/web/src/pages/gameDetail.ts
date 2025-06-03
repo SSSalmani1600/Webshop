@@ -1,5 +1,6 @@
 import "@web/components/NavbarComponent";
 import "@web/components/ProductDetailComponent";
+import "@web/components/AddToWishlistComponent";
 import { html } from "@web/helpers/webComponents";
 
 export class GameDetailPageComponent extends HTMLElement {

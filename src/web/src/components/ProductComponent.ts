@@ -1,5 +1,6 @@
 import type { Game } from "../../../api/src/types/Game";
 import type { GamePrices } from "../../../api/src/types/GamePrices";
+import "@web/components/AddToWishlistComponent";
 
 // Interface representing the response structure for a session
 interface SessionResponse {
@@ -231,7 +232,10 @@ export class GameList extends HTMLElement {
                     <strong>${gameTitle}</strong>
                     <div class="price">${price}</div>
 
+                    <div class="game-actions">
                         <a class="view-button" href="gameDetail.html?id=${game.id}">Bekijk game</a>
+                        <add-to-wishlist game-id="${game.id}"></add-to-wishlist>
+                    </div>
                     <add-to-cart game-id="${game.id}" price="${game.price ?? 0}"></add-to-cart>
                 </div>
             `;

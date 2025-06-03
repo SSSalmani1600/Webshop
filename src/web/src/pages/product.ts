@@ -1,5 +1,6 @@
 import "@web/components/ProductComponent";
 import "@web/components/Add_to_cartcomponent";
+import "@web/components/AddToWishlistComponent";
 import "@web/components/NavbarComponent";
 import { html } from "@web/helpers/webComponents";
 

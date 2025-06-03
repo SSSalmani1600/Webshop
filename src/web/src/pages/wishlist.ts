@@ -1,10 +1,12 @@
 import { WishlistItem } from "../../../api/src/types/WishlistItem";
 import { WishlistItemComponent } from "../components/WishlistItemComponent";
 import { NavbarComponent } from "../components/NavbarComponent";
+import { WishlistService } from "../services/WishlistService";
 
 export class WishlistPageComponent extends HTMLElement {
     private wishlistItems: WishlistItem[] = [];
     private isUpdating: boolean = false;
+    private readonly wishlistService: WishlistService = new WishlistService();
 
     public constructor() {
         super();
@@ -61,7 +63,7 @@ export class WishlistPageComponent extends HTMLElement {
                 width: 100%;
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-                gap: 1.5rem;
+                gap: 1rem;
             }
 
             .empty-message {
@@ -72,7 +74,7 @@ export class WishlistPageComponent extends HTMLElement {
                 justify-content: center;
                 text-align: center;
                 margin-top: 4rem;
-                gap: 1.5rem;
+                gap: 1rem;
             }
 
             .empty-wishlist-text {
@@ -101,35 +103,9 @@ export class WishlistPageComponent extends HTMLElement {
                 display: block;
             }
 
-            .error-message {
-                text-align: center;
-                padding: 2rem;
-                color: #ff4444;
-                font-size: 1.1rem;
-            }
-
             @media (max-width: 768px) {
                 .wishlist-container {
                     padding: 1rem;
-                }
-
-                .wishlist-content {
-                    flex-direction: column;
-                }
-
-                .wishlist-item {
-                    flex-direction: column;
-                    align-items: flex-start;
-                }
-
-                .wishlist-item img {
-                    width: 100%;
-                    height: auto;
-                }
-
-                .item-price {
-                    text-align: left;
-                    padding-top: 0.5rem;
                 }
             }
         `;
@@ -156,42 +132,35 @@ export class WishlistPageComponent extends HTMLElement {
         void this.fetchWishlist();
     }
 
+    private async deleteWishlistItem(itemId: number): Promise<void> {
+        try {
+            await this.wishlistService.deleteWishlistItem(itemId);
+            // Update na verwijdering
+            this.wishlistItems = this.wishlistItems.filter(item => item.id !== itemId);
+            this.updateWishlistDisplay();
+        }
+        catch (error) {
+            console.error("Error deleting item:", error);
+            void this.fetchWishlist();
+        }
+    }
+
     private async fetchWishlist(): Promise<void> {
         if (this.isUpdating) return;
         this.isUpdating = true;
 
         try {
-            const API_BASE: string = window.location.hostname.includes("localhost")
-                ? "http://localhost:3001"
-                : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
-
-            const response: Response = await fetch(`${API_BASE}/wishlist`, {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    this.showLoginMessage();
-                    return;
-                }
-                throw new Error(`Failed to fetch wishlist: ${response.statusText}`);
-            }
-
-            const data: unknown = await response.json();
-            if (!Array.isArray(data)) {
-                throw new Error("Invalid response format");
-            }
-
-            this.wishlistItems = data as WishlistItem[];
+            this.wishlistItems = await this.wishlistService.getWishlist();
             this.updateWishlistDisplay();
         }
         catch (error: unknown) {
             console.error("Fout bij ophalen favorieten:", error instanceof Error ? error.message : "Onbekende fout");
+
+            if (error instanceof Error && error.message === "UNAUTHORIZED") {
+                this.showLoginMessage();
+                return;
+            }
+
             const wishlistList: HTMLElement | null = this.shadowRoot?.querySelector("#wishlist-list") as HTMLElement | null;
             if (wishlistList) {
                 wishlistList.innerHTML = `
@@ -267,6 +236,10 @@ export class WishlistPageComponent extends HTMLElement {
 
         this.wishlistItems.forEach((item: WishlistItem) => {
             const element: WishlistItemComponent = new WishlistItemComponent(item);
+            element.addEventListener("wishlistItemDeleted", async (event: Event) => {
+                const customEvent: CustomEvent<{ itemId: number }> = event as CustomEvent<{ itemId: number }>;
+                await this.deleteWishlistItem(customEvent.detail.itemId);
+            });
             wishlistList.appendChild(element);
         });
     }

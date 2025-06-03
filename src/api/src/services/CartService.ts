@@ -47,4 +47,8 @@ export class CartService {
             connection.release();
         }
     }
+
+    public async clearCartByUserId(userId: number): Promise<void> {
+        
+    }
 }

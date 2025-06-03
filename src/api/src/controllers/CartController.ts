@@ -86,4 +86,8 @@ export class CartController {
             res.status(500).json({ error: "Internal server error" });
         }
     }
+
+    public async clearCart(req: Request, res: Response): Promise<void> {
+        const userId: number | null = getUserIdFromCookie(req);
+    }
 }

@@ -1,7 +1,16 @@
 import type { Game } from "@api/types/Game";
-import { SessionResponse } from "@shared/types";
-import { PostreviewApiService } from "@web/services/PostreviewApiService";
 import type { ReviewRequestBody } from "@web/interfaces/IReviewService";
+import { PostreviewApiService } from "@web/services/PostreviewApiService";
+import "@web/components/AddToWishlistComponent";
+
+interface SessionData {
+    sessionId: string;
+    username: string;
+}
+
+interface ReviewResponse {
+    message: string;
+}
 
 export class GameDetailComponent extends HTMLElement {
     private shadow: ShadowRoot;
@@ -17,7 +26,7 @@ export class GameDetailComponent extends HTMLElement {
     }
 
     private renderLoading(): void {
-        this.shadow.innerHTML = `<p style="color: white;">Game wordt geladen...</p>`;
+        this.shadow.innerHTML = "<p style=\"color: white;\">Game wordt geladen...</p>";
     }
 
     private async loadGame(): Promise<void> {
@@ -25,7 +34,7 @@ export class GameDetailComponent extends HTMLElement {
         const gameId: string | null = urlParams.get("id");
 
         if (!gameId) {
-            this.shadow.innerHTML = `<p style="color: red;">Geen game ID opgegeven.</p>`;
+            this.shadow.innerHTML = "<p style=\"color: red;\">Geen game ID opgegeven.</p>";
             return;
         }
 
@@ -40,14 +49,15 @@ export class GameDetailComponent extends HTMLElement {
 
             if (!response.ok) throw new Error("Kon game niet ophalen.");
 
-            const game: Game = await response.json();
+            const game: Game = await response.json() as Game;
             this.renderGame(game, parseInt(gameId), username);
-        } catch (error) {
-            this.shadow.innerHTML = `<p style="color: red;">Fout: ${(error as Error).message}</p>`;
+        }
+        catch (error) {
+            this.shadow.innerHTML = "<p style=\"color: red;\">Fout: " + (error as Error).message + "</p>";
         }
     }
 
-    private async getSession(): Promise<{ sessionId: string; username: string }> {
+    private async getSession(): Promise<SessionData> {
         const res: Response = await fetch(`${VITE_API_URL}session`, {
             credentials: "include", //  cookies meesturen
         });
@@ -58,13 +68,10 @@ export class GameDetailComponent extends HTMLElement {
             data !== null &&
             "sessionId" in data &&
             "username" in data &&
-            typeof (data as SessionResponse).sessionId === "string" &&
-            typeof (data as SessionResponse).username === "string"
+            typeof (data as SessionData).sessionId === "string" &&
+            typeof (data as SessionData).username === "string"
         ) {
-            return {
-                sessionId: (data as SessionResponse).sessionId,
-                username: (data as SessionResponse).username,
-            };
+            return data as SessionData;
         }
 
         throw new Error("Invalid session object");
@@ -82,7 +89,10 @@ export class GameDetailComponent extends HTMLElement {
     ): void {
         this.shadow.innerHTML = `
             <div class="box" style="max-width: 1500px; margin: 0 auto 20px auto;">
-                <h2><br><strong>${game.title}</strong></h2>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <h2><br><strong>${game.title}</strong></h2>
+                    <add-to-wishlist game-id="${gameId}"></add-to-wishlist>
+                </div>
                 <img src="${game.thumbnail}" alt="${game.title}" />
             </div>
 
@@ -112,17 +122,15 @@ export class GameDetailComponent extends HTMLElement {
             </div>
         `;
 
-        const reviewService = new PostreviewApiService();
-        const reviewButton = this.shadow.querySelector<HTMLButtonElement>("#submit-review");
-        const reviewInput = this.shadow.querySelector<HTMLTextAreaElement>("#review-input");
-        const reviewStatus = this.shadow.querySelector<HTMLDivElement>("#review-status");
+        const reviewService: PostreviewApiService = new PostreviewApiService();
+        const reviewButton: HTMLButtonElement | null = this.shadow.querySelector("#submit-review");
+        const reviewInput: HTMLTextAreaElement | null = this.shadow.querySelector("#review-input");
+        const reviewStatus: HTMLDivElement | null = this.shadow.querySelector("#review-status");
+        const currentUsername: string = username;
+        let selectedRating: number = 0;
+        const stars: NodeListOf<HTMLSpanElement> = this.shadow.querySelectorAll("#star-rating span");
 
-        const currentUsername = username;
-
-        let selectedRating = 0;
-        const stars = this.shadow.querySelectorAll<HTMLSpanElement>("#star-rating span");
-
-        stars.forEach((star) => {
+        stars.forEach(star => {
             star.addEventListener("click", () => {
                 selectedRating = parseInt(star.dataset.value || "0");
                 stars.forEach((s, index) => {
@@ -133,9 +141,9 @@ export class GameDetailComponent extends HTMLElement {
         });
 
         reviewButton?.addEventListener("click", async () => {
-            const comment = reviewInput?.value.trim();
-            const rating = selectedRating;
-            const userId = 1;
+            const comment: string | undefined = reviewInput?.value.trim();
+            const rating: number = selectedRating;
+            const userId: number = 1;
 
             if (!comment || rating < 1) {
                 reviewStatus!.textContent = "Vul een review én een waardering in.";
@@ -150,14 +158,14 @@ export class GameDetailComponent extends HTMLElement {
                 username: currentUsername,
             };
 
-            const response = await reviewService.postReview(gameId, body);
+            const response: ReviewResponse = await reviewService.postReview(gameId, body);
 
             reviewStatus!.textContent = response.message;
             reviewStatus!.style.color = "lightgreen";
             reviewInput!.value = "";
             selectedRating = 0;
 
-            stars.forEach((s) => {
+            stars.forEach(s => {
                 s.textContent = "☆";
                 s.style.color = "gray";
             });
@@ -169,14 +177,14 @@ export class GameDetailComponent extends HTMLElement {
     }
 
     private async loadReviews(gameId: number): Promise<void> {
-        const output = this.shadow.querySelector("#reviews-output");
+        const output: HTMLElement | null = this.shadow.querySelector("#reviews-output");
         if (!output) return;
 
         try {
-            const res = await fetch(`${VITE_API_URL}api/games/${gameId}/reviews`, {
+            const res: Response = await fetch(`${VITE_API_URL}api/games/${gameId}/reviews`, {
                 credentials: "include",
             });
-            const reviews = await res.json();
+            const reviews: unknown = await res.json();
 
             if (!Array.isArray(reviews)) return;
 
@@ -191,7 +199,8 @@ export class GameDetailComponent extends HTMLElement {
                     </div>
                 `)
                 .join("");
-        } catch (err) {
+        }
+        catch {
             output.innerHTML = "<p style='color:red;'>Kon reviews niet ophalen.</p>";
         }
     }

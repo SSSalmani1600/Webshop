@@ -31,7 +31,7 @@ export class Checkout extends HTMLElement {
                             <label>Telefoonnummer <span class="required">*</span></label>
                             <input type="text" name="telefoonnummer" placeholder="Bijv. 0612345678" required>
 
-                            <button type="submit" id="place-order" class="checkout-btn">Adres opslaan</button>
+                            <button type="submit" id="place-order" class="checkout-btn">Adres opslaan en door naar betaling.</button>
                         </form>
                     </div>
                 </section>

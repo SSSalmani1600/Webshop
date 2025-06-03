@@ -49,6 +49,19 @@ export class CartService {
     }
 
     public async clearCartByUserId(userId: number): Promise<void> {
-        
+        const connection: PoolConnection = await this._databaseService.openConnection();
+        try {
+            await connection.execute(
+                "DELETE FROM cart_items WHERE user_id = ?",
+                [userId]
+            );
+        }
+        catch (error) {
+            console.error("Database error bij legen van winkelmand:", error);
+            throw error;
+        }
+        finally {
+            connection.release();
+        }
     }
 }

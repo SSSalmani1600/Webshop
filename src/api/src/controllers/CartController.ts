@@ -89,5 +89,19 @@ export class CartController {
 
     public async clearCart(req: Request, res: Response): Promise<void> {
         const userId: number | null = getUserIdFromCookie(req);
+
+        if (!userId) {
+            res.status(401).json({ error: "Geen geldige gebruiker in cookie" });
+            return;
+        }
+
+        try {
+            await cartService.clearCartByUserId(userId);
+            res.status(204).send();
+        }
+        catch (error) {
+            console.error("Fout bij legen van winkelmand:", error);
+            res.status(500).json({ error: "Interne serverfout" });
+        }
     }
 }

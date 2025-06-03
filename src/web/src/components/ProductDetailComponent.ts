@@ -49,7 +49,7 @@ export class GameDetailComponent extends HTMLElement {
 
     private async getSession(): Promise<{ sessionId: string; username: string }> {
         const res: Response = await fetch(`${VITE_API_URL}session`, {
-            credentials: "include", // ✅ cookies meesturen
+            credentials: "include", //  cookies meesturen
         });
         const data: unknown = await res.json();
 

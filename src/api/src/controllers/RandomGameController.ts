@@ -16,7 +16,7 @@ export class RandomGameController {
      * Handelt het request af voor het ophalen van een willekeurige game
      * Endpoint: GET /api/games/random
      */
-    public async getRandomGame(req: Request, res: Response): Promise<void> {
+    public async getRandomGame(_req: Request, res: Response): Promise<void> {
         try {
             const randomGame: RandomGameData | null = await this._randomGameService.getRandomGame();
 

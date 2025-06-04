@@ -47,7 +47,7 @@ export class RandomGameComponent extends HTMLElement {
             <style>
                 :host {
                     display: block;
-                    margin: 1.5rem 0;
+                    margin: 8rem 0;
                 }
 
                 .random-game-container {

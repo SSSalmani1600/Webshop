@@ -21,15 +21,16 @@ webshop-page-index {
 /* Welcome section improvements */
 welcome-user {
     display: block;
-    margin-bottom: 3rem;
+    margin-bottom: 3rem 0;
+    margin: 0rem 0;
     padding: 0 1rem;
 }
 
 /* Random Game component spacing */
 random-game {
     display: block;
-    margin: 3rem 0;
-    padding: 0 1rem;
+    margin: 5rem 0 0rem 0;
+    padding: 2 1rem;
 }
 
 /* Smooth transitions for all interactive elements */
@@ -40,8 +41,8 @@ random-game {
 /* Homepage Featured Games Styling */
 .featured-games {
     max-width: 1200px;
-    margin: 4rem auto 2rem auto;
-    padding: 3rem 1rem;
+    margin: 0rem auto 2rem auto;
+    padding: 1rem 1rem 3rem 1rem;
     border-radius: 12px;
 }
 

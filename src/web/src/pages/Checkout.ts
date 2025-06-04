@@ -6,7 +6,7 @@ export class Checkout extends HTMLElement {
     // Zodra pagina opent → dingen laten zien op scherm + winkelwagen ophalen
     public connectedCallback(): void {
         this.render(); // dingen op scherm zetten
-        this.loadCartItems(); // spullen uit winkelwagen ophalen
+        void this.loadCartItems(); // spullen uit winkelwagen ophalen
     }
 
     // Hier wordt alles op het scherm gezet (adresformulier + winkelwagen)

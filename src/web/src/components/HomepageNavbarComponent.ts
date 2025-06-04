@@ -1,7 +1,11 @@
 // Declare VITE_API_URL as it comes from environment variables
 declare const VITE_API_URL: string;
 
-export class NavbarComponent extends HTMLElement {
+/**
+ * Homepage Navbar Component
+ * Een vereenvoudigde navbar specifiek voor de homepage
+ */
+export class HomepageNavbarComponent extends HTMLElement {
     private _shadow!: ShadowRoot;
 
     public constructor() {
@@ -11,32 +15,39 @@ export class NavbarComponent extends HTMLElement {
 
     public connectedCallback(): void {
         this.render();
-        this.updateCartCount();
-        void this.updateAuthStatus();
 
-        // Listen for cart updates
-        document.addEventListener("cart-updated", () => {
-            this.updateCartCount();
-        });
-
-        // Check login status every 5 seconds
-        setInterval(() => {
+        // Check if we have a custom auth button mode
+        const authMode: string | null = this.getAttribute("auth-mode");
+        if (authMode === "login" || authMode === "register") {
+            this.renderCustomAuthButton(authMode);
+        }
+        else {
+            // Default behavior - check login status
             void this.updateAuthStatus();
-        }, 5000);
+
+            // Listen for cart updates
+            document.addEventListener("cart-updated", () => {
+                this.updateCartCount();
+            });
+
+            // Check login status every 5 seconds
+            setInterval(() => {
+                void this.updateAuthStatus();
+            }, 5000);
+        }
     }
 
     private render(): void {
         this._shadow.innerHTML = `
             <style>
                 nav {
-                    display: grid;
-                    grid-template-columns: auto 1fr auto auto;
+                    display: flex;
+                    justify-content: space-between;
                     align-items: center;
                     padding: 1rem 2rem;
                     background-color: #222;
                     color: white;
                     font-family: 'Inter', sans-serif;
-                    gap: 1rem;
                 }
 
                 .logo {
@@ -56,8 +67,7 @@ export class NavbarComponent extends HTMLElement {
 
                 .nav-links {
                     display: flex;
-                    justify-content: center;
-                    gap: 20px;
+                    gap: 2rem;
                 }
 
                 .nav-links a {
@@ -74,29 +84,6 @@ export class NavbarComponent extends HTMLElement {
                     color: white;
                 }
 
-                .search {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                }
-
-                .search input {
-                    padding: 6px 10px;
-                    border-radius: 6px;
-                    border: none;
-                    font-size: 1rem;
-                }
-
-                .search button {
-                    background-color: #7f41f5;
-                    color: white;
-                    border: none;
-                    padding: 6px 12px;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-size: 1rem;
-                }
-
                 .right-section {
                     display: flex;
                     align-items: center;
@@ -106,7 +93,6 @@ export class NavbarComponent extends HTMLElement {
                 .auth-links {
                     display: flex;
                     align-items: center;
-                    margin-left: auto;
                 }
 
                 .auth-links a {
@@ -240,6 +226,10 @@ export class NavbarComponent extends HTMLElement {
                 .modal-button.confirm:hover {
                     background-color: #5a2fd6;
                 }
+
+                .hidden {
+                    display: none !important;
+                }
             </style>
 
             <nav>
@@ -251,16 +241,11 @@ export class NavbarComponent extends HTMLElement {
                 <div class="nav-links">
                     <a href="index.html">Home</a>
                     <a href="product.html">Games</a>
-                    <a href="wishlist.html">Favorieten</a>
-                </div>
-
-                <div class="search">
-                    <input type="text" id="search-input" placeholder="Zoek games..." />
-                    <button id="search-btn">🔍</button>
+                    <a href="wishlist.html" id="favorieten-link" class="hidden">Favorieten</a>
                 </div>
 
                 <div class="right-section">
-                    <div class="cart" id="cart">
+                    <div class="cart hidden" id="cart">
                         <img src="/assets/images/cart_empty.png" alt="Cart icon" />
                         <span class="cart-count" id="cart-count">0</span>
                     </div>
@@ -289,6 +274,8 @@ export class NavbarComponent extends HTMLElement {
         const modal: HTMLElement = this._shadow.getElementById("logout-modal") as HTMLElement;
         const cancelButton: HTMLElement = this._shadow.getElementById("cancel-logout") as HTMLElement;
         const confirmButton: HTMLElement = this._shadow.getElementById("confirm-logout") as HTMLElement;
+        const favorietenLink: HTMLElement | null = this._shadow.getElementById("favorieten-link");
+        const cartElement: HTMLElement | null = this._shadow.getElementById("cart");
 
         try {
             const response: Response = await fetch(`${VITE_API_URL}welcome`, {
@@ -305,6 +292,11 @@ export class NavbarComponent extends HTMLElement {
                         Uitloggen
                     </button>
                 `;
+
+                // Show favorieten and cart for logged in users
+                favorietenLink?.classList.remove("hidden");
+                cartElement?.classList.remove("hidden");
+                this.updateCartCount();
 
                 // Add logout event listener
                 const logoutBtn: HTMLButtonElement | null = this._shadow.getElementById("logout-btn") as HTMLButtonElement;
@@ -333,8 +325,12 @@ export class NavbarComponent extends HTMLElement {
 
                             // Update UI immediately to show login/register
                             authButtons.innerHTML = `
-                                <a href="login.html">Inloggen/Registreren</a>
+                                <a href="login.html">Inloggen</a>
                             `;
+
+                            // Hide favorieten and cart
+                            favorietenLink?.classList.add("hidden");
+                            cartElement?.classList.add("hidden");
 
                             // Close modal
                             modal.classList.remove("active");
@@ -351,16 +347,22 @@ export class NavbarComponent extends HTMLElement {
             else {
                 // User is not logged in
                 authButtons.innerHTML = `
-                    <a href="login.html">Inloggen/Registreren</a>
+                    <a href="login.html">Inloggen</a>
                 `;
+
+                // Hide favorieten and cart for non-logged in users
+                favorietenLink?.classList.add("hidden");
+                cartElement?.classList.add("hidden");
             }
         }
         catch (error: unknown) {
             console.error("Error checking auth status:", error);
             // Default to showing login link
             authButtons.innerHTML = `
-                <a href="login.html">Inloggen/Registreren</a>
+                <a href="login.html">Inloggen</a>
             `;
+            favorietenLink?.classList.add("hidden");
+            cartElement?.classList.add("hidden");
         }
     }
 
@@ -369,27 +371,6 @@ export class NavbarComponent extends HTMLElement {
         if (cartEl instanceof HTMLElement) {
             cartEl.addEventListener("click", () => {
                 window.location.href = "cart.html";
-            });
-        }
-
-        const searchBtnEl: HTMLButtonElement | null = this._shadow.getElementById("search-btn") as HTMLButtonElement;
-        const searchInputEl: HTMLInputElement | null = this._shadow.getElementById("search-input") as HTMLInputElement;
-
-        if (searchBtnEl instanceof HTMLElement && searchInputEl instanceof HTMLInputElement) {
-            searchBtnEl.addEventListener("click", () => {
-                const query: string = searchInputEl.value.trim();
-                if (query) {
-                    window.location.href = `/search.html?query=${encodeURIComponent(query)}`;
-                }
-            });
-
-            searchInputEl.addEventListener("keypress", (e: KeyboardEvent) => {
-                if (e.key === "Enter") {
-                    const query: string = searchInputEl.value.trim();
-                    if (query) {
-                        window.location.href = `/search.html?query=${encodeURIComponent(query)}`;
-                    }
-                }
             });
         }
     }
@@ -420,6 +401,29 @@ export class NavbarComponent extends HTMLElement {
                 }
             });
     }
+
+    private renderCustomAuthButton(authMode: string): void {
+        const authButtons: HTMLElement | null = this._shadow.getElementById("auth-buttons");
+        const favorietenLink: HTMLElement | null = this._shadow.getElementById("favorieten-link");
+        const cartElement: HTMLElement | null = this._shadow.getElementById("cart");
+
+        // Hide favorieten and cart for login/register pages
+        favorietenLink?.classList.add("hidden");
+        cartElement?.classList.add("hidden");
+
+        if (authMode === "login") {
+            // On login page, show "Registreren" button
+            if (authButtons) {
+                authButtons.innerHTML = "<a href=\"register.html\">Registreren</a>";
+            }
+        }
+        else if (authMode === "register") {
+            // On register page, show "Inloggen" button
+            if (authButtons) {
+                authButtons.innerHTML = "<a href=\"login.html\">Inloggen</a>";
+            }
+        }
+    }
 }
 
-customElements.define("navbar-component", NavbarComponent);
+customElements.define("homepage-navbar", HomepageNavbarComponent);

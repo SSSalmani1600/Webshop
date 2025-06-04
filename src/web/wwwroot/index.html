@@ -10,19 +10,25 @@
     <link href="/assets/css/default.css" rel="stylesheet">
     <link href="/assets/css/homepage.css" rel="stylesheet">
     <script type="module" src="/src/components/HomepageNavbarComponent.ts"></script>
+    <script type="module" src="/src/components/RandomGameComponent.ts"></script>
    
 </head>
 
 <body>
     <homepage-navbar></homepage-navbar>
     
-    <webshop-page-index></webshop-page-index>
+    <main class="homepage-content">
+        <webshop-page-index></webshop-page-index>
 
-    <!-- Featured Games Section -->
-    <section class="featured-games">
-        <h2>Uitgelichte Games</h2>
-        <homepage-games></homepage-games>
-    </section>
+        <!-- Random Game Section -->
+        <random-game></random-game>
+
+        <!-- Featured Games Section -->
+        <section class="featured-games">
+            <h2>Uitgelichte Games</h2>
+            <homepage-games></homepage-games>
+        </section>
+    </main>
 
     <script src="/src/pages/index.ts" type="module"></script>
 </body>

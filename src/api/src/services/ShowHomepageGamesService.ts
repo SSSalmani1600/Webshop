@@ -35,7 +35,7 @@ export class ShowHomepageGamesService {
                         WHEN 17 THEN 1
                         WHEN 12 THEN 2
                         WHEN 26 THEN 3
-                        WHEN 46 THEN 4
+                        WHEN 46 THEN 4  
                         WHEN 3 THEN 5
                     END
                 `

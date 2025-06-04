@@ -17,6 +17,7 @@ import { WishlistController } from "./controllers/WishlistController";
 import { NavbarController } from "./controllers/NavbarController";
 import { GameSearchController } from "./controllers/SearchbarController";
 import { LogoutController } from "./controllers/LogoutController";
+import { RandomGameController } from "./controllers/RandomGameController";
 
 export const router: Router = Router();
 
@@ -40,6 +41,7 @@ const navbarController: NavbarController = new NavbarController();
 const gameSearchController: GameSearchController = new GameSearchController();
 const logoutController: LogoutController = new LogoutController();
 const showHomepageGamesController: ShowHomepageGamesController = new ShowHomepageGamesController();
+const randomGameController: RandomGameController = new RandomGameController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
@@ -97,3 +99,6 @@ router.get("/wishlist", (req: Request, res: Response) => wishlistController.getW
 
 // Homepage games endpoint
 router.get("/homepage-games", (req: Request, res: Response) => showHomepageGamesController.getHomepageGames(req, res));
+
+// Random game endpoint voor "Verras mij" functionaliteit
+router.get("/games/random", (req: Request, res: Response) => randomGameController.getRandomGame(req, res));

@@ -1,4 +1,4 @@
-# Daily Stand-up Verslag 15/05
+# Daily Stand-up Verslag 22/05
 
 ## 👤 Kevin
 - **Wat heb je gedaan?**  
@@ -15,13 +15,13 @@
 
 ## 👤 Nabil
 - **Wat heb je gedaan?**
-    -
+    - verder gewerkt aan documentatie en user stories
 
 - **Wat ga je doen?**  
-    -
+    - verder gewerkt aan documentatie en user stories
 
 - **Zijn er blokkades?**  
-    -
+    - nog niet
 
 ---
 
@@ -50,13 +50,13 @@
 
 ## 👤 Dion
 - **Wat heb je gedaan?**  
-  - 
-  - 
+  - Code optimaal gemaakt voor de sprint review
+  - Website gedployed
 
 - **Wat ga je doen?**  
-  - 
+  - Merge request bekijken en accepteren voor de sprint review
 
 - **Zijn er blokkades?**  
-  - 
+  - Nee
 
 

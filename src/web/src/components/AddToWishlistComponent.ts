@@ -1,57 +1,68 @@
-import { WebshopEventService } from "../services/WebshopEventService";
-import { WebshopEvent } from "../enums/WebshopEvent";
-
 // Declare VITE_API_URL as it comes from environment variables
 declare const VITE_API_URL: string;
 
-/**
- * Response van de actie om toe te voegen aan het winkelmandje
- */
-interface AddToCartResult {
+interface AddToWishlistResult {
     success: boolean;
     message?: string;
 }
 
-/**
- * Component voor het toevoegen van een game aan het winkelmandje
- */
-export class AddToCartComponent extends HTMLElement {
-    private _gameId: number = 0;
-    private _price: number = 0;
-    private _eventService: WebshopEventService = new WebshopEventService();
-    private _button: HTMLButtonElement | null = null;
+interface WishlistItem {
+    game_id: number;
+}
 
-    /**
-     * Initialiseer het component
-     */
+/**
+ * Component voor het toevoegen van een game aan favorieten
+ */
+export class AddToWishlistComponent extends HTMLElement {
+    private _gameId: number = 0;
+    private _button: HTMLButtonElement | null = null;
+    private _isInWishlist: boolean = false;
+
     public constructor() {
         super();
     }
 
-    /**
-     * Wordt aangeroepen als het element aan de DOM wordt toegevoegd
-     */
     public connectedCallback(): void {
         this.render();
         this.setupEventListeners();
+        void this.checkWishlistStatus();
     }
 
-    /**
-     * Geeft de te observeren attributen terug
-     */
     public static get observedAttributes(): string[] {
-        return ["game-id", "price"];
+        return ["game-id"];
     }
 
-    /**
-     * Handelt wijzigingen in attributen af
-     */
     public attributeChangedCallback(name: string, _oldValue: string, newValue: string): void {
         if (name === "game-id") {
             this._gameId = parseInt(newValue, 10);
+            void this.checkWishlistStatus();
         }
-        else if (name === "price") {
-            this._price = parseFloat(newValue);
+    }
+
+    /**
+     * Controleer of de game al in de wishlist zit
+     */
+    private async checkWishlistStatus(): Promise<void> {
+        try {
+            const response: Response = await fetch(`${VITE_API_URL}wishlist`, {
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    this._isInWishlist = false;
+                    this.updateButtonStyle();
+                    return;
+                }
+                throw new Error("Kon wishlist status niet ophalen");
+            }
+
+            const wishlistItems: WishlistItem[] = await response.json() as WishlistItem[];
+            this._isInWishlist = wishlistItems.some(item => item.game_id === this._gameId);
+            this.updateButtonStyle();
+        }
+        catch (error) {
+            console.error("Fout bij controleren wishlist status:", error);
         }
     }
 
@@ -60,38 +71,52 @@ export class AddToCartComponent extends HTMLElement {
      */
     private render(): void {
         this._button = document.createElement("button");
-        this._button.textContent = "Voeg toe aan winkelmandje";
-        this._button.className = "add-to-cart-button";
-        this._button.style.backgroundColor = "#6B46C1";
-        this._button.style.color = "white";
-        this._button.style.padding = "8px 16px";
+        this._button.innerHTML = "♥";
+        this._button.className = "wishlist-button";
+        this._button.style.backgroundColor = "transparent";
         this._button.style.border = "none";
-        this._button.style.borderRadius = "4px";
+        this._button.style.fontSize = "24px";
         this._button.style.cursor = "pointer";
-        this._button.style.margin = "10px 0";
-        this._button.style.transition = "background-color 0.3s ease";
-
-        this._button.addEventListener("mouseover", () => {
-            this._button!.style.backgroundColor = "#553C9A";
-        });
-        this._button.addEventListener("mouseout", () => {
-            this._button!.style.backgroundColor = "#6B46C1";
-        });
+        this._button.style.padding = "8px";
+        this._button.style.transition = "color 0.3s ease";
+        this._button.style.color = "#6B46C1";
+        this._button.style.opacity = "0.7";
 
         this.appendChild(this._button);
+        this.updateButtonStyle();
     }
 
-    /**
-     * Zet event listeners op
-     */
+    private updateButtonStyle(): void {
+        if (!this._button) return;
+
+        if (this._isInWishlist) {
+            this._button.style.color = "#6B46C1";
+            this._button.style.opacity = "1";
+        }
+        else {
+            this._button.style.color = "#6B46C1";
+            this._button.style.opacity = "0.7";
+        }
+    }
+
     private setupEventListeners(): void {
-        this._button?.addEventListener("click", this.handleAddToCart.bind(this));
+        this._button?.addEventListener("click", this.handleAddToWishlist.bind(this));
+
+        // Hover effect
+        this._button?.addEventListener("mouseover", () => {
+            if (this._button) {
+                this._button.style.opacity = "1";
+            }
+        });
+
+        this._button?.addEventListener("mouseout", () => {
+            if (this._button && !this._isInWishlist) {
+                this._button.style.opacity = "0.7";
+            }
+        });
     }
 
-    /**
-     * Handelt het klikken op de knop af
-     */
-    private async handleAddToCart(e: Event): Promise<void> {
+    private async handleAddToWishlist(e: Event): Promise<void> {
         e.preventDefault();
 
         try {
@@ -101,25 +126,22 @@ export class AddToCartComponent extends HTMLElement {
                 return;
             }
 
-            const response: Response = await fetch(`${VITE_API_URL}cart/add`, {
+            const response: Response = await fetch(`${VITE_API_URL}wishlist/add`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     game_id: this._gameId,
-                    quantity: 1,
-                    price: this._price,
                 }),
                 credentials: "include",
             });
 
-            const data: AddToCartResult = await response.json() as AddToCartResult;
+            const data: AddToWishlistResult = await response.json() as AddToWishlistResult;
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    this.showNotification("Gebruiker niet ingelogd", "error");
-                    window.location.href = "/login.html";
+                    this.showNotification("Je moet ingelogd zijn om games toe te voegen aan favorieten", "error");
                     return;
                 }
                 this.showNotification(data.message || `Fout: ${response.statusText}`, "error");
@@ -127,21 +149,18 @@ export class AddToCartComponent extends HTMLElement {
             }
 
             if (data.success) {
-                this.showNotification("✅ Toegevoegd aan winkelmandje", "success");
-                document.dispatchEvent(new CustomEvent("cart-updated"));
-                this._eventService.dispatchEvent(WebshopEvent.AddToCart, {
-                    gameId: this._gameId,
-                    quantity: 1,
-                    price: this._price,
-                });
+                this._isInWishlist = true;
+                this.updateButtonStyle();
+                this.showNotification("✅ Toegevoegd aan favorieten", "success");
+                document.dispatchEvent(new CustomEvent("wishlist-updated"));
             }
             else {
                 this.showNotification(data.message || "Er is een fout opgetreden", "error");
             }
         }
         catch (error) {
-            console.error("Fout bij toevoegen aan winkelmandje:", error);
-            this.showNotification("Er is een fout opgetreden bij het toevoegen aan winkelmandje", "error");
+            console.error("Fout bij toevoegen aan favorieten:", error);
+            this.showNotification("Er is een fout opgetreden bij het toevoegen aan favorieten", "error");
         }
     }
 
@@ -150,12 +169,12 @@ export class AddToCartComponent extends HTMLElement {
      */
     private showNotification(message: string, type: "success" | "error"): void {
         // Verwijder bestaande notificaties eerst
-        const existingNotifications: NodeListOf<Element> = document.querySelectorAll(".cart-notification");
+        const existingNotifications: NodeListOf<Element> = document.querySelectorAll(".wishlist-notification");
         existingNotifications.forEach(notification => notification.remove());
 
         const notification: HTMLDivElement = document.createElement("div");
         notification.textContent = message;
-        notification.className = "cart-notification";
+        notification.className = "wishlist-notification";
         notification.style.position = "fixed";
         notification.style.top = "20px";
         notification.style.right = "20px";
@@ -167,26 +186,24 @@ export class AddToCartComponent extends HTMLElement {
         notification.style.fontWeight = "500";
 
         if (type === "success") {
-            notification.style.backgroundColor = "#6B46C1"; // Paarse kleur voor success
+            notification.style.backgroundColor = "#6B46C1";
             notification.style.color = "white";
         }
         else {
-            notification.style.backgroundColor = "#E53E3E"; // Rode kleur voor errors
+            notification.style.backgroundColor = "#E53E3E";
             notification.style.color = "white";
         }
 
         document.body.appendChild(notification);
 
-        // Voeg een fade-in animatie toe
         notification.style.opacity = "0";
         notification.style.transform = "translateY(-20px)";
-        // Trigger de animatie
+
         setTimeout(() => {
             notification.style.opacity = "1";
             notification.style.transform = "translateY(0)";
         }, 10);
 
-        // Verwijder de notificatie na 3 seconden met een fade-out effect
         setTimeout(() => {
             notification.style.opacity = "0";
             notification.style.transform = "translateY(-20px)";
@@ -199,5 +216,4 @@ export class AddToCartComponent extends HTMLElement {
     }
 }
 
-// Registreer het component
-customElements.define("add-to-cart", AddToCartComponent);
+customElements.define("add-to-wishlist", AddToWishlistComponent);

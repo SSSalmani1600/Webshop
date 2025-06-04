@@ -48,13 +48,12 @@ Ja me backend tript voor een of andere reden.
 
 ## 👤 Dion
 - **Wat heb je gedaan?**  
-  - 
-  - 
+  - Test afgemaakt voor de registratie pagina.
 
 - **Wat ga je doen?**  
-  - 
+  - Nieuwe user story aanmaken
 
 - **Zijn er blokkades?**  
-  - 
+  - Nee
 
 

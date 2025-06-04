@@ -1,5 +1,16 @@
 import type { Game } from "@api/types/Game";
-import { SessionResponse } from "@shared/types";
+import type { ReviewRequestBody } from "@web/interfaces/IReviewService";
+import { PostreviewApiService } from "@web/services/PostreviewApiService";
+import "@web/components/AddToWishlistComponent";
+
+interface SessionData {
+    sessionId: string;
+    username: string;
+}
+
+interface ReviewResponse {
+    message: string;
+}
 
 export class GameDetailComponent extends HTMLElement {
     private shadow: ShadowRoot;
@@ -28,215 +39,170 @@ export class GameDetailComponent extends HTMLElement {
         }
 
         try {
-            // Retrieve session ID
-            const sessionId: string = await this.getSession();
+            const { sessionId, username } = await this.getSession();
 
             const response: Response = await fetch(`${VITE_API_URL}game?id=${gameId}`, {
                 headers: {
                     "x-session": sessionId,
                 },
             });
-            console.log(response);
+
             if (!response.ok) throw new Error("Kon game niet ophalen.");
 
             const game: Game = await response.json() as Game;
-            this.renderGame(game);
+            this.renderGame(game, parseInt(gameId), username);
         }
         catch (error) {
-            this.shadow.innerHTML = `<p style="color: red;">Fout: ${(error as Error).message}</p>`;
+            this.shadow.innerHTML = "<p style=\"color: red;\">Fout: " + (error as Error).message + "</p>";
         }
     }
 
-    // Retrieve a session ID from the backend
-    private async getSession(): Promise<string> {
-        const res: Response = await fetch(`${VITE_API_URL}session`);
+    private async getSession(): Promise<SessionData> {
+        const res: Response = await fetch(`${VITE_API_URL}session`, {
+            credentials: "include", //  cookies meesturen
+        });
         const data: unknown = await res.json();
 
-        // Validate and return the session ID
         if (
             typeof data === "object" &&
             data !== null &&
             "sessionId" in data &&
-            typeof (data as SessionResponse).sessionId === "string"
+            "username" in data &&
+            typeof (data as SessionData).sessionId === "string" &&
+            typeof (data as SessionData).username === "string"
         ) {
-            return (data as SessionResponse).sessionId;
+            return data as SessionData;
         }
 
         throw new Error("Invalid session object");
     }
 
-    private renderGame(game: {
-        title: string;
-        thumbnail: string;
-        descriptionHtml: string;
-        price?: number | null;
-    }): void {
+    private renderGame(
+        game: {
+            title: string;
+            thumbnail: string;
+            descriptionHtml: string;
+            price?: number | null;
+        },
+        gameId: number,
+        username: string
+    ): void {
         this.shadow.innerHTML = `
-            <style>
-            * {
-            box-sizing: border-box;
-            }
-
-            :host {
-            display: block;
-            padding: 40px;
-            background-color: #0f0f0f;
-            color: white;
-            font-family: 'Inter', sans-serif;
-            width: 100vw;         
-            min-height: 100vh;    
-            margin: 0;
-            box-sizing: border-box;
-            overflow-x: hidden;  
-            position: relative; 
-            padding-top: 80px;
-            }
-
-            html, body {
-            margin: 0;
-            padding: 0;
-            background-color: #0f0f0f;
-            overflow-x: hidden;
-            }
-
-            h2 {
-            font-size: 28px;
-            font-weight: 600;
-            margin: 0 0 10px 0;
-            }
-
-            .price-top {
-            position: absolute;
-            top: 40px;
-            right: 40px;
-            color: #aaa;
-            font-size: 16px;
-            }
-
-            img {
-            width: 100%;
-            max-width: 800px;
-            border-radius: 12px;
-            margin: 40px auto 20px auto;
-            display: block;
-            }
-
-            .info-boxes {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-top: 20px;
-            }
-
-            .box {
-            background-color: #141414;
-            border: 1px solid #2a2a2a;
-            border-radius: 16px;
-            padding: 20px;
-            flex: 1;
-            min-width: 300px;
-            overflow: visible;        
-            height: auto;              
-            }
-
-            .box h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 16px;
-            }
-
-            .box p {
-            font-size: 14px;
-            color: #ccc;
-            line-height: 1.5;
-            }
-
-            .tags {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-            }
-
-            .tag {
-            background-color: #1c1c1c;
-            border: 1px solid #333;
-            border-radius: 999px;
-            padding: 6px 16px;
-            font-size: 13px;
-            color: #e0e0e0;
-            }
-
-            .bottom-bar {
-            margin-top: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 500px;
-            gap: 10px;
-            }
-
-            .add-button,
-            .back-button {
-            background-color: #7f41f5;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 999px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(127, 65, 245, 0.4);
-            transition: background 0.3s, box-shadow 0.3s;
-            text-decoration: none; /* for anchor styling */
-            display: inline-block;
-            text-align: center;
-            }
-
-            .add-button:hover,
-            .back-button:hover {
-            background-color: #6936cc;
-            box-shadow: 0 6px 16px rgba(105, 54, 204, 0.6);
-            }
-
-            .price-bottom {
-            font-size: 16px;
-            font-weight: 500;
-            }
-
-      </style>
-
-      <div class="box" style="max-width: 1500px; margin: 0 auto 20px auto;">
-        <h2><br><strong>${game.title}</strong></h2>
-        <img src="${game.thumbnail}" alt="${game.title}" />
-      </div>
-
-        <div class="info-boxes">
-        <div class="box">
-            <h3>Description</h3>
-            ${game.descriptionHtml}
-            <div class="tags">
-            <div class="tag">Single player</div>
-            <div class="tag">Interactive</div>
-            <div class="tag">Offline</div>
+            <div class="box" style="max-width: 1500px; margin: 0 auto 20px auto;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <h2><br><strong>${game.title}</strong></h2>
+                    <add-to-wishlist game-id="${gameId}"></add-to-wishlist>
+                </div>
+                <img src="${game.thumbnail}" alt="${game.title}" />
             </div>
-        </div>
-        <div class="box">
-            <p>Reviews:</p>
-        </div>
-        </div>
 
-        <div class="bottom-bar">
-        <button class="add-button">Toevoegen aan winkelmand</button>
-        <div class="price-bottom">${game.price !== undefined && game.price !== null ? `$${game.price}` : "N/B"}</div>
-        </div>
+            <div class="info-boxes">
+                <div class="box">
+                    <h3>Description</h3>
+                    ${game.descriptionHtml}
+                </div>
+                <div class="box">
+                    <h3>Reviews:</h3>
+                    <div id="reviews-output"></div>
 
-        <div style="text-align: center; margin-bottom: 30px;">
-        <a href="product.html" class="back-button">← Ga terug</a>
-        </div>
+                    <textarea id="review-input" rows="4" placeholder="Schrijf hier je review..." 
+                        style="width: 100%; padding: 10px; border-radius: 8px; resize: vertical; margin-bottom: 10px;"></textarea>
 
+                    <div id="star-rating" style="margin-bottom: 10px; font-size: 24px; color: gray; cursor: pointer;">
+                        <span data-value="1">☆</span>
+                        <span data-value="2">☆</span>
+                        <span data-value="3">☆</span>
+                        <span data-value="4">☆</span>
+                        <span data-value="5">☆</span>
+                    </div>
+
+                    <button id="submit-review" style="padding: 10px 20px; border-radius: 999px; background-color: #7f41f5; color: white; border: none; cursor: pointer;">Plaatsen</button>
+                    <div id="review-status" style="margin-top: 10px; color: lightgreen;"></div>
+                </div>
+            </div>
         `;
+
+        const reviewService: PostreviewApiService = new PostreviewApiService();
+        const reviewButton: HTMLButtonElement | null = this.shadow.querySelector("#submit-review");
+        const reviewInput: HTMLTextAreaElement | null = this.shadow.querySelector("#review-input");
+        const reviewStatus: HTMLDivElement | null = this.shadow.querySelector("#review-status");
+        const currentUsername: string = username;
+        let selectedRating: number = 0;
+        const stars: NodeListOf<HTMLSpanElement> = this.shadow.querySelectorAll("#star-rating span");
+
+        stars.forEach(star => {
+            star.addEventListener("click", () => {
+                selectedRating = parseInt(star.dataset.value || "0");
+                stars.forEach((s, index) => {
+                    s.textContent = index < selectedRating ? "★" : "☆";
+                    s.style.color = index < selectedRating ? "gold" : "gray";
+                });
+            });
+        });
+
+        reviewButton?.addEventListener("click", async () => {
+            const comment: string | undefined = reviewInput?.value.trim();
+            const rating: number = selectedRating;
+            const userId: number = 1;
+
+            if (!comment || rating < 1) {
+                reviewStatus!.textContent = "Vul een review én een waardering in.";
+                reviewStatus!.style.color = "red";
+                return;
+            }
+
+            const body: ReviewRequestBody = {
+                userId,
+                rating,
+                comment,
+                username: currentUsername,
+            };
+
+            const response: ReviewResponse = await reviewService.postReview(gameId, body);
+
+            reviewStatus!.textContent = response.message;
+            reviewStatus!.style.color = "lightgreen";
+            reviewInput!.value = "";
+            selectedRating = 0;
+
+            stars.forEach(s => {
+                s.textContent = "☆";
+                s.style.color = "gray";
+            });
+
+            await this.loadReviews(gameId);
+        });
+
+        void this.loadReviews(gameId);
+    }
+
+    private async loadReviews(gameId: number): Promise<void> {
+        const output: HTMLElement | null = this.shadow.querySelector("#reviews-output");
+        if (!output) return;
+
+        try {
+            const res: Response = await fetch(`${VITE_API_URL}api/games/${gameId}/reviews`, {
+                credentials: "include",
+            });
+            const reviews: unknown = await res.json();
+
+            if (!Array.isArray(reviews)) return;
+
+            output.innerHTML = reviews
+                .map((r: { rating: number; comment: string; username?: string }) => `
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #fff;">${r.username || "Anoniem"}</strong><br/>
+                        <span style="color: gold; font-size: 16px;">
+                            ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
+                        </span><br/>
+                        <span style="color: #ccc; font-size: 14px;">${r.comment}</span>
+                    </div>
+                `)
+                .join("");
+        }
+        catch {
+            output.innerHTML = "<p style='color:red;'>Kon reviews niet ophalen.</p>";
+        }
     }
 }
 

@@ -16,8 +16,10 @@ import { ShowHomepageGamesController } from "./controllers/ShowHomepageGamesCont
 import { WishlistController } from "./controllers/WishlistController";
 import { NavbarController } from "./controllers/NavbarController";
 import { GameSearchController } from "./controllers/SearchbarController";
+import { ReviewController } from "./controllers/ReviewController";
 import { LogoutController } from "./controllers/LogoutController";
 import { RandomGameController } from "./controllers/RandomGameController";
+import { AddToWishlistController } from "./controllers/AddToWishlistController";
 
 export const router: Router = Router();
 
@@ -42,6 +44,8 @@ const gameSearchController: GameSearchController = new GameSearchController();
 const logoutController: LogoutController = new LogoutController();
 const showHomepageGamesController: ShowHomepageGamesController = new ShowHomepageGamesController();
 const randomGameController: RandomGameController = new RandomGameController();
+const reviewController: ReviewController = new ReviewController();
+const addToWishlistController: AddToWishlistController = new AddToWishlistController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
@@ -73,6 +77,9 @@ router.get("/discount/codes", (req: Request, res: Response) => discountControlle
 // Checkout endpoint
 router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));
 
+// Review endpoints (aangepast pad)
+router.use("/api", sessionMiddleware, reviewController.router);
+
 // Secret endpoint
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));
 
@@ -102,3 +109,7 @@ router.get("/homepage-games", (req: Request, res: Response) => showHomepageGames
 
 // Random game endpoint voor "Verras mij" functionaliteit
 router.get("/games/random", (req: Request, res: Response) => randomGameController.getRandomGame(req, res));
+
+// Wishlist endpoints
+router.post("/wishlist/add", (req: Request, res: Response) => addToWishlistController.addToWishlist(req, res));
+router.delete("/wishlist/:id", (req: Request, res: Response) => wishlistController.deleteWishlistItem(req, res));

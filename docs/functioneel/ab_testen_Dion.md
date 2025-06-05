@@ -16,7 +16,7 @@ Wij hebben 2 verschillende designs gemaakt voor de product overview page, die he
 ## **1. Desings**  
 ### 🅰️ Design A – Tekstgebaseerde knoppen
 
-![Design A](./testA.png)
+![Design A](./Atest.png)
 
 **Kenmerken**  
 In deze versie zijn de primaire knoppen tekstueel aangeduid met “Bekijk” en “+”.
@@ -33,7 +33,7 @@ In deze versie zijn de primaire knoppen tekstueel aangeduid met “Bekijk” en 
 
 ### 🅱️ Design B – Icon-gebaseerde knoppen
 
-![Design B](./testB.png)
+![Design B](./Btest.png)
 
 **Kenmerken**  
 Deze versie maakt gebruik van visuele iconen: een oogje voor bekijken en een winkelwagentje voor toevoegen.

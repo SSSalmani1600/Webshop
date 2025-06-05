@@ -5,11 +5,11 @@
 ---
 ## **Wat is getest en hoe?**  
 
-Wij hebben 2 verschillende designs gemaakt voor de product overview page, die hebben wij door middel van een presentatie getoond aan de testpersonen. In die presentatie hebben wij de 2 verschillende designs gepresenteerd met onderbouwing, hierna gaven wij de klas de mogelijkheid om te stemmen op welk design zij het mooist vonden.
+Ik heb 2 verschillende desings gemaakt en deze gepresenteerd door de 2 verschillende webste pagina's naast elkaar open te zetten, zodat de testpersoon gelijk makkelijk en snel kon vergelijken welke zij het mooist vinden.
 
 | **Wat is getest?**  |
 |-------------------------|
-| **Product overview**             |
+| **Admin page, add product pop-up** |
 
 ---
 

@@ -13,51 +13,58 @@ Wij hebben 2 verschillende designs gemaakt voor de product overview page, die he
 
 ---
 
-## **1. Desings**  
-### 🅰️ Design A – Tekstgebaseerde knoppen
+## 1. **Designs**
+
+Tijdens de A/B-test hebben we twee varianten getest van de **pop-up voor het aanmaken van een nieuw product** in de adminomgeving. De focus lag op leesbaarheid, contrast, en visuele aansluiting bij de rest van de interface.
+
+---
+
+### 🅰️ Design A – Donkere pop-up (consistent met UI)
 
 ![Design A](./Atest.png)
 
 **Kenmerken**  
-In deze versie zijn de primaire knoppen tekstueel aangeduid met “Bekijk” en “+”.
+Deze versie maakt gebruik van een donkere achtergrondkleur voor de pop-up, wat aansluit bij de bestaande dark mode-styling van de website.
 
 **Voordelen**
-- Tekstuele knoppen zijn duidelijk voor gebruikers die minder vertrouwd zijn met iconen.
-- De “Bekijk”-knop geeft direct aan wat de actie doet, wat drempelverlagend werkt voor nieuwe bezoekers.
+- Consistent met de rest van de adminpagina (dark theme).
+- Minder fel licht bij het openen van de modal, wat prettiger is voor de ogen.
+- De knoppen en invoervelden vallen visueel beter op tegen de donkere achtergrond.
 
 **Nadelen**
-- De betekenis van de “+”-knop kan onduidelijk zijn (toevoegen aan winkelmand? favoriet?).
-- Minder visueel aantrekkelijk bij kortere buttonlabels.
+- Kan iets minder duidelijk zijn bij fel omgevingslicht of op schermen met slechte helderheid.
+- Minder geschikt voor gebruikers die gewend zijn aan lichte interfaces.
 
 ---
 
-### 🅱️ Design B – Icon-gebaseerde knoppen
+### 🅱️ Design B – Lichtkleurige pop-up
 
 ![Design B](./Btest.png)
 
 **Kenmerken**  
-Deze versie maakt gebruik van visuele iconen: een oogje voor bekijken en een winkelwagentje voor toevoegen.
+In deze versie heeft de pop-up een lichtere, neutrale achtergrondkleur, wat contrasteert met de verder donkere pagina.
 
 **Voordelen**
-- Meer visuele balans door iconen van gelijke grootte.
-- De iconen zijn herkenbaar voor gebruikers die gewend zijn aan webshops, wat zorgt voor een modernere look.
-- Beter schaalbaar in responsive design, doordat iconen minder ruimte innemen dan tekst.
+- Hogere visuele scheiding tussen de pop-up en de achtergrond.
+- Mogelijk beter leesbaar op slecht gekalibreerde schermen.
+- Lichte kleuren voelen voor sommige gebruikers moderner of "schoner" aan.
 
 **Nadelen**
-- Voor sommige gebruikers kan het niet direct duidelijk zijn wat de iconen betekenen zonder begeleidende tekst.
-- Minder toegankelijk voor gebruikers met visuele beperkingen of beperkte digitale geletterdheid.
+- Breekt visueel met het dark theme van de rest van de interface.
+- Knoppen vallen minder goed op doordat de aandacht wordt getrokken naar de lichte achtergrond.
+- Feller voor de ogen, vooral bij langdurig gebruik of in donkere omgevingen.
+
 ---
 
-## **2. Resultaat**  
+## 2. **Resultaat**
 
-Uit de A/B-test is gebleken dat **optie B (icon-gebaseerde knoppen)** door de meeste gebruikers als prettiger werd ervaren. Gebruikers gaven aan dat de iconen intuïtiever en visueel aantrekkelijker waren, vooral omdat ze herkenbaar zijn uit andere webshops.  
+Uit de A/B-test kwam naar voren dat **optie A (donkere pop-up)** de voorkeur had. De meeste gebruikers gaven aan dat het ontwerp rustiger oogt en beter past binnen de bestaande gebruikersinterface. Vooral het behoud van stijlconsistentie werd genoemd als voordeel.  
 
-Daarnaast zorgden de iconen voor een rustigere en meer consistente vormgeving binnen de kaart, wat bijdroeg aan een professionelere uitstraling van de interface.
-
-Hoewel een klein deel van de testpersonen aangaf dat begeleidende tekst misschien nog iets duidelijker zou zijn, vonden de meeste gebruikers dat de gekozen iconen voldoende betekenis overbrachten.
+Daarnaast werd de visuele balans tussen de pop-up en de rest van de adminpagina als prettiger ervaren. De invoervelden en knoppen waren duidelijk zichtbaar, zonder dat de modal te veel afleidde van de content erachter.
 
 **Conclusie:**  
-Design B sluit beter aan bij de verwachtingen van de doelgroep en zal daarom worden toegepast in het definitieve ontwerp.
+Design A biedt een meer consistente gebruikerservaring binnen de dark-themed omgeving en werd daardoor als prettiger en professioneler ervaren. Deze variant wordt daarom doorgevoerd in het eindontwerp.
+
 
 ---
 

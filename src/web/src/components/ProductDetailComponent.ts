@@ -59,7 +59,7 @@ export class GameDetailComponent extends HTMLElement {
 
     private async getSession(): Promise<SessionData> {
         const res: Response = await fetch(`${VITE_API_URL}session`, {
-            credentials: "include", //  cookies meesturen
+            credentials: "include", // cookies meesturen
         });
         const data: unknown = await res.json();
 
@@ -122,17 +122,33 @@ export class GameDetailComponent extends HTMLElement {
             </div>
         `;
 
+        // service om review naar backend te sturen
         const reviewService: PostreviewApiService = new PostreviewApiService();
+
+        // knop waarmee je review verstuurt
         const reviewButton: HTMLButtonElement | null = this.shadow.querySelector("#submit-review");
+
+        // vak waar je de tekst van je review typt
         const reviewInput: HTMLTextAreaElement | null = this.shadow.querySelector("#review-input");
+
+        // plek waar succes- of foutmelding getoond wordt
         const reviewStatus: HTMLDivElement | null = this.shadow.querySelector("#review-status");
+
+        // naam van huidige gebruiker
         const currentUsername: string = username;
+
+        // hoeveel sterren gekozen (default = 0)
         let selectedRating: number = 0;
+
+        // alle sterren-elementen op de pagina
         const stars: NodeListOf<HTMLSpanElement> = this.shadow.querySelectorAll("#star-rating span");
 
+        // klik op ster = waarde zetten en stijl aanpassen
         stars.forEach(star => {
             star.addEventListener("click", () => {
                 selectedRating = parseInt(star.dataset.value || "0");
+
+                // sterren inkleuren tot gekozen waarde
                 stars.forEach((s, index) => {
                     s.textContent = index < selectedRating ? "★" : "☆";
                     s.style.color = index < selectedRating ? "gold" : "gray";
@@ -140,17 +156,20 @@ export class GameDetailComponent extends HTMLElement {
             });
         });
 
+        // als je op knop klikt
         reviewButton?.addEventListener("click", async () => {
-            const comment: string | undefined = reviewInput?.value.trim();
+            const comment: string | undefined = reviewInput?.value.trim(); // haal tekst op
             const rating: number = selectedRating;
-            const userId: number = 1;
+            const userId: number = 1; // placeholder userId (moet uit sessie komen eigenlijk)
 
+            // check of alle velden zijn ingevuld
             if (!comment || rating < 1) {
                 reviewStatus!.textContent = "Vul een review én een waardering in.";
                 reviewStatus!.style.color = "red";
                 return;
             }
 
+            // maak review body aan
             const body: ReviewRequestBody = {
                 userId,
                 rating,
@@ -158,21 +177,26 @@ export class GameDetailComponent extends HTMLElement {
                 username: currentUsername,
             };
 
+            // stuur review naar backend
             const response: ReviewResponse = await reviewService.postReview(gameId, body);
 
+            // toon reactie van backend
             reviewStatus!.textContent = response.message;
             reviewStatus!.style.color = "lightgreen";
+
+            // reset tekst en sterren
             reviewInput!.value = "";
             selectedRating = 0;
-
             stars.forEach(s => {
                 s.textContent = "☆";
                 s.style.color = "gray";
             });
 
+            // herlaad reviews onderaan
             await this.loadReviews(gameId);
         });
 
+        // bij laden: haal meteen reviews op
         void this.loadReviews(gameId);
     }
 

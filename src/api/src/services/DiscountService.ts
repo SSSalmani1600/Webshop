@@ -2,7 +2,7 @@ import { DiscountValidationResult, ThirdPartyDiscountCode } from "../interfaces/
 
 // Service die kortingscodes valideert via externe API en een fallback systeem heeft voor als de API niet beschikbaar is
 export class DiscountService {
-    // URL van de externe API voor kortingscodes
+    // URL thirdparty API voor kortingscodes
     private readonly API_BASE_URL = "http://oege.ie.hva.nl:8999/api/discount_codes";
 
     // Standaard opties voor het maken van API requests

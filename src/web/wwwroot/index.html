@@ -5,18 +5,67 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LucaStars Webshop</title>
+    <title>LucaStars - Jouw Game Paradise 🎮</title>
+    <meta name="description" content="Ontdek duizenden games, vind je volgende favoriete spel en word onderdeel van de LucaStars gaming community!">
 
     <link href="/assets/css/default.css" rel="stylesheet">
-   
+    <link href="/assets/css/homepage.css" rel="stylesheet">
+    
+    <!-- Import components -->
+    <script type="module" src="/src/components/HomepageNavbarComponent.ts"></script>
+    <script type="module" src="/src/components/RandomGameComponent.ts"></script>
+    <script type="module" src="/src/components/WelcomeUserComponent.ts"></script>
 </head>
 
 <body>
-    <div class="login-button-container">
-        <a href="/login.html" class="login-button">Inloggen</a>
-    </div>
+    <homepage-navbar></homepage-navbar>
     
-    <webshop-page-index></webshop-page-index>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-titles">
+                <h1 class="hero-title">
+                    <span class="gradient-text">Welkom bij LucaStars</span>
+                </h1>
+                <welcome-user></welcome-user>
+            </div>
+            <p class="hero-subtitle">
+                Ontdek duizenden games, vind je volgende favoriete spel en word onderdeel van onze gaming community!
+            </p>
+            <div class="hero-buttons">
+                <a href="/product.html" class="cta-button primary">
+                    🚀 Ontdek Games
+                </a>
+                <a href="#featured" class="cta-button secondary">
+                    ⭐ Uitgelichte Games
+                </a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="floating-icons">
+                <span class="icon icon-1">🎮</span>
+                <span class="icon icon-2">🏆</span>
+                <span class="icon icon-3">⭐</span>
+                <span class="icon icon-4">🎯</span>
+                <span class="icon icon-5">🎲</span>
+                <span class="icon icon-6">🕹️</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Random Game Section -->
+    <section class="adventure-section">
+        <random-game></random-game>
+    </section>
+
+    <!-- Featured Games Section -->
+    <section class="featured-games" id="featured">
+        <div class="section-header">
+            <h2>🌟 Uitgelichte Games</h2>
+            <p>Onze nieuwste topgames van deze maand!</p>
+        </div>  
+        <homepage-games></homepage-games>
+    </section>
 
     <script src="/src/pages/index.ts" type="module"></script>
 </body>

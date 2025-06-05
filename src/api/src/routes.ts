@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { WelcomeController } from "./controllers/WelcomeController";
+import { WelcomeUserController } from "./controllers/WelcomeUserController";
 import { OrderController } from "./controllers/OrderContoller";
 import { sessionMiddleware } from "./middleware/sessionMiddleware";
 import { CartController } from "./controllers/CartController";
@@ -11,6 +12,7 @@ import { RegisterController } from "./controllers/RegisterController";
 import { DiscountController } from "./controllers/DiscountController";
 import { DiscountCodeRequestBody } from "./interfaces/IDiscountService";
 import { GameDetailController } from "./controllers/ProductDetailController";
+import { ShowHomepageGamesController } from "./controllers/ShowHomepageGamesController";
 import { startPayment } from './controllers/StripeController';
 
 import { WishlistController } from "./controllers/WishlistController";
@@ -18,6 +20,7 @@ import { NavbarController } from "./controllers/NavbarController";
 import { GameSearchController } from "./controllers/SearchbarController";
 import { ReviewController } from "./controllers/ReviewController";
 import { LogoutController } from "./controllers/LogoutController";
+import { RandomGameController } from "./controllers/RandomGameController";
 import { AddToWishlistController } from "./controllers/AddToWishlistController";
 
 export const router: Router = Router();
@@ -27,6 +30,7 @@ router.get("/", (_: Request, res: Response) => {
 });
 
 const welcomeController: WelcomeController = new WelcomeController();
+const welcomeUserController: WelcomeUserController = new WelcomeUserController();
 const orderController: OrderController = new OrderController();
 const gameDetailController: GameDetailController = new GameDetailController();
 const cartController: CartController = new CartController();
@@ -40,6 +44,8 @@ const wishlistController: WishlistController = new WishlistController();
 const navbarController: NavbarController = new NavbarController();
 const gameSearchController: GameSearchController = new GameSearchController();
 const logoutController: LogoutController = new LogoutController();
+const showHomepageGamesController: ShowHomepageGamesController = new ShowHomepageGamesController();
+const randomGameController: RandomGameController = new RandomGameController();
 const reviewController: ReviewController = new ReviewController();
 const addToWishlistController: AddToWishlistController = new AddToWishlistController();
 
@@ -57,6 +63,7 @@ router.get("/session", (req: Request, res: Response) => welcomeController.getSes
 router.delete("/session", (req: Request, res: Response) => welcomeController.deleteSession(req, res));
 router.delete("/session/expired", (req: Request, res: Response) => welcomeController.deleteExpiredSessions(req, res));
 router.get("/welcome", (req: Request, res: Response) => welcomeController.getWelcome(req, res));
+router.get("/welcome-user", (req: Request, res: Response) => welcomeUserController.getWelcomeMessage(req, res));
 
 // Cart endpoints
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
@@ -100,5 +107,13 @@ router.patch("/products/:id/hidden", (req: Request, res: Response) =>
 
 // Wishlist endpoints
 router.get("/wishlist", (req: Request, res: Response) => wishlistController.getWishlist(req, res));
+
+// Homepage games endpoint
+router.get("/homepage-games", (req: Request, res: Response) => showHomepageGamesController.getHomepageGames(req, res));
+
+// Random game endpoint voor "Verras mij" functionaliteit
+router.get("/games/random", (req: Request, res: Response) => randomGameController.getRandomGame(req, res));
+
+// Wishlist endpoints
 router.post("/wishlist/add", (req: Request, res: Response) => addToWishlistController.addToWishlist(req, res));
 router.delete("/wishlist/:id", (req: Request, res: Response) => wishlistController.deleteWishlistItem(req, res));

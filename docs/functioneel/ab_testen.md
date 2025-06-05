@@ -16,8 +16,8 @@ Wij hebben 2 verschillende designs gemaakt voor de product overview page, die he
 ## **1. Desings**  
 Tijdens de A/B testhebben wij de volgende 2 desings gepresenteerd:  
 
-<br> ![TMC feedback](../img/testA.png)
-<br> ![TMC feedback](../img/testB.png)
+<br> ![TMC feedback](./testA.png)
+<br> ![TMC feedback](./testB.png)
 ---
 
 ## **2. Actiepunten**  

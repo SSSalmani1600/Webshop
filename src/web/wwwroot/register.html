@@ -1,35 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <title>Games WebComponent</title>
-  <link href="/assets/css/register.css" rel="stylesheet">
-<script type="module" src="./../src/pages/register.ts"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LucaStars - Registreer</title>
+    
+    <link href="/assets/css/register.css" rel="stylesheet">
+    <script type="module" src="/src/components/HomepageNavbarComponent.ts"></script>
+    <script type="module" src="./../src/pages/register.ts"></script>
 </head>
 <body>
-<register-form>
-  <div class="container">
-    <div class="form-box">
-        <div class="logo">
-            <img src="/assets/images/logo.svg" alt="LucaStars logo" />
-            <h1>LucaStars</h1>
-        </div>
-        <h2>Account aanmaken</h2>
-        <form id="register-form">
-            <input type="text" name="username" placeholder="Gebruikersnaam" required />
-            <input type="email" name="email" placeholder="E-mailadres" required />
-            <input type="password" name="password" placeholder="Wachtwoord" required />
-            <button type="submit">Registreer</button>
-        </form>
-        <div class="footer">
-            Heb je al een account?
-            <a href="/login.html">Inloggen</a>
-        </div>
-    </div>
-  </div>
-</register-form>
+    <homepage-navbar auth-mode="register"></homepage-navbar>
 
-</div>
-
+    <register-form>
+        <div class="container">
+            <div class="form-box">
+                <div class="logo">
+                    <img src="/assets/images/logo.svg" alt="LucaStars logo" />
+                    <h1>LucaStars</h1>
+                </div>
+                <h2>Account aanmaken</h2>
+                <form id="register-form">
+                    <input type="text" name="username" placeholder="Gebruikersnaam" required />
+                    <input type="email" name="email" placeholder="E-mailadres" required />
+                    <input type="password" name="password" placeholder="Wachtwoord" required />
+                    <button type="submit">Registreer</button>
+                </form>
+                <div class="footer">
+                    Heb je al een account?
+                    <a href="/login.html">Inloggen</a>
+                </div>
+            </div>
+        </div>
+    </register-form>
 </body>
 </html>

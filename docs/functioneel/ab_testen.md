@@ -14,28 +14,50 @@ Wij hebben 2 verschillende designs gemaakt voor de product overview page, die he
 ---
 
 ## **1. Desings**  
-Tijdens de A/B testhebben wij de volgende 2 desings gepresenteerd:  
+### 🅰️ Design A – Tekstgebaseerde knoppen
 
-<br> ![TMC feedback](./testA.png)
-<br> ![TMC feedback](./testB.png)
+![Design A](./testA.png)
+
+**Kenmerken**  
+In deze versie zijn de primaire knoppen tekstueel aangeduid met “Bekijk” en “+”.
+
+**Voordelen**
+- Tekstuele knoppen zijn duidelijk voor gebruikers die minder vertrouwd zijn met iconen.
+- De “Bekijk”-knop geeft direct aan wat de actie doet, wat drempelverlagend werkt voor nieuwe bezoekers.
+
+**Nadelen**
+- De betekenis van de “+”-knop kan onduidelijk zijn (toevoegen aan winkelmand? favoriet?).
+- Minder visueel aantrekkelijk bij kortere buttonlabels.
+
 ---
 
-## **2. Actiepunten**  
+### 🅱️ Design B – Icon-gebaseerde knoppen
 
-### **Visuele duidelijkheid en interactie**  
-- **Zoekfunctie**: Ik ga een zoekfunctie toevoegen in het design. 
-- **Taal**: Ik ga met de PO overleggen welke taal hij op de website wil en alles naar die taal veranderen. 
-- **Prijs**: Ik ga de prijs op de website veranderen naar euro's.
+![Design B](./testB.png)
 
-### **Kleuren en styling**  
-- **Kleur consistentie**: Ik ga de kleur van enkele componenten veranderen naar de huis style van de website, zodat het allemaal een mooi geheel wordt.
+**Kenmerken**  
+Deze versie maakt gebruik van visuele iconen: een oogje voor bekijken en een winkelwagentje voor toevoegen.
 
+**Voordelen**
+- Meer visuele balans door iconen van gelijke grootte.
+- De iconen zijn herkenbaar voor gebruikers die gewend zijn aan webshops, wat zorgt voor een modernere look.
+- Beter schaalbaar in responsive design, doordat iconen minder ruimte innemen dan tekst.
+
+**Nadelen**
+- Voor sommige gebruikers kan het niet direct duidelijk zijn wat de iconen betekenen zonder begeleidende tekst.
+- Minder toegankelijk voor gebruikers met visuele beperkingen of beperkte digitale geletterdheid.
 ---
 
-## **3. Conclusie**  
-De gebruikerstest heeft aangetoond dat er visuele inconsistenties zijn die de gebruikers ervaring minder vloeiend maken. Er zijn opmerkingen gemaakt over de styling van bepaalde componenten, die niet goed aansluiten bij de rest van de website.  
+## **2. Resultaat**  
 
-Door deze verbeterpunten door te voeren, zal de website een meer samenhangende en professionele uitstraling krijgen. Met name de visuele aanpassingen en het verfijnen van de styling zullen bijdragen aan een betere gebruikerservaring.  
+Uit de A/B-test is gebleken dat **optie B (icon-gebaseerde knoppen)** door de meeste gebruikers als prettiger werd ervaren. Gebruikers gaven aan dat de iconen intuïtiever en visueel aantrekkelijker waren, vooral omdat ze herkenbaar zijn uit andere webshops.  
 
-Om de effectiviteit van deze verbeteringen te testen, wordt een hertest gepland nadat de wijzigingen zijn doorgevoerd.  
+Daarnaast zorgden de iconen voor een rustigere en meer consistente vormgeving binnen de kaart, wat bijdroeg aan een professionelere uitstraling van de interface.
+
+Hoewel een klein deel van de testpersonen aangaf dat begeleidende tekst misschien nog iets duidelijker zou zijn, vonden de meeste gebruikers dat de gekozen iconen voldoende betekenis overbrachten.
+
+**Conclusie:**  
+Design B sluit beter aan bij de verwachtingen van de doelgroep en zal daarom worden toegepast in het definitieve ontwerp.
+
+---
 

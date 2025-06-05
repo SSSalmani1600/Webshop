@@ -1,12 +1,7 @@
 import { DiscountValidationResult, ThirdPartyDiscountCode } from "../interfaces/IDiscountService";
 
-interface DiscountApiResponse {
-    code: string;
-    discountPercentage: number;
-}
-
 export class DiscountService {
-    private readonly API_BASE_URL = "http://oege.ie.hva.nl:8999/api/discount_code";
+    private readonly API_BASE_URL = "http://oege.ie.hva.nl:8999/api/discount_codes";
     private readonly FETCH_OPTIONS: RequestInit = {
         method: "GET",
         credentials: "include",
@@ -27,25 +22,26 @@ export class DiscountService {
         valid: true,
     };
 
-    public async validateDiscountCode(code: string, amount: number): Promise<DiscountValidationResult> {
+    public async validateDiscountCode(code: string, _amount: number): Promise<DiscountValidationResult> {
         try {
-            const url: string = `${this.API_BASE_URL}?code=${encodeURIComponent(code)}&amount=${amount}`;
+            const url: string = `${this.API_BASE_URL}/${encodeURIComponent(code)}`;
             const response: Response = await fetch(url, this.FETCH_OPTIONS);
 
             if (!response.ok) {
                 throw new Error("API niet bereikbaar");
             }
 
-            const data: DiscountApiResponse = await response.json() as DiscountApiResponse;
+            const data: ThirdPartyDiscountCode[] = await response.json() as ThirdPartyDiscountCode[];
+            const validCode: ThirdPartyDiscountCode | undefined = data.find(c => c.code === code && c.valid);
 
-            if (!data.discountPercentage || data.code !== code) {
+            if (!validCode) {
                 return { valid: false };
             }
 
             return {
                 valid: true,
-                discountPercentage: data.discountPercentage,
-                code: data.code,
+                discountPercentage: validCode.amount,
+                code: validCode.code,
             };
         }
         catch (error) {

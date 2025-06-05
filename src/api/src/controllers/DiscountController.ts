@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { DiscountService } from "../services/DiscountService";
 import { DiscountCodeRequestBody, DiscountValidationResult } from "../interfaces/IDiscountService";
 
+// Controller die HTTP requests afhandelt voor het valideren van kortingscodes via de DiscountService
 export class DiscountController {
     private readonly discountService: DiscountService;
 
@@ -9,6 +10,7 @@ export class DiscountController {
         this.discountService = new DiscountService();
     }
 
+    // Valideert een kortingscode via de service en stuurt het kortingspercentage of een foutmelding terug naar de client
     public async applyDiscount(req: Request<object, object, DiscountCodeRequestBody>, res: Response): Promise<void> {
         try {
             const { code } = req.body;

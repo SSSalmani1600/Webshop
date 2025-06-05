@@ -1,4 +1,6 @@
+// Custom HTML component die een invoerveld en knop toont voor kortingscodes en communiceert met de server
 export class DiscountCodeComponent extends HTMLElement {
+    // Input, button en message elements die we gebruiken om de kortingscode UI te maken en bij te werken
     private discountInput: HTMLInputElement;
     private discountButton: HTMLButtonElement;
     private discountMessage: HTMLParagraphElement;
@@ -107,6 +109,7 @@ export class DiscountCodeComponent extends HTMLElement {
         });
     }
 
+    // Verstuurt de ingevoerde kortingscode naar de server via POST request en verwerkt de response (success/error)
     private async applyDiscount(): Promise<void> {
         const code: string = this.discountInput.value.trim();
         if (!code) {
@@ -183,6 +186,7 @@ export class DiscountCodeComponent extends HTMLElement {
         }
     }
 
+    // Toont een success of error bericht aan de gebruiker en past de juiste styling toe (groen/rood)
     private showMessage(message: string, type: "success" | "error"): void {
         this.discountMessage.textContent = message;
         this.discountMessage.className = `discount-message ${type}`;

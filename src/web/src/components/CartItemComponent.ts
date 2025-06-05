@@ -1,6 +1,8 @@
 import { CartItem } from "../interfaces/CartItem";
 
+// Custom HTML component die een winkelwagen item weergeeft met afbeelding, titel, prijs en verwijder knop
 export class CartItemComponent extends HTMLElement {
+    // Properties die alle informatie van het winkelwagen item bevatten (prijs, aantal, titel, etc.)
     protected itemPrice: number;
     protected itemQuantity: number;
     protected itemId: number;
@@ -10,6 +12,7 @@ export class CartItemComponent extends HTMLElement {
 
     public constructor(item: CartItem) {
         super();
+        // Zet string prijs om naar nummer voor berekeningen
         this.itemPrice = typeof item.price === "string" ? parseFloat(item.price) : item.price;
         this.itemQuantity = item.quantity;
         this.itemId = item.id;
@@ -17,17 +20,21 @@ export class CartItemComponent extends HTMLElement {
         this.itemThumbnail = item.thumbnail;
     }
 
+    // Berekent de nieuwe prijs met korting en update de weergave van het product in de winkelwagen
     public setDiscount(discountPercentage: number): void {
         this.itemDiscount = discountPercentage;
         this.render();
     }
 
+    // Genereert de HTML structuur voor het winkelwagen item met styling en event listeners voor de verwijder knop
     public render(): void {
+        // Bereken de prijs met korting en rond af op 2 decimalen
         const discountedPrice: number = this.itemPrice * (1 - this.itemDiscount / 100);
         const roundedDiscountedPrice: number = parseFloat(discountedPrice.toFixed(2));
 
         this.innerHTML = `
             <style>
+                // Styling voor het winkelwagen item in een card layout
                 .cart-item {
                     display: flex;
                     justify-content: space-between;
@@ -39,6 +46,7 @@ export class CartItemComponent extends HTMLElement {
                     font-size: 0.9rem;
                 }
 
+                // Afbeelding styling met vaste afmetingen en afgeronde hoeken
                 .cart-item img {
                     width: 180px;
                     height: 100px;
@@ -46,6 +54,7 @@ export class CartItemComponent extends HTMLElement {
                     border-radius: 4px;
                 }
 
+                // Container voor product details (titel en aantal)
                 .item-details {
                     display: flex;
                     flex-direction: column;
@@ -92,6 +101,7 @@ export class CartItemComponent extends HTMLElement {
                     justify-content: flex-end;
                 }
 
+                // Styling voor de verwijder knop
                 .delete-button {
                     background: none;
                     border: none;
@@ -112,6 +122,7 @@ export class CartItemComponent extends HTMLElement {
 
                 <div class="price-actions">
                     <div class="price-container">
+                        // Toon originele prijs alleen als er korting is
                         ${this.itemDiscount > 0 ? `<span class="original-price">€${this.itemPrice.toFixed(2)}</span>` : ""}
                         <div class="item-price">€${roundedDiscountedPrice.toFixed(2)}</div>
                     </div>
@@ -120,9 +131,11 @@ export class CartItemComponent extends HTMLElement {
             </div>
         `;
 
+        // Voeg click event toe aan de verwijder knop
         const deleteButton: HTMLButtonElement | null = this.querySelector(".delete-button");
         if (deleteButton) {
             deleteButton.addEventListener("click", () => {
+                // Stuur custom event naar parent component voor verwijderen
                 this.dispatchEvent(new CustomEvent("item-delete", {
                     detail: { id: this.itemId },
                     bubbles: true,

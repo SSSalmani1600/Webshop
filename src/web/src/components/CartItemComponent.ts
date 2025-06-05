@@ -34,7 +34,6 @@ export class CartItemComponent extends HTMLElement {
 
         this.innerHTML = `
             <style>
-                // Styling voor het winkelwagen item in een card layout
                 .cart-item {
                     display: flex;
                     justify-content: space-between;
@@ -46,7 +45,6 @@ export class CartItemComponent extends HTMLElement {
                     font-size: 0.9rem;
                 }
 
-                // Afbeelding styling met vaste afmetingen en afgeronde hoeken
                 .cart-item img {
                     width: 180px;
                     height: 100px;
@@ -54,7 +52,6 @@ export class CartItemComponent extends HTMLElement {
                     border-radius: 4px;
                 }
 
-                // Container voor product details (titel en aantal)
                 .item-details {
                     display: flex;
                     flex-direction: column;
@@ -101,7 +98,6 @@ export class CartItemComponent extends HTMLElement {
                     justify-content: flex-end;
                 }
 
-                // Styling voor de verwijder knop
                 .delete-button {
                     background: none;
                     border: none;
@@ -122,7 +118,6 @@ export class CartItemComponent extends HTMLElement {
 
                 <div class="price-actions">
                     <div class="price-container">
-                        // Toon originele prijs alleen als er korting is
                         ${this.itemDiscount > 0 ? `<span class="original-price">€${this.itemPrice.toFixed(2)}</span>` : ""}
                         <div class="item-price">€${roundedDiscountedPrice.toFixed(2)}</div>
                     </div>

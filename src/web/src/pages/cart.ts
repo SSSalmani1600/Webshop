@@ -15,19 +15,19 @@ export class CartPageComponent extends HTMLElement {
         // Maak een shadow DOM aan voor isolatie van styles
         const shadow: ShadowRoot = this.attachShadow({ mode: "open" });
 
-        // Voeg styles toe voor de winkelwagen layout
         const style: HTMLStyleElement = document.createElement("style");
         style.textContent = `
-            // Basis styling voor de hele component
             :host {
                 display: block;
                 background-color: #141414;
                 color: white;
                 font-family: sans-serif;
+                padding: 0;
+                margin: 0;
                 min-height: 100vh;
+                box-sizing: border-box;
             }
 
-            // Styling voor de 'verder winkelen' knop
             .continue-shopping-button {
                 margin-top: 2rem;
                 padding: 0.8rem 1.5rem;
@@ -35,68 +35,236 @@ export class CartPageComponent extends HTMLElement {
                 color: white;
                 border: none;
                 border-radius: 10px;
+                font-size: 1rem;
                 cursor: pointer;
+                text-align: center;
+                display: inline-block;
             }
 
-            // Primaire variant van de knop (paars)
             .continue-shopping-button.primary {
                 margin: 2rem auto 0;
                 background-color: #703bf7;
                 display: block;
             }
 
-            // Container voor de hele winkelwagen
             .cart-container {
                 min-width: 300px;
                 padding: 1.5rem;
             }
 
-            // Flex container voor producten en totaal
+            .cart-container h2 {
+                margin-bottom: 1rem;
+            }
+
             .cart-content {
                 display: flex;
                 justify-content: space-between;
                 flex-wrap: wrap;
                 gap: 1rem;
+                align-items: flex-start;
             }
 
-            // Lijst met winkelwagen items
             #cart-list {
                 flex: 3;
                 min-width: 300px;
             }
 
-            // Styling voor het totaal overzicht
+            .cart-item {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 1rem;
+                padding: 0.8rem;
+                background-color: #222121;
+                border-radius: 6px;
+                margin-bottom: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .cart-item img {
+                width: 180px;
+                height: 100px;
+                object-fit: cover;
+                border-radius: 4px;
+            }
+
+            .item-details {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                flex: 1;
+                padding-top: 0.2rem;
+            }
+
+            .item-details h4 {
+                margin: 0 0 0.4rem 0;
+                font-size: 1rem;
+            }
+
+            .item-details p {
+                margin: 0;
+                font-size: 0.85rem;
+                color: #ccc;
+            }
+
+            .item-price {
+                min-width: 80px;
+                text-align: right;
+                font-weight: bold;
+                padding-top: 0.2rem;
+                font-size: 1rem;
+            }
+
             .cart-summary {
                 flex: 1;
                 min-width: 250px;
                 padding: 1rem;
                 border-radius: 8px;
                 background-color: #222121;
+                display: flex;
+                justify-content: center;
+                align-items: center;
             }
 
-            // Container voor de checkout knop
             .summary-inner {
                 width: 100%;
                 max-width: 300px;
                 display: flex;
                 flex-direction: column;
+                align-items: stretch;
                 gap: 1rem;
             }
 
-            // Header van de winkelwagen met gradient
+            .cart-summary-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .cart-summary h3 {
+                margin: 0;
+                font-size: 1rem;
+            }
+
+            #total-price {
+                margin: 0;
+                font-size: 1rem;
+                font-weight: bold;
+                text-align: right;
+            }
+
+            .original-price {
+                text-decoration: line-through;
+                color: #666;
+                font-size: 0.9rem;
+                margin-right: 0.5rem;
+            }
+
+            .price-container {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+            .discount-info {
+                color: #703bf7;
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
+                text-align: right;
+            }
+
+            .discount-info.active {
+                display: block;
+            }
+
+            .discount-info:not(.active) {
+                display: none;
+            }
+
+            .checkout-button {
+                align-self: center;
+                height: 40px;
+                width: 100%;
+                padding: 0.4rem 0.8rem;
+                background-color: #703bf7;
+                border: none;
+                border-radius: 4px;
+                color: white;
+                cursor: pointer;
+                font-size: 0.8rem;
+            }
+
             .cart-header {
                 height: 150px;
                 background: linear-gradient(90deg, rgba(38, 38, 38, 1) 0%, rgba(38, 38, 38, 0) 53%);
+                display: block;
+                margin: 0;
                 padding: 2.5rem;
+                box-sizing: border-box;
             }
 
-            // Styling voor lege winkelwagen melding
+            .cart-header h2 {
+                font-size: 1.5rem;
+                font-weight: bold;
+                margin: 0;
+            }
+
+            .cart-header p {
+                margin-top: 0.8rem;
+                color: #ccc;
+            }
+
             .empty-message {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                justify-content: center;
                 text-align: center;
                 margin-top: 4rem;
+                gap: 1.5rem;
+            }
+
+            .empty-cart-image {
+                max-width: 100px;
+                height: auto;
+                opacity: 0.8;
+            }
+
+            .empty-cart-text {
+                font-size: 1rem;
+                color: #ccc;
+                max-width: 300px;
+                margin: 0;
+            }
+
+            @media (max-width: 768px) {
+                .cart-content {
+                    flex-direction: column;
+                }
+
+                .cart-item {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .cart-item img {
+                    width: 100%;
+                    height: auto;
+                }
+
+                .item-price {
+                    text-align: left;
+                    padding-top: 0.5rem;
+                }
+
+                .checkout-button {
+                    width: 100%;
+                }
+
+                .summary-inner {
+                    width: 100%;
+                }
             }
         `;
 
@@ -140,32 +308,25 @@ export class CartPageComponent extends HTMLElement {
         void this.fetchCart();
 
         // Event listener voor 'verder winkelen' knop
-        const continueShoppingButton: HTMLButtonElement | null = this.shadowRoot?.querySelector(".continue-shopping-button") ?? null;
-        if (continueShoppingButton) {
-            continueShoppingButton.addEventListener("click", () => {
-                window.location.href = "product.html";
-            });
-        }
+        const continueShoppingButton: HTMLButtonElement = this.shadowRoot?.querySelector(".continue-shopping-button") as HTMLButtonElement;
+        continueShoppingButton.addEventListener("click", () => {
+            window.location.href = "product.html";
+        });
 
         // Event listener voor checkout knop
-        const checkoutButton: HTMLButtonElement | null = this.shadowRoot?.querySelector(".checkout-button") ?? null;
-        if (checkoutButton) {
-            checkoutButton.addEventListener("click", () => {
-                window.location.href = "checkout.html";
-            });
-        }
+        const checkoutButton: HTMLButtonElement = this.shadowRoot?.querySelector(".checkout-button") as HTMLButtonElement;
+        checkoutButton.addEventListener("click", () => {
+            window.location.href = "checkout.html";
+        });
 
         // Event listener voor kortingscode component
-        const discountComponent: Element | null = this.shadowRoot?.querySelector("discount-code-component") ?? null;
-        if (discountComponent) {
-            discountComponent.addEventListener("discount-applied", async (event: Event) => {
-                // Update korting wanneer een code wordt toegepast
-                const customEvent: CustomEvent<{ discountPercentage: number; code: string }> = event as CustomEvent<{ discountPercentage: number; code: string }>;
-                this.currentDiscount = customEvent.detail.discountPercentage;
-                this.currentDiscountCode = customEvent.detail.code;
-                await this.fetchCart();
-            });
-        }
+        const discountComponent: Element = this.shadowRoot?.querySelector("discount-code-component") as Element;
+        discountComponent.addEventListener("discount-applied", async (event: Event) => {
+            const customEvent: CustomEvent<{ discountPercentage: number; code: string }> = event as CustomEvent<{ discountPercentage: number; code: string }>;
+            this.currentDiscount = customEvent.detail.discountPercentage;
+            this.currentDiscountCode = customEvent.detail.code;
+            await this.fetchCart();
+        });
     }
 
     private async fetchCart(): Promise<void> {
@@ -198,28 +359,25 @@ export class CartPageComponent extends HTMLElement {
             if (!res.ok) {
                 if (res.status === 401) {
                     // Toon login melding als gebruiker niet is ingelogd
-                    const cartList: HTMLElement | null = this.shadowRoot?.querySelector("#cart-list") as HTMLElement | null;
+                    const cartList: HTMLElement = this.shadowRoot?.querySelector("#cart-list") as HTMLElement;
                     const summary: HTMLElement = this.shadowRoot?.querySelector(".cart-summary") as HTMLElement;
                     const continueShopping: HTMLElement = this.shadowRoot?.querySelector(".continue-shopping-button") as HTMLElement;
 
-                    if (cartList) {
-                        summary.style.display = "none";
-                        continueShopping.style.display = "none";
+                    summary.style.display = "none";
+                    continueShopping.style.display = "none";
 
-                        cartList.innerHTML = `
-                            <div class="empty-message">
-                                <img src="/assets/images/cart_empty.png" alt="Login required" class="empty-cart-image">
-                                <p class="empty-cart-text">Log eerst in om je winkelwagen te bekijken</p>
-                                <a href="login.html" class="continue-shopping-button primary">Inloggen</a>
-                            </div>
-                        `;
-                    }
+                    cartList.innerHTML = `
+                        <div class="empty-message">
+                            <img src="/assets/images/cart_empty.png" alt="Login required" class="empty-cart-image">
+                            <p class="empty-cart-text">Log eerst in om je winkelwagen te bekijken</p>
+                            <a href="login.html" class="continue-shopping-button primary">Inloggen</a>
+                        </div>
+                    `;
                     return;
                 }
                 throw new Error(`Failed to fetch cart: ${res.statusText}`);
             }
 
-            // Parse de response data
             interface CartResponse {
                 cart: CartItem[];
                 total: number;
@@ -227,10 +385,9 @@ export class CartPageComponent extends HTMLElement {
                 discountPercentage?: number;
             }
 
+            // Parse de response data
             const data: CartResponse = await res.json() as CartResponse;
             this.cartItems = data.cart;
-
-            // Update de weergave met nieuwe data
             this.updateCartDisplay({
                 total: data.total,
                 discountPercentage: data.discountPercentage ?? this.currentDiscount,
@@ -240,14 +397,12 @@ export class CartPageComponent extends HTMLElement {
         catch (e) {
             // Toon foutmelding als er iets mis gaat
             console.error("Fout bij ophalen winkelwagen:", e);
-            const cartList: HTMLElement | null = this.shadowRoot?.querySelector("#cart-list") as HTMLElement | null;
-            if (cartList) {
-                cartList.innerHTML = `
-                    <div class="empty-message">
-                        <p class="empty-cart-text">Er is een fout opgetreden bij het ophalen van je winkelwagen. Probeer het later opnieuw.</p>
-                    </div>
-                `;
-            }
+            const cartList: HTMLElement = this.shadowRoot?.querySelector("#cart-list") as HTMLElement;
+            cartList.innerHTML = `
+                <div class="empty-message">
+                    <p class="empty-cart-text">Er is een fout opgetreden bij het ophalen van je winkelwagen. Probeer het later opnieuw.</p>
+                </div>
+            `;
         }
         finally {
             this.isUpdating = false;
@@ -274,22 +429,20 @@ export class CartPageComponent extends HTMLElement {
             if (!deleteResponse.ok) {
                 if (deleteResponse.status === 401) {
                     // Toon login melding als sessie verlopen is
-                    const cartList: HTMLElement | null = this.shadowRoot?.querySelector("#cart-list") as HTMLElement | null;
+                    const cartList: HTMLElement = this.shadowRoot?.querySelector("#cart-list") as HTMLElement;
                     const summary: HTMLElement = this.shadowRoot?.querySelector(".cart-summary") as HTMLElement;
                     const continueShopping: HTMLElement = this.shadowRoot?.querySelector(".continue-shopping-button") as HTMLElement;
 
-                    if (cartList) {
-                        summary.style.display = "none";
-                        continueShopping.style.display = "none";
+                    summary.style.display = "none";
+                    continueShopping.style.display = "none";
 
-                        cartList.innerHTML = `
-                            <div class="empty-message">
-                                <img src="/assets/images/cart_empty.png" alt="Login required" class="empty-cart-image">
-                                <p class="empty-cart-text">Log eerst in om je winkelwagen te bekijken</p>
-                                <a href="login.html" class="continue-shopping-button primary">Inloggen</a>
-                            </div>
-                        `;
-                    }
+                    cartList.innerHTML = `
+                        <div class="empty-message">
+                            <img src="/assets/images/cart_empty.png" alt="Login required" class="empty-cart-image">
+                            <p class="empty-cart-text">Log eerst in om je winkelwagen te bekijken</p>
+                            <a href="login.html" class="continue-shopping-button primary">Inloggen</a>
+                        </div>
+                    `;
                     return;
                 }
                 throw new Error(`Failed to delete item: ${deleteResponse.statusText}`);
@@ -307,10 +460,10 @@ export class CartPageComponent extends HTMLElement {
 
     private updateCartDisplay(data?: { total: number; discountPercentage: number; subtotal: number }): void {
         const shadow: ShadowRoot = this.shadowRoot!;
-        const cartList: HTMLElement = shadow.querySelector("#cart-list")!;
-        const totalDisplay: HTMLElement = shadow.querySelector("#total-price")!;
+        const cartList: HTMLElement = shadow.querySelector("#cart-list") as HTMLElement;
+        const totalDisplay: HTMLElement = shadow.querySelector("#total-price") as HTMLElement;
         const summary: HTMLElement = shadow.querySelector(".cart-summary") as HTMLElement;
-        const header: HTMLElement = shadow.querySelector(".cart-header p")!;
+        const header: HTMLElement = shadow.querySelector(".cart-header p") as HTMLElement;
         const continueShopping: HTMLElement = shadow.querySelector(".continue-shopping-button") as HTMLElement;
 
         cartList.innerHTML = "";
@@ -358,19 +511,17 @@ export class CartPageComponent extends HTMLElement {
         this.cartItems.forEach((item: CartItem) => {
             const element: CartItemComponent = new CartItemComponent(item);
             element.setDiscount(data?.discountPercentage ?? this.currentDiscount);
-
             element.addEventListener("item-delete", async (event: Event) => {
                 const customEvent: CustomEvent<{ id: number }> = event as CustomEvent<{ id: number }>;
                 const itemId: number = customEvent.detail.id;
                 await this.deleteCartItem(itemId);
             });
-
             cartList.appendChild(element);
         });
 
         // Update totaalbedragen
         if (data) {
-            const originalTotal: HTMLElement = shadow.querySelector("#original-total")!;
+            const originalTotal: HTMLElement = shadow.querySelector("#original-total") as HTMLElement;
             if (data.discountPercentage > 0) {
                 originalTotal.textContent = `€${data.subtotal.toFixed(2)}`;
                 totalDisplay.textContent = `€${data.total.toFixed(2)}`;

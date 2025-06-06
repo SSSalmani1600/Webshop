@@ -16,7 +16,6 @@ export class ProductPageComponent extends HTMLElement {
         const element: HTMLElement = html`
             <div>
                 <navbar-component></navbar-component>
-                <h1>Alle games</h1>
                 <game-list></game-list>
             </div>
             

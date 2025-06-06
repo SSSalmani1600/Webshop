@@ -338,7 +338,7 @@ export class CartPageComponent extends HTMLElement {
         this.isUpdating = true;
 
         try {
-            // Bepaal welke server we moeten gebruiken (lokaal of online)
+            // Bepaal welke server moeten gebruiken (lokaal of online)
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
                 : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";

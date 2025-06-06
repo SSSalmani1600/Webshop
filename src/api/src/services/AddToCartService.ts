@@ -9,6 +9,7 @@ interface CartItemData {
     quantity: number;
     price: number;
     userId: number;
+    isFree?: boolean;
 }
 
 /**

@@ -1,8 +1,8 @@
 import { CartItem } from "../interfaces/CartItem";
 
-// Custom HTML component die een winkelwagen item weergeeft met afbeelding, titel, prijs en verwijder knop
+// Dit is een component die één product in de winkelwagen laat zien
 export class CartItemComponent extends HTMLElement {
-    // Properties die alle informatie van het winkelwagen item bevatten (prijs, aantal, titel, etc.)
+    // Deze variabelen slaan alle informatie over het product op
     protected itemPrice: number;
     protected itemQuantity: number;
     protected itemId: number;
@@ -12,7 +12,7 @@ export class CartItemComponent extends HTMLElement {
 
     public constructor(item: CartItem) {
         super();
-        // Zet string prijs om naar nummer voor berekeningen
+        // Zet de prijs om naar een getal als het een tekst was
         this.itemPrice = typeof item.price === "string" ? parseFloat(item.price) : item.price;
         this.itemQuantity = item.quantity;
         this.itemId = item.id;
@@ -20,15 +20,15 @@ export class CartItemComponent extends HTMLElement {
         this.itemThumbnail = item.thumbnail;
     }
 
-    // Berekent de nieuwe prijs met korting en update de weergave van het product in de winkelwagen
+    // Deze functie past een korting toe op het product
     public setDiscount(discountPercentage: number): void {
         this.itemDiscount = discountPercentage;
         this.render();
     }
 
-    // Genereert de HTML structuur voor het winkelwagen item met styling en event listeners voor de verwijder knop
+    // Deze functie maakt de HTML voor het product
     public render(): void {
-        // Bereken de prijs met korting en rond af op 2 decimalen
+        // Bereken de prijs met korting
         const discountedPrice: number = this.itemPrice * (1 - this.itemDiscount / 100);
         const roundedDiscountedPrice: number = parseFloat(discountedPrice.toFixed(2));
 
@@ -126,11 +126,11 @@ export class CartItemComponent extends HTMLElement {
             </div>
         `;
 
-        // Voeg click event toe aan de verwijder knop
+        // Voeg een actie toe aan de verwijder knop
         const deleteButton: HTMLButtonElement | null = this.querySelector(".delete-button");
         if (deleteButton) {
             deleteButton.addEventListener("click", () => {
-                // Stuur custom event naar parent component voor verwijderen
+                // Stuur een bericht naar boven dat dit product verwijderd moet worden
                 this.dispatchEvent(new CustomEvent("item-delete", {
                     detail: { id: this.itemId },
                     bubbles: true,
@@ -140,9 +140,11 @@ export class CartItemComponent extends HTMLElement {
         }
     }
 
+    // Deze functie wordt aangeroepen als de component aan de pagina wordt toegevoegd
     public connectedCallback(): void {
         this.render();
     }
 }
 
+// Registreer de component zodat we deze kunnen gebruiken in HTML
 customElements.define("cart-item", CartItemComponent);

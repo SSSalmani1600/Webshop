@@ -2,14 +2,17 @@ import { DatabaseService } from "./DatabaseService";
 import { PoolConnection } from "mysql2/promise";
 import type { CartItem } from "../types/CartItem";
 
-// Service die database operaties uitvoert voor de winkelwagen (ophalen en verwijderen van items via SQL queries)
+// Deze service regelt alle database operaties voor de winkelwagen
 export class CartService {
+    // We maken een verbinding met de database
     private readonly _databaseService: DatabaseService = new DatabaseService();
 
-    // Haalt via een SQL JOIN query alle winkelwagen items op met game informatie (titel, thumbnail) voor een specifieke gebruiker
+    // Deze functie haalt alle producten op uit de winkelwagen van een gebruiker
     public async getCartItemsByUser(userId: number): Promise<CartItem[]> {
+        // Maak een verbinding met de database
         const connection: PoolConnection = await this._databaseService.openConnection();
         try {
+            // Haal alle items op met een SQL query die winkelwagen en game informatie combineert
             return await this._databaseService.query<CartItem[]>(
                 connection,
                 `
@@ -29,24 +32,29 @@ export class CartService {
             );
         }
         finally {
+            // Sluit de database verbinding weer
             connection.release();
         }
     }
 
-    // Verwijdert een specifiek winkelwagen item uit de database na controle of het item bij de juiste gebruiker hoort
+    // Deze functie verwijdert een product uit de winkelwagen
     public async deleteCartItemById(cartItemId: number, userId: number): Promise<void> {
+        // Maak een verbinding met de database
         const connection: PoolConnection = await this._databaseService.openConnection();
         try {
+            // Verwijder het item, maar alleen als het van deze gebruiker is
             await connection.execute(
                 "DELETE FROM cart_items WHERE id = ? AND user_id = ?",
                 [cartItemId, userId]
             );
         }
         catch (error) {
+            // Als er iets mis gaat, log de fout en geef deze door
             console.error("Database error bij verwijderen cart item:", error);
             throw error;
         }
         finally {
+            // Sluit de database verbinding weer
             connection.release();
         }
     }

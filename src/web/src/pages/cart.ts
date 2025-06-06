@@ -2,19 +2,20 @@ import { CartItem } from "../interfaces/CartItem";
 import { CartItemComponent } from "../components/CartItemComponent";
 import { NavbarComponent } from "../components/NavbarComponent";
 
-// Hoofdcomponent voor de winkelwagenpagina die producten toont, kortingen toepast en totalen berekent
+// Dit is de hoofdpagina voor de winkelwagen die alle producten laat zien
 export class CartPageComponent extends HTMLElement {
-    // Status variabelen voor de winkelwagen
-    private currentDiscount: number = 0; // Huidig toegepaste kortingspercentage
-    private currentDiscountCode: string = ""; // Actieve kortingscode
-    private cartItems: CartItem[] = []; // Lijst met producten in winkelwagen
-    private isUpdating: boolean = false; // Voorkomt dubbele updates
+    // Deze variabelen houden de status van de winkelwagen bij
+    private currentDiscount: number = 0; // Hoeveel procent korting er nu is
+    private currentDiscountCode: string = ""; // Welke kortingscode er wordt gebruikt
+    private cartItems: CartItem[] = []; // Lijst met alle producten
+    private isUpdating: boolean = false; // Voorkomt dat we dubbel updaten
 
     public constructor() {
         super();
-        // Maak een shadow DOM aan voor isolatie van styles
+        // Maak een afgeschermde omgeving voor deze component
         const shadow: ShadowRoot = this.attachShadow({ mode: "open" });
 
+        // Voeg de styling toe voor de pagina
         const style: HTMLStyleElement = document.createElement("style");
         style.textContent = `
             :host {
@@ -268,7 +269,7 @@ export class CartPageComponent extends HTMLElement {
             }
         `;
 
-        // Maak de basis HTML structuur aan
+        // Maak de basis HTML structuur voor de pagina
         const container: HTMLDivElement = document.createElement("div");
         container.innerHTML = `
             <navbar-component></navbar-component>
@@ -303,23 +304,24 @@ export class CartPageComponent extends HTMLElement {
         shadow.append(style, container);
     }
 
+    // Deze functie wordt aangeroepen als de pagina wordt geladen
     public connectedCallback(): void {
-        // Haal winkelwagen data op zodra component wordt toegevoegd aan de DOM
+        // Haal de winkelwagen inhoud op van de server
         void this.fetchCart();
 
-        // Event listener voor 'verder winkelen' knop
+        // Als op 'verder winkelen' wordt geklikt, ga naar de productpagina
         const continueShoppingButton: HTMLButtonElement = this.shadowRoot?.querySelector(".continue-shopping-button") as HTMLButtonElement;
         continueShoppingButton.addEventListener("click", () => {
             window.location.href = "product.html";
         });
 
-        // Event listener voor checkout knop
+        // Als op 'checkout' wordt geklikt, ga naar de afrekenpagina
         const checkoutButton: HTMLButtonElement = this.shadowRoot?.querySelector(".checkout-button") as HTMLButtonElement;
         checkoutButton.addEventListener("click", () => {
             window.location.href = "checkout.html";
         });
 
-        // Event listener voor kortingscode component
+        // Luister naar kortingscodes die worden ingevoerd
         const discountComponent: Element = this.shadowRoot?.querySelector("discount-code-component") as Element;
         discountComponent.addEventListener("discount-applied", async (event: Event) => {
             const customEvent: CustomEvent<{ discountPercentage: number; code: string }> = event as CustomEvent<{ discountPercentage: number; code: string }>;
@@ -329,24 +331,25 @@ export class CartPageComponent extends HTMLElement {
         });
     }
 
+    // Deze functie haalt de winkelwagen inhoud op van de server
     private async fetchCart(): Promise<void> {
-        // Voorkom dubbele updates
+        // Voorkom dat we dubbel ophalen
         if (this.isUpdating) return;
         this.isUpdating = true;
 
         try {
-            // Bepaal de juiste API URL op basis van environment
+            // Bepaal welke server we moeten gebruiken (lokaal of online)
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
                 : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
-            // Voeg kortingscode toe aan URL als die er is
+            // Voeg de kortingscode toe aan het verzoek als die er is
             const url: URL = new URL(`${API_BASE}/cart`);
             if (this.currentDiscountCode) {
                 url.searchParams.append("discountCode", this.currentDiscountCode);
             }
 
-            // Haal winkelwagen data op van de server
+            // Vraag de winkelwagen op van de server
             const res: Response = await fetch(url.toString(), {
                 method: "GET",
                 credentials: "include",
@@ -356,9 +359,10 @@ export class CartPageComponent extends HTMLElement {
                 },
             });
 
+            // Als er iets mis is met de aanmelding
             if (!res.ok) {
                 if (res.status === 401) {
-                    // Toon login melding als gebruiker niet is ingelogd
+                    // Laat zien dat de gebruiker moet inloggen
                     const cartList: HTMLElement = this.shadowRoot?.querySelector("#cart-list") as HTMLElement;
                     const summary: HTMLElement = this.shadowRoot?.querySelector(".cart-summary") as HTMLElement;
                     const continueShopping: HTMLElement = this.shadowRoot?.querySelector(".continue-shopping-button") as HTMLElement;
@@ -378,6 +382,7 @@ export class CartPageComponent extends HTMLElement {
                 throw new Error(`Failed to fetch cart: ${res.statusText}`);
             }
 
+            // Dit is het formaat van het antwoord dat we verwachten
             interface CartResponse {
                 cart: CartItem[];
                 total: number;
@@ -385,9 +390,10 @@ export class CartPageComponent extends HTMLElement {
                 discountPercentage?: number;
             }
 
-            // Parse de response data
+            // Lees het antwoord van de server
             const data: CartResponse = await res.json() as CartResponse;
             this.cartItems = data.cart;
+            // Update wat we op het scherm laten zien
             this.updateCartDisplay({
                 total: data.total,
                 discountPercentage: data.discountPercentage ?? this.currentDiscount,
@@ -395,7 +401,7 @@ export class CartPageComponent extends HTMLElement {
             });
         }
         catch (e) {
-            // Toon foutmelding als er iets mis gaat
+            // Als er iets mis gaat, laat een foutmelding zien
             console.error("Fout bij ophalen winkelwagen:", e);
             const cartList: HTMLElement = this.shadowRoot?.querySelector("#cart-list") as HTMLElement;
             cartList.innerHTML = `
@@ -405,18 +411,20 @@ export class CartPageComponent extends HTMLElement {
             `;
         }
         finally {
+            // We zijn klaar met updaten
             this.isUpdating = false;
         }
     }
 
+    // Deze functie verwijdert een product uit de winkelwagen
     private async deleteCartItem(itemId: number): Promise<void> {
         try {
-            // Bepaal API URL voor verwijderen
+            // Bepaal welke server we moeten gebruiken
             const API_BASE: string = window.location.hostname.includes("localhost")
                 ? "http://localhost:3001"
                 : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
-            // Stuur delete request naar de server
+            // Stuur een verzoek om het product te verwijderen
             const deleteResponse: Response = await fetch(`${API_BASE}/cart/item/${itemId}`, {
                 method: "DELETE",
                 credentials: "include",
@@ -426,9 +434,10 @@ export class CartPageComponent extends HTMLElement {
                 },
             });
 
+            // Als er iets mis is met de aanmelding
             if (!deleteResponse.ok) {
                 if (deleteResponse.status === 401) {
-                    // Toon login melding als sessie verlopen is
+                    // Laat zien dat de gebruiker moet inloggen
                     const cartList: HTMLElement = this.shadowRoot?.querySelector("#cart-list") as HTMLElement;
                     const summary: HTMLElement = this.shadowRoot?.querySelector(".cart-summary") as HTMLElement;
                     const continueShopping: HTMLElement = this.shadowRoot?.querySelector(".continue-shopping-button") as HTMLElement;
@@ -448,16 +457,18 @@ export class CartPageComponent extends HTMLElement {
                 throw new Error(`Failed to delete item: ${deleteResponse.statusText}`);
             }
 
-            // Update lokale lijst en UI
+            // Verwijder het product uit onze lijst en update het scherm
             this.cartItems = this.cartItems.filter(item => item.id !== itemId);
             await this.fetchCart();
         }
         catch (error) {
+            // Als er iets mis gaat, probeer de winkelwagen opnieuw op te halen
             console.error("Error deleting item:", error);
             void this.fetchCart();
         }
     }
 
+    // Deze functie update wat we op het scherm laten zien
     private updateCartDisplay(data?: { total: number; discountPercentage: number; subtotal: number }): void {
         const shadow: ShadowRoot = this.shadowRoot!;
         const cartList: HTMLElement = shadow.querySelector("#cart-list") as HTMLElement;
@@ -468,8 +479,9 @@ export class CartPageComponent extends HTMLElement {
 
         cartList.innerHTML = "";
 
-        // Toon lege winkelwagen melding als er geen items zijn
+        // Als de winkelwagen leeg is
         if (this.cartItems.length === 0) {
+            // Laat een bericht zien dat de wagen leeg is
             header.textContent = "Er zijn geen producten in je winkelmandje.";
             summary.style.display = "none";
             continueShopping.style.display = "none";
@@ -477,13 +489,13 @@ export class CartPageComponent extends HTMLElement {
             const emptyMessage: HTMLDivElement = document.createElement("div");
             emptyMessage.className = "empty-message";
 
-            // Voeg lege winkelwagen afbeelding toe
+            // Voeg een plaatje toe van een lege winkelwagen
             const emptyImg: HTMLImageElement = document.createElement("img");
             emptyImg.src = "/assets/images/cart_empty.png";
             emptyImg.className = "empty-cart-image";
             emptyImg.alt = "Lege winkelwagen";
 
-            // Voeg tekst en knop toe
+            // Voeg een bericht en knop toe
             const emptyText: HTMLParagraphElement = document.createElement("p");
             emptyText.textContent = "Je winkelmandje is leeg. Voeg producten toe om te beginnen met shoppen!";
             emptyText.className = "empty-cart-text";
@@ -502,12 +514,12 @@ export class CartPageComponent extends HTMLElement {
             return;
         }
 
-        // Toon winkelwagen items en totalen
+        // Als er wel producten in de winkelwagen zitten
         summary.style.display = "flex";
         continueShopping.style.display = "block";
         header.textContent = "Rond je bestelling af - producten aan je winkelwagen toevoegen betekent geen reservering.";
 
-        // Maak cart items aan en voeg ze toe
+        // Voeg elk product toe aan het scherm
         this.cartItems.forEach((item: CartItem) => {
             const element: CartItemComponent = new CartItemComponent(item);
             element.setDiscount(data?.discountPercentage ?? this.currentDiscount);
@@ -519,14 +531,16 @@ export class CartPageComponent extends HTMLElement {
             cartList.appendChild(element);
         });
 
-        // Update totaalbedragen
+        // Update de totaalbedragen
         if (data) {
             const originalTotal: HTMLElement = shadow.querySelector("#original-total") as HTMLElement;
             if (data.discountPercentage > 0) {
+                // Als er korting is, laat beide prijzen zien
                 originalTotal.textContent = `€${data.subtotal.toFixed(2)}`;
                 totalDisplay.textContent = `€${data.total.toFixed(2)}`;
             }
             else {
+                // Anders alleen de normale prijs
                 originalTotal.textContent = "";
                 totalDisplay.textContent = `€${data.total.toFixed(2)}`;
             }
@@ -534,6 +548,7 @@ export class CartPageComponent extends HTMLElement {
     }
 }
 
+// Registreer de componenten zodat we ze kunnen gebruiken in HTML
 customElements.define("webshop-page-cart", CartPageComponent);
 if (!customElements.get("navbar-component")) {
     customElements.define("navbar-component", NavbarComponent);

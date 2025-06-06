@@ -1,11 +1,11 @@
 import { DiscountValidationResult, ThirdPartyDiscountCode } from "../interfaces/IDiscountService";
 
-// Service die kortingscodes valideert via externe API en een fallback systeem heeft voor als de API niet beschikbaar is
+// Deze service controleert kortingscodes en heeft een backup plan als de externe API niet werkt
 export class DiscountService {
-    // URL thirdparty API voor kortingscodes
+    // Dit is het adres van de externe API die we gebruiken voor kortingscodes
     private readonly API_BASE_URL = "http://oege.ie.hva.nl:8999/api/discount_codes";
 
-    // Standaard opties voor het maken van API requests
+    // Dit zijn de instellingen die we gebruiken bij elke API aanroep
     private readonly FETCH_OPTIONS: RequestInit = {
         method: "GET",
         credentials: "include",
@@ -15,40 +15,42 @@ export class DiscountService {
         },
     };
 
-    // Testcode die wordt gebruikt als de externe API niet bereikbaar is
+    // Dit is een test kortingscode die we gebruiken als de externe API niet werkt
     private readonly fallbackCode: ThirdPartyDiscountCode = {
-        code: "TEST123", // Code die gebruikers kunnen invoeren
-        amount: 15, // 15% korting
-        currency: "EUR", // Altijd in euros
-        validUntil: "2026-12-31", // Geldig tot eind 2026
-        createdOn: "2024-01-01",
-        usedOn: null,
-        valid: true,
+        code: "TEST123", // Dit is de code die klanten kunnen invoeren
+        amount: 15, // Dit geeft 15% korting
+        currency: "EUR", // De korting is in euros
+        validUntil: "2026-12-31", // De code werkt tot eind 2026
+        createdOn: "2024-01-01", // De code is gemaakt op 1 januari 2024
+        usedOn: null, // De code is nog niet gebruikt
+        valid: true, // De code is geldig
     };
 
-    // Valideert een kortingscode via de externe API en valt terug op de testcode als de API niet beschikbaar is
+    // Deze functie controleert of een kortingscode geldig is
     public async validateDiscountCode(code: string, _amount: number): Promise<DiscountValidationResult> {
         try {
-            // Bouw de URL op voor de API call met de ingevoerde code
+            // We maken de URL waar we de code gaan controleren
             const url: string = `${this.API_BASE_URL}/${encodeURIComponent(code)}`;
 
-            // Probeer de kortingscode te valideren via de externe API
+            // We vragen aan de externe API of de code geldig is
             const response: Response = await fetch(url, this.FETCH_OPTIONS);
 
+            // Als er iets mis gaat met de API
             if (!response.ok) {
                 throw new Error("API niet bereikbaar");
             }
 
-            // Parse de response en zoek naar een geldige code
+            // We lezen het antwoord van de API
             const data: ThirdPartyDiscountCode[] = await response.json() as ThirdPartyDiscountCode[];
+            // We zoeken naar een geldige code die overeenkomt met wat de klant heeft ingevoerd
             const validCode: ThirdPartyDiscountCode | undefined = data.find(c => c.code === code && c.valid);
 
-            // Als geen geldige code gevonden is
+            // Als we geen geldige code vinden
             if (!validCode) {
                 return { valid: false };
             }
 
-            // Stuur de korting terug als de code geldig is
+            // Als we wel een geldige code vinden, sturen we de korting terug
             return {
                 valid: true,
                 discountPercentage: validCode.amount,
@@ -56,10 +58,10 @@ export class DiscountService {
             };
         }
         catch (error) {
-            // Log de error en val terug op de test kortingscode
+            // Als er iets mis gaat met de API, gebruiken we de test code
             console.warn("Valideer via fallback (API faalde):", error);
 
-            // Als de ingevoerde code overeenkomt met onze test code
+            // Als de klant de test code heeft ingevoerd
             if (code === this.fallbackCode.code) {
                 return {
                     valid: true,
@@ -68,7 +70,7 @@ export class DiscountService {
                 };
             }
 
-            // Anders is de code ongeldig
+            // Als het niet de test code is, is de code ongeldig
             return { valid: false };
         }
     }

@@ -5,7 +5,6 @@ export class DiscountService {
     // Dit is het adres van de externe API die we gebruiken voor kortingscodes
     private readonly API_BASE_URL = "http://oege.ie.hva.nl:8999/api/discount_codes";
 
-    // Dit zijn de instellingen die we gebruiken bij elke API aanroep
     private readonly FETCH_OPTIONS: RequestInit = {
         method: "GET",
         credentials: "include",
@@ -17,13 +16,13 @@ export class DiscountService {
 
     // Dit is een test kortingscode die we gebruiken als de externe API niet werkt
     private readonly fallbackCode: ThirdPartyDiscountCode = {
-        code: "TEST123", // Dit is de code die klanten kunnen invoeren
-        amount: 15, // Dit geeft 15% korting
-        currency: "EUR", // De korting is in euros
-        validUntil: "2026-12-31", // De code werkt tot eind 2026
-        createdOn: "2024-01-01", // De code is gemaakt op 1 januari 2024
-        usedOn: null, // De code is nog niet gebruikt
-        valid: true, // De code is geldig
+        code: "TEST123",
+        amount: 15,
+        currency: "EUR",
+        validUntil: "2026-12-31",
+        createdOn: "2024-01-01",
+        usedOn: null,
+        valid: true,
     };
 
     // Deze functie controleert of een kortingscode geldig is

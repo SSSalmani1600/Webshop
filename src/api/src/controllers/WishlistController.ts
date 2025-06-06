@@ -4,21 +4,13 @@ import { WishlistItem } from "../types/WishlistItem";
 
 const wishlistService: WishlistService = new WishlistService();
 
-function getUserIdFromCookie(req: Request): number | null {
-    const cookieHeader: string | undefined = req.headers.cookie;
-    if (!cookieHeader) return null;
-
-    const match: RegExpMatchArray | null = cookieHeader.match(/(?:^|;\s*)user=(\d+)/);
-    return match ? parseInt(match[1], 10) : null;
-}
-
 export class WishlistController {
     public async getWishlist(req: Request, res: Response): Promise<void> {
         try {
-            const userId: number | null = getUserIdFromCookie(req);
+            const userId: number | undefined = req.userId;
 
             if (!userId) {
-                res.status(401).json({ error: "Geen geldige gebruiker" });
+                res.status(401).json({ error: "Gebruiker is niet ingelogd" });
                 return;
             }
 
@@ -27,16 +19,21 @@ export class WishlistController {
         }
         catch (error) {
             console.error("Error fetching wishlist:", error);
-            res.status(500).json({ error: "error" });
+            res.status(500).json({ error: "Er is een fout opgetreden bij het ophalen van de favorieten" });
         }
     }
 
     public async deleteWishlistItem(req: Request, res: Response): Promise<void> {
-        const userId: number | null = getUserIdFromCookie(req);
+        const userId: number | undefined = req.userId;
         const wishlistItemId: number = parseInt(req.params.id, 10);
 
-        if (!userId || isNaN(wishlistItemId)) {
-            res.status(400).json({ error: "Ongeldige gebruiker" });
+        if (!userId) {
+            res.status(401).json({ error: "Gebruiker is niet ingelogd" });
+            return;
+        }
+
+        if (isNaN(wishlistItemId)) {
+            res.status(400).json({ error: "Ongeldig item ID" });
             return;
         }
 
@@ -46,7 +43,7 @@ export class WishlistController {
         }
         catch (error) {
             console.error("Error deleting wishlist item:", error);
-            res.status(500).json({ error: "error" });
+            res.status(500).json({ error: "Er is een fout opgetreden bij het verwijderen van het item" });
         }
     }
 }

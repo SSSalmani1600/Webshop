@@ -7,29 +7,13 @@
 
     <title>LucaStars - Login</title>
 
-    <link href="/assets/css/navbar-login.css" rel="stylesheet">
     <link href="/assets/css/login.css" rel="stylesheet">
+    <script type="module" src="/src/components/HomepageNavbarComponent.ts"></script>
     <script type="module" src="./../src/pages/login.ts"></script>
 </head>
 
 <body>
-    <header class="navbar">
-        <div class="logo">
-            <a href="/index.html">
-                <img src="/assets/images/logo.svg" alt="LucaStars" />
-                <span>LucaStars</span>
-            </a>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="/index.html">Home</a></li>
-                <li><a href="/services.html">Services</a></li>
-            </ul>
-        </nav>
-        <div class="auth-buttons">
-            <a href="/register.html" class="btn-register">Registreer</a>
-        </div>
-    </header>
+    <homepage-navbar auth-mode="login"></homepage-navbar>
 
     <main class="login-container">
         <div class="login-form-container">

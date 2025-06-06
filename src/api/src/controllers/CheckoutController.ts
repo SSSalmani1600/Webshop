@@ -12,8 +12,8 @@ export class CheckoutController {
     public async createAddress(req: Request, res: Response): Promise<void> {
         try {
             // ✅ Voeg deze regel toe
-        console.log("REQ BODY:", req.body);
-        
+            console.log("REQ BODY:", req.body);
+
             // Pakt data uit formulier van gebruiker
             const body: Record<string, unknown> = req.body as Record<string, unknown>;
             const userId: number = Number(body.userId);

@@ -1,4 +1,30 @@
+interface CartItem {
+    id: number;
+    title: string;
+    price: number;
+    quantity: number;
+    thumbnail: string;
+}
+
+interface CartData {
+    cart: CartItem[];
+    subtotal: number;
+    total: number;
+}
+
+interface AddressFormData {
+    userId: number;
+    naam: string;
+    straatHuisnummer: string;
+    postcodePlaats: string;
+    telefoonnummer: string;
+}
+
 export class Checkout extends HTMLElement {
+    private readonly API_BASE: string = window.location.hostname.includes("localhost")
+        ? "http://localhost:3001"
+        : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+
     public constructor() {
         super();
     }
@@ -6,7 +32,7 @@ export class Checkout extends HTMLElement {
     // Zodra pagina opent → dingen laten zien op scherm + winkelwagen ophalen
     public connectedCallback(): void {
         this.render(); // dingen op scherm zetten
-        this.loadCartItems(); // spullen uit winkelwagen ophalen
+        void this.loadCartItems(); // spullen uit winkelwagen ophalen
     }
 
     // Hier wordt alles op het scherm gezet (adresformulier + winkelwagen)
@@ -20,7 +46,7 @@ export class Checkout extends HTMLElement {
                         <h3>Verzendadres</h3>
                         <form id="adresForm">
                             <label>Naam <span class="required">*</span></label>
-                            <input type="text" name="naam" placeholder="Bijv. Nabil Salmani" required>
+                            <input type="text" name="naam" placeholder="Bijv. Henk Biervliet" required>
 
                             <label>Straat + Huisnummer <span class="required">*</span></label>
                             <input type="text" name="straat_huisnummer" placeholder="Bijv. Parklaan 12A" required>
@@ -31,7 +57,7 @@ export class Checkout extends HTMLElement {
                             <label>Telefoonnummer <span class="required">*</span></label>
                             <input type="text" name="telefoonnummer" placeholder="Bijv. 0612345678" required>
 
-                            <button type="submit" id="place-order" class="checkout-btn">Adres opslaan</button>
+                            <button type="submit" id="place-order" class="checkout-btn">Adres opslaan en door naar betaling.</button>
                         </form>
                     </div>
                 </section>
@@ -58,16 +84,15 @@ export class Checkout extends HTMLElement {
             let userId: number;
             try {
                 userId = await this.getUserId(); // wie is ingelogd?
-                console.log("Gebruiker ID:", userId);
-            } catch (error) {
-                console.error("Kan gebruiker niet vinden:", error);
+            }
+            catch {
                 alert("Je bent niet ingelogd. Log eerst in.");
                 return;
             }
 
             // info uit formulier halen
             const formData: FormData = new FormData(form);
-            const data = {
+            const data: AddressFormData = {
                 userId,
                 naam: this.getFormValue(formData, "naam").trim(),
                 straatHuisnummer: this.getFormValue(formData, "straat_huisnummer").trim(),
@@ -75,15 +100,9 @@ export class Checkout extends HTMLElement {
                 telefoonnummer: this.getFormValue(formData, "telefoonnummer").trim(),
             };
 
-            console.table(data);
-
             try {
-                const API_BASE: string = window.location.hostname.includes("localhost")
-                    ? "http://localhost:3001"
-                    : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
-
                 // stuur adres naar server
-                const res: Response = await fetch(`${API_BASE}/checkout`, {
+                const res: Response = await fetch(`${this.API_BASE}/checkout`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -99,8 +118,8 @@ export class Checkout extends HTMLElement {
                 // als gelukt → melding + doorsturen
                 alert("✅ Je adres is opgeslagen!");
                 window.location.href = "example.html";
-            } catch (error) {
-                console.error("Fout bij opslaan adres:", error);
+            }
+            catch {
                 alert("Er ging iets mis bij het opslaan");
             }
         });
@@ -108,27 +127,23 @@ export class Checkout extends HTMLElement {
 
     // Haalt games uit winkelwagen op en laat ze zien
     private async loadCartItems(): Promise<void> {
-        const API_BASE: string = window.location.hostname.includes("localhost")
-            ? "http://localhost:3001"
-            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
-
         try {
-            const res: Response = await fetch(`${API_BASE}/cart`, {
+            const res: Response = await fetch(`${this.API_BASE}/cart`, {
                 credentials: "include",
             });
 
             if (!res.ok) throw new Error("Kan winkelwagen niet ophalen");
 
-            const data = await res.json();
-            const cartItems = data.cart;
-            const subtotal = data.subtotal;
-            const total = data.total;
+            const data: CartData = await res.json() as CartData;
+            const cartItems: CartItem[] = data.cart;
+            const subtotal: number = data.subtotal;
+            const total: number = data.total;
 
-            const summarySection = this.querySelector(".checkout-summary");
+            const summarySection: Element | null = this.querySelector(".checkout-summary");
             if (!summarySection) return;
 
             // zet games op het scherm
-            const itemsHtml = cartItems.map((item: any) => `
+            const itemsHtml: string = cartItems.map((item: CartItem) => `
                 <div class="summary-item">
                     <div class="summary-game" style="display: flex; gap: 12px; margin-bottom: 12px;">
                         <img src="${item.thumbnail}" alt="${item.title}" style="width: 200px; height: 150px; border-radius: 8px;">
@@ -152,8 +167,9 @@ export class Checkout extends HTMLElement {
                     <p style="margin: 4px 0;"><strong style="font-size: 16px;">Totaal: €${total.toFixed(2)}</strong></p>
                 </div>
             `;
-        } catch (error) {
-            console.error("Fout bij ophalen winkelwagen:", error);
+        }
+        catch {
+            // Cart loading failed, but we'll handle this silently for now
         }
     }
 
@@ -165,17 +181,13 @@ export class Checkout extends HTMLElement {
 
     // Vraagt aan server wie is ingelogd (gebruiker ophalen)
     private async getUserId(): Promise<number> {
-        const API_BASE: string = window.location.hostname.includes("localhost")
-            ? "http://localhost:3001"
-            : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
-
-        const res = await fetch(`${API_BASE}/secret`, {
+        const res: Response = await fetch(`${this.API_BASE}/secret`, {
             credentials: "include",
         });
 
         if (!res.ok) throw new Error("Geen sessie gevonden");
 
-        const data = await res.json();
+        const data: { userId?: number } = await res.json() as { userId?: number };
         if (!data.userId || data.userId === 0) {
             throw new Error("Geen geldige gebruiker");
         }

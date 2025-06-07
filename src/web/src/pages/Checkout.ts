@@ -1,3 +1,5 @@
+import { PaymentService } from "../../src/services/PaymentService";
+
 interface CartItem {
     id: number;
     title: string;
@@ -24,6 +26,8 @@ export class Checkout extends HTMLElement {
     private readonly API_BASE: string = window.location.hostname.includes("localhost")
         ? "http://localhost:3001"
         : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
+    private readonly _paymentService: PaymentService = new PaymentService();
+    private _totalAmount: number = 0;
 
     public constructor() {
         super();
@@ -113,11 +117,32 @@ export class Checkout extends HTMLElement {
 
                 if (!res.ok) throw new Error("Fout bij opslaan");
 
-                await res.json();
+                const orderData = await res.json();
+                const orderId = orderData.orderId;
 
-                // als gelukt → melding + doorsturen
-                alert("✅ Je adres is opgeslagen!");
-                window.location.href = "example.html";
+                // Start betalingsproces
+                try {
+                    const transactionId = await this._paymentService.createPayment(this._totalAmount, orderId);
+                    
+                    // Sla transaction ID op in database
+                    await fetch(`${this.API_BASE}/checkout/payment`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        credentials: "include",
+                        body: JSON.stringify({
+                            orderId,
+                            transactionId
+                        })
+                    });
+
+                    // Redirect naar betaalpagina
+                    this._paymentService.redirectToPaymentPage(transactionId);
+                } catch (error) {
+                    console.error("Fout bij starten betaling:", error);
+                    alert("Er ging iets mis bij het starten van de betaling. Probeer het later opnieuw.");
+                }
             }
             catch {
                 alert("Er ging iets mis bij het opslaan");
@@ -138,6 +163,7 @@ export class Checkout extends HTMLElement {
             const cartItems: CartItem[] = data.cart;
             const subtotal: number = data.subtotal;
             const total: number = data.total;
+            this._totalAmount = total; // Sla totaalbedrag op voor betaling
 
             const summarySection: Element | null = this.querySelector(".checkout-summary");
             if (!summarySection) return;

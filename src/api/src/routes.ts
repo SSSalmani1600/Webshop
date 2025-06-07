@@ -13,7 +13,6 @@ import { DiscountController } from "./controllers/DiscountController";
 import { DiscountCodeRequestBody } from "./interfaces/IDiscountService";
 import { GameDetailController } from "./controllers/ProductDetailController";
 import { ShowHomepageGamesController } from "./controllers/ShowHomepageGamesController";
-import { startPayment } from './controllers/StripeController';
 
 import { WishlistController } from "./controllers/WishlistController";
 import { NavbarController } from "./controllers/NavbarController";
@@ -79,8 +78,6 @@ router.get("/discount/codes", (req: Request, res: Response) => discountControlle
 // Checkout endpoint
 router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));
 
-// Stripe betaling endpoint
-router.post('/betaling', (req: Request, res: Response) => startPayment(req, res));
 // Review endpoints (aangepast pad)
 router.use("/api", sessionMiddleware, reviewController.router);
 

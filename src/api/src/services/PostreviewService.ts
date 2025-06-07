@@ -16,14 +16,14 @@ interface ReviewRow {
 
 // service voor communicatie met database
 export class PostreviewService {
-    private readonly db: DatabaseService = new DatabaseService(); // db helper
+    private readonly db: DatabaseService = new DatabaseService(); // db 
 
     // voeg review toe aan database
     public async addReview(userId: number, gameId: number, rating: number, comment: string): Promise<void> {
         const connection: PoolConnection = await this.db.openConnection(); // maak verbinding
 
         try {
-            // query om review op te slaan
+            // q om review op te slaan
             const query: string = `
                 INSERT INTO review (user_id, game_id, rating, comment)
                 VALUES (?, ?, ?, ?)
@@ -32,7 +32,7 @@ export class PostreviewService {
             await this.db.query<ResultSetHeader>(connection, query, userId, gameId, rating, comment);
         }
         finally {
-            connection.release(); // sluit verbinding
+            connection.release(); 
         }
     }
 

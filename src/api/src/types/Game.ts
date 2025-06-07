@@ -10,4 +10,6 @@ export interface Game {
     tags: string;
     price?: number | null;
     hidden: boolean;
+    genre?: string | null;
+
 }

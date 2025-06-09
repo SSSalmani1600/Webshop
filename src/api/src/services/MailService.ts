@@ -42,5 +42,10 @@ export class MailService {
                 html,
             }),
         });
+
+        if (!response.ok) {
+            const error: string = await response.text();
+            throw new Error("Mail verzenden mislukt: " + error);
+        }
     }
 }

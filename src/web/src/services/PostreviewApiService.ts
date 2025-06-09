@@ -1,29 +1,42 @@
 import type { ReviewRequestBody, ReviewResponse } from "@web/interfaces/IReviewService";
 
-// service die review naar backend stuurt
 export class PostreviewApiService {
-    // stuurt review naar backend
     public async postReview(gameId: number, review: ReviewRequestBody): Promise<ReviewResponse> {
         try {
-            // haal sterren + comment uit review-object
             const { rating, comment } = review;
 
-            // stuur POST-verzoek naar backend
             const response: Response = await fetch(`${VITE_API_URL}api/games/${gameId}/reviews`, {
-                method: "POST", // dit is een POST (dus iets sturen)
+                method: "POST",
                 headers: {
-                    "Content-Type": "application/json", // zeg dat je JSON stuurt
+                    "Content-Type": "application/json",
                 },
-                credentials: "include", // stuur ook cookies mee (voor user info)
-                body: JSON.stringify({ rating, comment }), // zet sterren + comment in body
+                credentials: "include",
+                body: JSON.stringify({ rating, comment }),
             });
 
-            // wacht op antwoord en geef terug
             return await response.json();
         } catch (error) {
-            // als fout gebeurt, toon melding
             console.error("Fout bij review plaatsen:", error);
             return { message: "Er ging iets mis met je review." };
+        }
+    }
+
+    // ✅ NIEUW: review bijwerken
+    public async updateReview(reviewId: number, comment: string): Promise<ReviewResponse> {
+        try {
+            const response: Response = await fetch(`${VITE_API_URL}api/reviews/${reviewId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({ comment }),
+            });
+
+            return await response.json();
+        } catch (error) {
+            console.error("Fout bij review bijwerken:", error);
+            return { message: "Er ging iets mis met het bijwerken van je review." };
         }
     }
 }

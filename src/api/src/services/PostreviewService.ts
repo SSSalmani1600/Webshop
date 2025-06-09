@@ -2,24 +2,31 @@ import { DatabaseService } from "@api/services/DatabaseService";
 import type { ResultSetHeader } from "mysql2";
 import type { PoolConnection } from "mysql2/promise";
 
+interface ReviewRow {
+    rating: number;
+    comment: string;
+    username: string;
+}
+
 export class PostreviewService {
-    private readonly db = new DatabaseService();
+    private readonly db: DatabaseService = new DatabaseService();
 
     public async addReview(userId: number, gameId: number, rating: number, comment: string): Promise<void> {
         const connection: PoolConnection = await this.db.openConnection();
 
         try {
-            const query = `
+            const query: string = `
                 INSERT INTO review (user_id, game_id, rating, comment)
                 VALUES (?, ?, ?, ?)
             `;
             await this.db.query<ResultSetHeader>(connection, query, userId, gameId, rating, comment);
-        } finally {
+        }
+        finally {
             connection.release();
         }
     }
 
-    public async getReviewsForGame(gameId: number): Promise<{ rating: number; comment: string; username: string }[]> {
+    public async getReviewsForGame(gameId: number): Promise<ReviewRow[]> {
         const connection: PoolConnection = await this.db.openConnection();
 
         try {
@@ -32,8 +39,9 @@ export class PostreviewService {
                 `,
                 [gameId]
             );
-            return rows as { rating: number; comment: string; username: string }[];
-        } finally {
+            return rows as ReviewRow[];
+        }
+        finally {
             connection.release();
         }
     }

@@ -64,3 +64,176 @@ Het endpoint retourneert een array met één of meerdere **GamePrices-objecten**
     }
 ]
 ```
+---
+
+# 📌 Endpoint: POST /discount/apply
+
+### ✅ Wat doet het endpoint?
+Het /discount/apply endpoint controleert of een opgegeven kortingscode geldig is en retourneert het kortingspercentage als de code geldig is.
+
+### 🔁 Type verzoek
+`POST`
+
+### 📥 Ontvangen data
+
+````json
+{
+    "code": "TEST123"
+}
+````
+
+### 📤 Teruggegeven data
+Het endpoint retourneert een DiscountResponse-object met de volgende structuur:
+
+````json
+{
+    "success": true,
+    "valid": true,
+    "discountPercentage": 15,
+    "code": "TEST123"
+}
+````
+
+Als de code ongeldig is of er een fout optreedt:
+
+````json
+{
+    "success": false,
+    "valid": false,
+    "message": "Ongeldige kortingscode"
+}
+````
+
+# 📌 Endpoint: GET /cart
+
+### ✅ Wat doet het endpoint?
+Het /cart endpoint haalt alle items op die in de winkelwagen van de ingelogde gebruiker zitten, inclusief totaalprijzen en eventuele kortingen.
+
+### 🔁 Type verzoek
+`GET`
+
+### 📥 Ontvangen data
+
+### Query Parameters:
+`discountCode` (string, optioneel): Een kortingscode die moet worden toegepast op het totaalbedrag
+
+### 📤 Teruggegeven data
+Het endpoint retourneert een CartResponse-object met de volgende structuur:
+
+````json
+{
+    "cart": [
+        {
+            "id": 1,
+            "game_id": 123,
+            "quantity": 2,
+            "price": 29.99,
+            "title": "Game Title",
+            "thumbnail": "https://example.com/image.jpg"
+        }
+    ],
+    "subtotal": 59.98,
+    "total": 50.98,
+    "discountPercentage": 15
+}
+````
+
+---
+
+# 📌 Endpoint: DELETE /cart/item/:id
+
+### ✅ Wat doet het endpoint?
+Het /cart/item/:id endpoint verwijdert een specifiek item uit de winkelwagen van de ingelogde gebruiker.'
+
+### 🔁 Type verzoek
+
+`DELETE`
+
+### 📥 Ontvangen data
+URL Parameters `:id` (number): Het ID van het winkelwagen-item dat verwijderd moet worden
+
+### 📤 Teruggegeven data
+Het endpoint retourneert een lege response met status code 204 bij succes.
+
+---
+
+# 📌 Endpoint: GET /wishlist
+
+### ✅ Wat doet het endpoint?
+Het /wishlist endpoint haalt alle items op die op de verlanglijst van de ingelogde gebruiker staan.
+
+### 🔁 Type verzoek
+`GET`
+
+### 📥 Ontvangen data
+
+### Headers:
+x-session (string): Een geldige sessie-ID die wordt meegegeven voor authenticatie of sessiebeheer.
+
+### 📤 Teruggegeven data
+Het endpoint retourneert een array van wishlist items:
+
+````json
+[
+    {
+        "id": 1,
+        "game_id": 123,
+        "title": "Game Title",
+        "thumbnail": "https://example.com/image.jpg",
+        "price": 29.99
+    }
+]
+````
+
+---
+
+# 📌 Endpoint: POST /wishlist/add
+
+### ✅ Wat doet het endpoint?
+Het `/wishlist/add` endpoint voegt een game toe aan de verlanglijst van de ingelogde gebruiker.
+
+### 🔁 Type verzoek
+`POST`
+
+### 📥 Ontvangen data
+
+````json
+{
+    "game_id": 123
+}
+````
+
+### Headers:
+`x-session` (string): Een geldige sessie-ID die wordt meegegeven voor authenticatie of sessiebeheer.
+
+### 📤 Teruggegeven data
+Het endpoint retourneert het toegevoegde item:
+
+````json
+{
+    "id": 1,
+    "game_id": 123,
+    "user_id": 456
+}
+````
+
+---
+
+# 📌 Endpoint: DELETE /wishlist/:id
+
+### ✅ Wat doet het endpoint?
+Het `/wishlist/:id` endpoint verwijdert een specifiek item van de verlanglijst van de ingelogde gebruiker.
+
+### 🔁 Type verzoek
+`DELETE`
+
+### 📥 Ontvangen data
+
+### URL Parameters:
+`:id` (number): Het ID van het verlanglijst-item dat verwijderd moet worden
+
+### Headers:
+`x-session` (string): Een geldige sessie-ID die wordt meegegeven voor authenticatie of sessiebeheer.
+
+### 📤 Teruggegeven data
+Het endpoint retourneert een lege response met status code 204 bij succes.

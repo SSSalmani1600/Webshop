@@ -19,4 +19,28 @@ export class MailService {
 
         await this.sendMail(toName, toEmail, `Bestelbevestiging #${orderNumber}`, html);
     }
+
+    private async sendMail(toName: string, toEmail: string, subject: string, html: string): Promise<void> {
+        const response: Response = await fetch("https://api.hbo-ict.cloud/mail", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${this.apiKey}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                from: {
+                    name: "laajoowiicoo13",
+                    address: "noreply@hbo-ict.cloud",
+                },
+                to: [
+                    {
+                        name: toName,
+                        address: toEmail,
+                    },
+                ],
+                subject,
+                html,
+            }),
+        });
+    }
 }

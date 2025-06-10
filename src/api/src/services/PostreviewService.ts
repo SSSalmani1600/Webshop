@@ -1,5 +1,5 @@
 import { DatabaseService } from "@api/services/DatabaseService";
-import type { ResultSetHeader } from "mysql2";
+import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import type { PoolConnection } from "mysql2/promise";
 
 interface Review {
@@ -32,7 +32,7 @@ export class PostreviewService {
         const connection: PoolConnection = await this.db.openConnection();
 
         try {
-            const [rows] = await connection.query(
+            const [rows] = await connection.query<RowDataPacket[]>(
                 `
                 SELECT r.id, r.rating, r.comment, u.username
                 FROM review r
@@ -66,7 +66,7 @@ export class PostreviewService {
         const connection: PoolConnection = await this.db.openConnection();
 
         try {
-            const [rows] = await connection.query(
+            const [rows] = await connection.query<RowDataPacket[]>(
                 `
                 SELECT r.id, r.user_id AS userId, r.game_id AS gameId, r.rating, r.comment, u.username
                 FROM review r
@@ -90,7 +90,7 @@ export class PostreviewService {
         const connection: PoolConnection = await this.db.openConnection();
 
         try {
-            const [rows] = await connection.query(
+            const [rows] = await connection.query<RowDataPacket[]>(
                 `SELECT username FROM user WHERE id = ?`,
                 [userId]
             );

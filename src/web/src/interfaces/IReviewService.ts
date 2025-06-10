@@ -12,11 +12,11 @@ export interface IReviewService {
   getReviewsForGame(gameId: number): Promise<Review[]>;
   updateReview(reviewId: number, comment: string): Promise<void>;
 
-  // ✅ Nieuw toegevoegd:
   getReviewById(reviewId: number): Promise<Review | null>;
 }
 
 export interface ReviewRequestBody {
+  userId: number; 
   rating: number;
   comment: string;
 }

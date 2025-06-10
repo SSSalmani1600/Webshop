@@ -85,9 +85,11 @@ export class ReviewController {
             console.log("⛳ review.username:", review.username);
             console.log("⛳ vergelijking:", review.username === username);
 
-            if (review.username !== username) {
-                return res.status(403).json({ message: "Je mag alleen je eigen review bewerken." });
-            }
+           if (review.username !== username) {
+    res.status(403).json({ message: "Je mag alleen je eigen review bewerken." });
+    return;
+}
+
 
             await this.postReviewService.updateReview(reviewId, comment);
             res.status(200).json({ message: "Review succesvol bijgewerkt." });

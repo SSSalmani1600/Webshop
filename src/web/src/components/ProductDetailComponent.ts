@@ -6,6 +6,8 @@ import "@web/components/AddToWishlistComponent";
 interface SessionData {
   sessionId: string;
   username: string;
+  userId: number;
+
 }
 
 interface Review {
@@ -145,10 +147,8 @@ export class GameDetailComponent extends HTMLElement {
       }
 
       const body: ReviewRequestBody = {
-        userId: 1,
         rating: selectedRating,
         comment,
-        username: this.currentUsername,
       };
 
       await reviewService.postReview(gameId, body);
@@ -189,27 +189,91 @@ export class GameDetailComponent extends HTMLElement {
 
     console.log("✅ canEdit =", canEdit);
 
-    if (this.editingReviewId === r.id && canEdit) {
-      return `
-        <div style="margin-bottom: 10px;">
-          <strong style="color: #fff;">${r.username}</strong><br/>
-          <textarea id="edit-textarea" style="width:100%; height:60px;">${this.editingReviewText}</textarea><br/>
-          <button id="save-edit">Opslaan</button>
-          <button id="cancel-edit">Annuleren</button>
-        </div>
-      `;
-    }
+   if (this.editingReviewId === r.id && canEdit) {
+  return `
+    <div style="
+      background-color: #3a3a3a;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    ">
+      <strong style="color: #fff; font-size: 15px;">${r.username}</strong><br/>
+      <div style="margin: 8px 0; color: gold; font-size: 16px;">
+        ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
+      </div>
+      <textarea id="edit-textarea" style="
+        width: 100%;
+        height: 80px;
+        margin-top: 10px;
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        resize: vertical;
+        box-sizing: border-box;
+      ">${this.editingReviewText}</textarea>
+      <div style="margin-top: 10px;">
+        <button id="save-edit" style="
+          background-color: #7f41f5;
+          color: white;
+          border: none;
+          padding: 6px 12px;
+          font-size: 13px;
+          border-radius: 8px;
+          cursor: pointer;
+          margin-right: 10px;
+        ">Opslaan</button>
+        <button id="cancel-edit" style="
+          background-color: #555;
+          color: white;
+          border: none;
+          padding: 6px 12px;
+          font-size: 13px;
+          border-radius: 8px;
+          cursor: pointer;
+        ">Annuleren</button>
+      </div>
+    </div>
+  `;
+}
+
 
     return `
-      <div style="margin-bottom: 10px;">
-        <strong style="color: #fff;">${r.username}</strong><br/>
-        <span style="color: gold; font-size: 16px;">
-          ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
-        </span><br/>
-        <span style="color: #ccc; font-size: 14px;">${r.comment}</span><br/>
-        ${canEdit ? `<button class="edit-btn" data-review-id="${r.id}" data-comment="${r.comment}">✏️ Bewerken</button>` : ""}
-      </div>
-    `;
+  <div style="
+    background-color: #3a3a3a;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+  ">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <strong style="color: #fff; font-size: 15px;">${r.username}</strong>
+      ${
+        canEdit
+          ? `<button class="edit-btn" data-review-id="${r.id}" data-comment="${r.comment}" style="
+                background-color: #7f41f5;
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                font-size: 13px;
+                border-radius: 8px;
+                cursor: pointer;
+            ">
+              ✏️ Bewerken
+            </button>`
+          : ""
+      }
+    </div>
+    <div style="margin-top: 6px; color: gold; font-size: 16px;">
+      ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
+    </div>
+    <p style="margin-top: 8px; color: #ddd; font-size: 14px; line-height: 1.5; margin-bottom: 0;">
+      ${r.comment}
+    </p>
+  </div>
+`;
+
   })
   .join("");
 

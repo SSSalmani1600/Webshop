@@ -1,22 +1,27 @@
+export interface Review {
+  id: number;
+  userId: number;
+  username: string;
+  gameId: number;
+  rating: number;
+  comment: string;
+}
+
+export interface IReviewService {
+  addReview(userId: number, gameId: number, rating: number, comment: string): Promise<void>;
+  getReviewsForGame(gameId: number): Promise<Review[]>;
+  updateReview(reviewId: number, comment: string): Promise<void>;
+
+  // ✅ Nieuw toegevoegd:
+  getReviewById(reviewId: number): Promise<Review | null>;
+}
+
 export interface ReviewRequestBody {
-    userId: number;
-    rating: number;
-    comment: string;
-    username?: string;
+  rating: number;
+  comment: string;
 }
 
 export interface ReviewResponse {
-    message: string;
+  message: string;
 }
 
-export interface ReviewItem {
-    rating: number;
-    comment: string;
-    username: string;
-    id?: number; // ✅ toegevoegd zodat frontend weet welk review bewerkt wordt
-}
-
-// ✅ optioneel: aparte body voor PUT-request
-export interface ReviewUpdateBody {
-    comment: string;
-}

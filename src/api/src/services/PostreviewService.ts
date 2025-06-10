@@ -2,6 +2,15 @@ import { DatabaseService } from "@api/services/DatabaseService";
 import type { ResultSetHeader } from "mysql2";
 import type { PoolConnection } from "mysql2/promise";
 
+interface Review {
+    id: number;
+    userId: number;
+    username: string;
+    gameId: number;
+    rating: number;
+    comment: string;
+}
+
 export class PostreviewService {
     private readonly db = new DatabaseService();
 
@@ -38,7 +47,6 @@ export class PostreviewService {
         }
     }
 
-    // ✅ nieuw toegevoegd
     public async updateReview(reviewId: number, comment: string): Promise<void> {
         const connection: PoolConnection = await this.db.openConnection();
 
@@ -49,6 +57,49 @@ export class PostreviewService {
                 WHERE id = ?
             `;
             await this.db.query<ResultSetHeader>(connection, query, comment, reviewId);
+        } finally {
+            connection.release();
+        }
+    }
+
+    public async getReviewById(reviewId: number): Promise<Review | null> {
+        const connection: PoolConnection = await this.db.openConnection();
+
+        try {
+            const [rows] = await connection.query(
+                `
+                SELECT r.id, r.user_id AS userId, r.game_id AS gameId, r.rating, r.comment, u.username
+                FROM review r
+                JOIN user u ON r.user_id = u.id
+                WHERE r.id = ?
+                `,
+                [reviewId]
+            );
+
+            if (!rows || rows.length === 0) {
+                return null;
+            }
+
+            return rows[0] as Review;
+        } finally {
+            connection.release();
+        }
+    }
+
+    public async getUsernameByUserId(userId: number): Promise<{ username: string } | null> {
+        const connection: PoolConnection = await this.db.openConnection();
+
+        try {
+            const [rows] = await connection.query(
+                `SELECT username FROM user WHERE id = ?`,
+                [userId]
+            );
+
+            if (!rows || rows.length === 0) {
+                return null;
+            }
+
+            return rows[0] as { username: string };
         } finally {
             connection.release();
         }

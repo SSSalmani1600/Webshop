@@ -46,6 +46,7 @@ export class GameDetailComponent extends HTMLElement {
 
     try {
       const { sessionId, username } = await this.getSession();
+      this.currentUsername = username;
       const response = await fetch(`${VITE_API_URL}game?id=${gameId}`, {
         headers: { "x-session": sessionId },
       });
@@ -53,7 +54,7 @@ export class GameDetailComponent extends HTMLElement {
       if (!response.ok) throw new Error("Kon game niet ophalen.");
 
       const game = (await response.json()) as Game;
-      this.renderGame(game, parseInt(gameId, 10), username);
+      this.renderGame(game, parseInt(gameId, 10));
     } catch (error) {
       this.shadow.innerHTML = `<p style=\"color: red;\">Fout: ${(error as Error).message}</p>`;
     }
@@ -77,7 +78,7 @@ export class GameDetailComponent extends HTMLElement {
     throw new Error("Invalid session object");
   }
 
-  private renderGame(game: Game, gameId: number, username: string): void {
+  private renderGame(game: Game, gameId: number): void {
     this.shadow.innerHTML = `
       <div class="box" style="max-width: 1500px; margin: 0 auto 20px auto;">
         <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -117,7 +118,6 @@ export class GameDetailComponent extends HTMLElement {
     const reviewButton = this.shadow.querySelector<HTMLButtonElement>("#submit-review");
     const reviewInput = this.shadow.querySelector<HTMLTextAreaElement>("#review-input");
     const reviewStatus = this.shadow.querySelector<HTMLDivElement>("#review-status");
-    this.currentUsername = username;
     let selectedRating = 0;
     const stars = this.shadow.querySelectorAll<HTMLSpanElement>("#star-rating span");
 
@@ -171,8 +171,6 @@ export class GameDetailComponent extends HTMLElement {
   }
 
   private async loadReviews(gameId: number): Promise<void> {
-    console.log("Ingelogd als:", this.currentUsername);
-
     const output = this.shadow.querySelector<HTMLElement>("#reviews-output");
     if (!output) return;
 
@@ -181,30 +179,37 @@ export class GameDetailComponent extends HTMLElement {
       const reviews = (await res.json()) as Review[];
 
       output.innerHTML = reviews
-        .map((r) => {
-          if (this.editingReviewId === r.id) {
-            return `
-              <div style="margin-bottom: 10px;">
-                <strong style="color: #fff;">${r.username}</strong><br/>
-                <textarea id="edit-textarea" style="width:100%; height:60px;">${this.editingReviewText}</textarea><br/>
-                <button id="save-edit">Opslaan</button>
-                <button id="cancel-edit">Annuleren</button>
-              </div>
-            `;
-          }
-          const canEdit = r.username?.toLowerCase() === this.currentUsername.toLowerCase();
-          return `
-            <div style="margin-bottom: 10px;">
-              <strong style="color: #fff;">${r.username}</strong><br/>
-              <span style="color: gold; font-size: 16px;">
-                ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
-              </span><br/>
-              <span style="color: #ccc; font-size: 14px;">${r.comment}</span><br/>
-              ${canEdit ? `<button class="edit-btn" data-review-id="${r.id}" data-comment="${r.comment}">Bewerk</button>` : ""}
-            </div>
-          `;
-        })
-        .join("");
+  .map((r) => {
+    console.log("⚠️ Vergelijking:", `"${r.username}"`, "vs", `"${this.currentUsername}"`);
+
+    const canEdit = r.username?.trim().toLowerCase() === this.currentUsername.trim().toLowerCase();
+
+    console.log("✅ canEdit =", canEdit);
+
+    if (this.editingReviewId === r.id && canEdit) {
+      return `
+        <div style="margin-bottom: 10px;">
+          <strong style="color: #fff;">${r.username}</strong><br/>
+          <textarea id="edit-textarea" style="width:100%; height:60px;">${this.editingReviewText}</textarea><br/>
+          <button id="save-edit">Opslaan</button>
+          <button id="cancel-edit">Annuleren</button>
+        </div>
+      `;
+    }
+
+    return `
+      <div style="margin-bottom: 10px;">
+        <strong style="color: #fff;">${r.username}</strong><br/>
+        <span style="color: gold; font-size: 16px;">
+          ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
+        </span><br/>
+        <span style="color: #ccc; font-size: 14px;">${r.comment}</span><br/>
+        ${canEdit ? `<button class="edit-btn" data-review-id="${r.id}" data-comment="${r.comment}">✏️ Bewerken</button>` : ""}
+      </div>
+    `;
+  })
+  .join("");
+
     } catch {
       output.innerHTML = "<p style='color:red;'>Kon reviews niet ophalen.</p>";
     }

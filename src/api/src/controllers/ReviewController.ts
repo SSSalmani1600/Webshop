@@ -11,7 +11,7 @@ export class ReviewController {
 
         this.router.post("/games/:id/reviews", this.postReview.bind(this));
         this.router.get("/games/:id/reviews", this.getReviewsByGameId.bind(this));
-        this.router.put("/reviews/:id", this.updateReview.bind(this)); // ✅ nieuw toegevoegd
+        this.router.put("/reviews/:id", this.updateReview.bind(this));
     }
 
     public async postReview(req: Request, res: Response): Promise<void> {
@@ -52,15 +52,41 @@ export class ReviewController {
         }
     }
 
-    // ✅ nieuwe updateReview-methode
     public async updateReview(req: Request, res: Response): Promise<void> {
         try {
             const reviewId = parseInt(req.params.id);
             const { comment } = req.body;
+            const userIdCookie = req.cookies?.user;
+            const userId = parseInt(userIdCookie);
 
-            if (isNaN(reviewId) || !comment) {
-                res.status(400).json({ message: "Ongeldig review ID of lege comment." });
+            if (!userId || isNaN(userId) || !comment || isNaN(reviewId)) {
+                res.status(400).json({ message: "Ongeldige invoer of niet ingelogd." });
                 return;
+            }
+
+            const gebruiker = await this.postReviewService.getUsernameByUserId(userId);
+
+            if (!gebruiker) {
+                res.status(404).json({ message: "Gebruiker niet gevonden." });
+                return;
+            }
+
+            const username = gebruiker.username;
+            console.log("⛳ userId uit cookie:", userId);
+            console.log("⛳ username uit DB:", username);
+
+            const review = await this.postReviewService.getReviewById(reviewId);
+
+            if (!review) {
+                res.status(404).json({ message: "Review niet gevonden." });
+                return;
+            }
+
+            console.log("⛳ review.username:", review.username);
+            console.log("⛳ vergelijking:", review.username === username);
+
+            if (review.username !== username) {
+                return res.status(403).json({ message: "Je mag alleen je eigen review bewerken." });
             }
 
             await this.postReviewService.updateReview(reviewId, comment);

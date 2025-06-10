@@ -77,12 +77,21 @@ export class OrderService {
 
     public async getUserNameById(userId: number): Promise<string> {
         const connection: PoolConnection = await this._db.openConnection();
-        
+
         try {
             const [rows] = await connection.query(
-                `SELECT username FROM users WHERE id = ?`,
+                "SELECT username FROM users WHERE id = ?",
                 [userId]
-            );            
+            );
+            const result = Array.isArray(rows) ? rows[0] : null;
+            return result?.username ?? "";        
+        }
+        catch (e) {
+            console.error("Fout in getUserNameById:", e);
+            throw new Error(`Kan gebruikersnaam niet ophalen: ${e instanceof Error ? e.message : e}`);
+        }
+        finally {
+            connection.release();
         }
     }
 }

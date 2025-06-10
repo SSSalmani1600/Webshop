@@ -73,5 +73,16 @@ export class OrderService {
         finally {
             connection.release();
         }
+    }
+
+    public async getUserNameById(userId: number): Promise<string> {
+        const connection: PoolConnection = await this._db.openConnection();
+        
+        try {
+            const [rows] = await connection.query(
+                `SELECT username FROM users WHERE id = ?`,
+                [userId]
+            );            
         }
+    }
 }

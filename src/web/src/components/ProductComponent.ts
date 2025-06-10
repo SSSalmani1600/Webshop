@@ -242,7 +242,7 @@ export class GameList extends HTMLElement {
                         <a class="view-button" href="gameDetail.html?id=${game.id}">Bekijk game</a>
                         <add-to-wishlist game-id="${game.id}"></add-to-wishlist>
                     </div>
-                    <add-to-cart game-id="${game.id}" price="${game.price ?? 0}"></add-to-cart>
+                    <add-to-cart game-id="${game.id}"></add-to-cart>
                 </div>
             `;
         }).join("");

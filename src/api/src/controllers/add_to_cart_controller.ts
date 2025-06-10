@@ -24,27 +24,25 @@ export class AddToCartController {
                 return;
             }
 
-            // Haal game details uit het request body
+            // Haal game details uit het request body (zonder prijs)
             const gameId: number = Number((req.body as { game_id: string }).game_id);
             const quantity: number = Number((req.body as { quantity?: string }).quantity) || 1;
-            const price: number = Number((req.body as { price: string }).price);
 
-            console.log("Toevoegen aan winkelmandje:", { userId, gameId, quantity, price });
+            console.log("Toevoegen aan winkelmandje:", { userId, gameId, quantity });
 
-            // Valideer de request data
-            if (!gameId || !price) {
+            // Valideer de request data (prijs wordt nu server-side opgehaald)
+            if (!gameId) {
                 res.status(400).json({
                     success: false,
-                    message: "Ontbrekende game_id of price in verzoek",
+                    message: "Ontbrekende game_id in verzoek",
                 });
                 return;
             }
 
-            // Gebruik de service om het item toe te voegen
+            // Gebruik de service om het item toe te voegen (prijs wordt automatisch opgehaald)
             const result: { success: boolean; message: string } = await this._addToCartService.addToCart({
                 gameId,
                 quantity,
-                price,
                 userId,
             });
 

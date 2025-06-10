@@ -74,7 +74,6 @@ router.get("/games/search", (req: Request, res: Response) => gameSearchControlle
 
 // Discount code endpoints
 router.post("/discount/apply", (req: Request<object, object, DiscountCodeRequestBody>, res: Response) => discountController.applyDiscount(req, res));
-router.get("/discount/codes", (req: Request, res: Response) => discountController.getAvailableDiscountCodes(req, res));
 router.get("/actie/:productId", (req, res) => actionController.getActieByProductA(req, res));
 
 // Checkout endpoint

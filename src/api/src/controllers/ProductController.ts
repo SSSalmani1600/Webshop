@@ -86,4 +86,4 @@ export class ProductController {
             res.status(500).json({ error: "Zichtbaarheid wijzigen mislukt." });
         }
     }
-}
+};

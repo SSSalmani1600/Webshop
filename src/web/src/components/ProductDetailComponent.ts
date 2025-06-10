@@ -7,7 +7,6 @@ interface SessionData {
   sessionId: string;
   username: string;
   userId: number;
-
 }
 
 interface Review {
@@ -22,6 +21,7 @@ export class GameDetailComponent extends HTMLElement {
   private editingReviewId: number | null = null;
   private editingReviewText = "";
   private currentUsername = "";
+  private currentUserId = 0;
 
   public constructor() {
     super();
@@ -34,7 +34,7 @@ export class GameDetailComponent extends HTMLElement {
   }
 
   private renderLoading(): void {
-    this.shadow.innerHTML = "<p style=\"color: white;\">Game wordt geladen...</p>";
+    this.shadow.innerHTML = `<p style="color: white;">Game wordt geladen...</p>`;
   }
 
   private async loadGame(): Promise<void> {
@@ -42,13 +42,15 @@ export class GameDetailComponent extends HTMLElement {
     const gameId = urlParams.get("id");
 
     if (!gameId) {
-      this.shadow.innerHTML = "<p style=\"color: red;\">Geen game ID opgegeven.</p>";
+      this.shadow.innerHTML = `<p style="color: red;">Geen game ID opgegeven.</p>`;
       return;
     }
 
     try {
-      const { sessionId, username } = await this.getSession();
+      const { sessionId, username, userId } = await this.getSession();
       this.currentUsername = username;
+      this.currentUserId = userId;
+
       const response = await fetch(`${VITE_API_URL}game?id=${gameId}`, {
         headers: { "x-session": sessionId },
       });
@@ -58,7 +60,7 @@ export class GameDetailComponent extends HTMLElement {
       const game = (await response.json()) as Game;
       this.renderGame(game, parseInt(gameId, 10));
     } catch (error) {
-      this.shadow.innerHTML = `<p style=\"color: red;\">Fout: ${(error as Error).message}</p>`;
+      this.shadow.innerHTML = `<p style="color: red;">Fout: ${(error as Error).message}</p>`;
     }
   }
 
@@ -66,16 +68,15 @@ export class GameDetailComponent extends HTMLElement {
     const res = await fetch(`${VITE_API_URL}session`, { credentials: "include" });
     const data = await res.json();
 
-      console.log("📦 getSession() response:", data); // 🔥 HIER TOEVOEGEN
-
-
     if (
       typeof data === "object" &&
       data !== null &&
       "sessionId" in data &&
       "username" in data &&
+      "userId" in data &&
       typeof data.sessionId === "string" &&
-      typeof data.username === "string"
+      typeof data.username === "string" &&
+      typeof data.userId === "number"
     ) {
       return data as SessionData;
     }
@@ -147,6 +148,7 @@ export class GameDetailComponent extends HTMLElement {
       }
 
       const body: ReviewRequestBody = {
+        userId: this.currentUserId,
         rating: selectedRating,
         comment,
       };
@@ -182,101 +184,43 @@ export class GameDetailComponent extends HTMLElement {
       const reviews = (await res.json()) as Review[];
 
       output.innerHTML = reviews
-  .map((r) => {
-    console.log("⚠️ Vergelijking:", `"${r.username}"`, "vs", `"${this.currentUsername}"`);
+        .map((r) => {
+          const canEdit = r.username?.trim().toLowerCase() === this.currentUsername.trim().toLowerCase();
 
-    const canEdit = r.username?.trim().toLowerCase() === this.currentUsername.trim().toLowerCase();
+          if (this.editingReviewId === r.id && canEdit) {
+            return `
+              <div style="background-color: #3a3a3a; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                <strong style="color: #fff; font-size: 15px;">${r.username}</strong><br/>
+                <div style="margin: 8px 0; color: gold; font-size: 16px;">
+                  ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
+                </div>
+                <textarea id="edit-textarea" style="width: 100%; height: 80px; margin-top: 10px; padding: 10px; font-size: 14px; border-radius: 8px; border: 1px solid #ccc; resize: vertical;">${this.editingReviewText}</textarea>
+                <div style="margin-top: 10px;">
+                  <button id="save-edit" style="background-color: #7f41f5; color: white; padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; margin-right: 10px;">Opslaan</button>
+                  <button id="cancel-edit" style="background-color: #555; color: white; padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer;">Annuleren</button>
+                </div>
+              </div>
+            `;
+          }
 
-    console.log("✅ canEdit =", canEdit);
-
-   if (this.editingReviewId === r.id && canEdit) {
-  return `
-    <div style="
-      background-color: #3a3a3a;
-      padding: 16px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.25);
-    ">
-      <strong style="color: #fff; font-size: 15px;">${r.username}</strong><br/>
-      <div style="margin: 8px 0; color: gold; font-size: 16px;">
-        ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
-      </div>
-      <textarea id="edit-textarea" style="
-        width: 100%;
-        height: 80px;
-        margin-top: 10px;
-        padding: 10px;
-        font-size: 14px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        resize: vertical;
-        box-sizing: border-box;
-      ">${this.editingReviewText}</textarea>
-      <div style="margin-top: 10px;">
-        <button id="save-edit" style="
-          background-color: #7f41f5;
-          color: white;
-          border: none;
-          padding: 6px 12px;
-          font-size: 13px;
-          border-radius: 8px;
-          cursor: pointer;
-          margin-right: 10px;
-        ">Opslaan</button>
-        <button id="cancel-edit" style="
-          background-color: #555;
-          color: white;
-          border: none;
-          padding: 6px 12px;
-          font-size: 13px;
-          border-radius: 8px;
-          cursor: pointer;
-        ">Annuleren</button>
-      </div>
-    </div>
-  `;
-}
-
-
-    return `
-  <div style="
-    background-color: #3a3a3a;
-    padding: 16px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.25);
-  ">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <strong style="color: #fff; font-size: 15px;">${r.username}</strong>
-      ${
-        canEdit
-          ? `<button class="edit-btn" data-review-id="${r.id}" data-comment="${r.comment}" style="
-                background-color: #7f41f5;
-                color: white;
-                border: none;
-                padding: 6px 12px;
-                font-size: 13px;
-                border-radius: 8px;
-                cursor: pointer;
-            ">
-              ✏️ Bewerken
-            </button>`
-          : ""
-      }
-    </div>
-    <div style="margin-top: 6px; color: gold; font-size: 16px;">
-      ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
-    </div>
-    <p style="margin-top: 8px; color: #ddd; font-size: 14px; line-height: 1.5; margin-bottom: 0;">
-      ${r.comment}
-    </p>
-  </div>
-`;
-
-  })
-  .join("");
-
+          return `
+            <div style="background-color: #3a3a3a; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="color: #fff; font-size: 15px;">${r.username}</strong>
+                ${
+                  canEdit
+                    ? `<button class="edit-btn" data-review-id="${r.id}" data-comment="${r.comment}" style="background-color: #7f41f5; color: white; border: none; padding: 6px 12px; font-size: 13px; border-radius: 8px; cursor: pointer;">✏️ Bewerken</button>`
+                    : ""
+                }
+              </div>
+              <div style="margin-top: 6px; color: gold; font-size: 16px;">
+                ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
+              </div>
+              <p style="margin-top: 8px; color: #ddd; font-size: 14px;">${r.comment}</p>
+            </div>
+          `;
+        })
+        .join("");
     } catch {
       output.innerHTML = "<p style='color:red;'>Kon reviews niet ophalen.</p>";
     }

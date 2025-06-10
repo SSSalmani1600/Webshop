@@ -3,6 +3,10 @@ import type { GamePrices } from "../../../api/src/types/GamePrices";
 import "@web/components/AddToWishlistComponent";
 import "@web/components/Add_to_cartcomponent";
 
+const VITE_API_URL: string = window.location.hostname.includes("localhost")
+    ? "http://localhost:3001/"
+    : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api/";
+
 interface SessionResponse {
     sessionId: string;
 }
@@ -36,6 +40,14 @@ export class GameList extends HTMLElement {
             }
 
             await this.render();
+
+            // Sorteer dropdown eventlistener toevoegen
+            this.shadowRoot
+                ?.querySelector("#sort-select")
+                ?.addEventListener("change", (e: Event) => {
+                    const target: HTMLSelectElement = e.target as HTMLSelectElement;
+                    this.sortByPrice(target.value as "asc" | "desc");
+                });
         }
         catch (error) {
             console.error(error);
@@ -133,7 +145,7 @@ export class GameList extends HTMLElement {
           margin-bottom: 1.5rem;
         }
         .filter-section select {
-          width: 100%;
+          width: 50%;
           padding: 10px;
           background-color: #2a2a2a;
           color: #fff;
@@ -145,6 +157,7 @@ export class GameList extends HTMLElement {
           display: flex;
           flex-wrap: wrap;
           gap: 10px;
+          margin-top: 0.5rem;
         }
         .genre-checkbox {
           display: flex;
@@ -232,7 +245,9 @@ export class GameList extends HTMLElement {
       <div class="filter-panel">
         <div class="filter-header">Filters</div>
         <div class="filter-section">
-          <label for="sort-select">Sorteer op prijs:</label>
+          <label for="sort-select" style="display: block; margin-bottom: 0.5rem;">
+            Sorteer op prijs:
+          </label>
           <select id="sort-select">
             <option value="asc">Laag → Hoog</option>
             <option value="desc">Hoog → Laag</option>

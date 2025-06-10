@@ -7,8 +7,17 @@ import { PoolConnection } from "mysql2/promise";
 interface CartItemData {
     gameId: number;
     quantity: number;
-    price: number;
     userId: number;
+    isFree?: boolean;
+}
+
+/**
+ * Interface voor game price response van externe API
+ */
+interface GamePriceResponse {
+    price: number;
+    productId: number;
+    currency: string;
 }
 
 /**
@@ -25,7 +34,7 @@ export class AddToCartService {
     /**
      * Voeg een item toe aan het winkelmandje
      *
-     * @param cartItem - De cart item data
+     * @param cartItem - De cart item data (zonder price)
      * @returns Een promise die wordt resolved als het item is toegevoegd
      */
     public async addToCart(cartItem: CartItemData): Promise<{ success: boolean; message: string }> {
@@ -41,6 +50,15 @@ export class AddToCartService {
                 };
             }
 
+            const { gameId, isFree = false } = cartItem;
+
+            let price: number;
+            if (isFree) {
+                price = 0;
+            }
+            else {
+                price = await this.getGamePrice(gameId);
+            }
             // Controleer of het item al in het winkelmandje zit
             const existingCartItem: { id: number }[] = await this.databaseService.query(
                 connection,
@@ -49,12 +67,13 @@ export class AddToCartService {
                 cartItem.gameId
             );
 
-            // Als het item al bestaat, update de hoeveelheid
+            // Als het item al bestaat, update de hoeveelheid en prijs
             if (Array.isArray(existingCartItem) && existingCartItem.length > 0) {
                 await this.databaseService.query(
                     connection,
-                    "UPDATE cart_items SET quantity = quantity + ? WHERE user_id = ? AND game_id = ?",
+                    "UPDATE cart_items SET quantity = quantity + ?, price = ? WHERE user_id = ? AND game_id = ?",
                     cartItem.quantity,
+                    price,
                     cartItem.userId,
                     cartItem.gameId
                 );
@@ -72,7 +91,7 @@ export class AddToCartService {
                 cartItem.userId,
                 cartItem.gameId,
                 cartItem.quantity,
-                cartItem.price
+                price
             );
 
             return {
@@ -86,18 +105,54 @@ export class AddToCartService {
     }
 
     /**
-     * Controleer of een game bestaat
+     * Haal game prijs op - eerst van externe API, anders fallback naar €20
+     *
+     * @param gameId - Het ID van de game
+     * @returns De prijs van de game
+     */
+    private async getGamePrice(gameId: number): Promise<number> {
+        try {
+            // Probeer externe API
+            const response: globalThis.Response = await fetch(`http://oege.ie.hva.nl:8889/api/productprices/${gameId}`);
+
+            if (response.ok) {
+                const data: GamePriceResponse[] = await response.json() as GamePriceResponse[];
+                if (Array.isArray(data) && data.length > 0 && data[0].price) {
+                    console.log(`Price fetched from API for game ${gameId}: €${data[0].price}`);
+                    return data[0].price;
+                }
+            }
+        }
+        catch {
+            // API niet bereikbaar - gebruik fallback
+            console.log(`External API not available for game ${gameId}, using fallback price €20`);
+        }
+
+        // Fallback naar standaardprijs
+        console.log(`Using fallback price €20 for game ${gameId}`);
+        return 20.00;
+    }
+
+    /**
+     * Controleer of een game bestaat in de database
      *
      * @param connection - Database connectie
      * @param gameId - Het ID van de game
-     * @returns True als de game bestaat, anders false
+     * @returns true als de game bestaat, false anders
      */
     private async checkGameExists(connection: PoolConnection, gameId: number): Promise<boolean> {
-        const result: { id: number }[] = await this.databaseService.query(
-            connection,
-            "SELECT id FROM games WHERE id = ?",
-            gameId
-        );
-        return Array.isArray(result) && result.length > 0;
+        try {
+            const result: { id: number }[] = await this.databaseService.query(
+                connection,
+                "SELECT id FROM games WHERE id = ?",
+                gameId
+            );
+
+            return Array.isArray(result) && result.length > 0;
+        }
+        catch (error) {
+            console.error(`Error checking if game exists for game ${gameId}:`, error);
+            return false;
+        }
     }
-}
+};

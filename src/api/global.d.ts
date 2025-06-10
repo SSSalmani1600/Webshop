@@ -3,7 +3,7 @@ declare global {
         export interface Request {
             sessionId?: string;
             userId?: number;
-            username?: string; 
+            username?: string;
         }
     }
 }

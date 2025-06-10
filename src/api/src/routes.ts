@@ -21,6 +21,7 @@ import { ReviewController } from "./controllers/ReviewController";
 import { LogoutController } from "./controllers/LogoutController";
 import { RandomGameController } from "./controllers/RandomGameController";
 import { AddToWishlistController } from "./controllers/AddToWishlistController";
+import { ActionController } from "./controllers/ActionController";
 
 export const router: Router = Router();
 
@@ -47,6 +48,7 @@ const showHomepageGamesController: ShowHomepageGamesController = new ShowHomepag
 const randomGameController: RandomGameController = new RandomGameController();
 const reviewController: ReviewController = new ReviewController();
 const addToWishlistController: AddToWishlistController = new AddToWishlistController();
+const actionController: ActionController = new ActionController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
@@ -73,7 +75,7 @@ router.get("/games/search", (req: Request, res: Response) => gameSearchControlle
 
 // Discount code endpoints
 router.post("/discount/apply", (req: Request<object, object, DiscountCodeRequestBody>, res: Response) => discountController.applyDiscount(req, res));
-router.get("/discount/codes", (req: Request, res: Response) => discountController.getAvailableDiscountCodes(req, res));
+router.get("/actie/:productId", (req, res) => actionController.getActieByProductA(req, res));
 
 // Checkout endpoint
 router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));

@@ -1,7 +1,10 @@
-import { DiscountCode, DiscountValidationResult, ThirdPartyDiscountCode } from "../interfaces/IDiscountService";
+import { DiscountValidationResult, ThirdPartyDiscountCode } from "../interfaces/IDiscountService";
 
+// Deze service controleert kortingscodes en heeft een backup plan als de externe API niet werkt
 export class DiscountService {
-    private readonly API_BASE_URL = "https://oege.ie.hva.nl:8887/api/discount_codes";
+    // Dit is het adres van de externe API die we gebruiken voor kortingscodes
+    private readonly API_BASE_URL = "http://oege.ie.hva.nl:8999/api/discount_codes";
+
     private readonly FETCH_OPTIONS: RequestInit = {
         method: "GET",
         credentials: "include",
@@ -11,7 +14,7 @@ export class DiscountService {
         },
     };
 
-    // third party API werkt alleen op school netwerk, dus fallback code
+    // Dit is een test kortingscode die we gebruiken als de externe API niet werkt
     private readonly fallbackCode: ThirdPartyDiscountCode = {
         code: "TEST123",
         amount: 15,
@@ -22,109 +25,52 @@ export class DiscountService {
         valid: true,
     };
 
-    public async validateDiscountCode(code: string): Promise<DiscountValidationResult> {
+    // Deze functie controleert of een kortingscode geldig is
+    public async validateDiscountCode(code: string, _amount: number): Promise<DiscountValidationResult> {
         try {
-            let allCodes: DiscountCode[];
-            try {
-                allCodes = await this.getAllDiscountCodes();
-                console.log("Successfully fetched codes from API:", allCodes);
-            }
-            catch (error) {
-                console.log("API not accessible, using fallback code:", error);
+            // We maken de URL waar we de code gaan controleren
+            const url: string = `${this.API_BASE_URL}/${encodeURIComponent(code)}`;
 
-                // ALs API niet bereikbaar is, gebruik de fallback code
-                allCodes = [{
-                    code: this.fallbackCode.code,
-                    discount: this.fallbackCode.amount,
-                    expires_at: this.fallbackCode.validUntil,
-                    valid: this.fallbackCode.valid && new Date(this.fallbackCode.validUntil) > new Date(),
-                }];
+            // We vragen aan de externe API of de code geldig is
+            const response: Response = await fetch(url, this.FETCH_OPTIONS);
+
+            // Als er iets mis gaat met de API
+            if (!response.ok) {
+                throw new Error("API niet bereikbaar");
             }
 
-            console.log("Validating code:", code, "against codes:", allCodes);
-            const matchedCode: DiscountCode | undefined = allCodes.find(dc => dc.code === code);
+            // We lezen het antwoord van de API
+            const data: ThirdPartyDiscountCode[] = await response.json() as ThirdPartyDiscountCode[];
+            // We zoeken naar een geldige code die overeenkomt met wat de klant heeft ingevoerd
+            const validCode: ThirdPartyDiscountCode | undefined = data.find(c => c.code === code && c.valid);
 
-            if (!matchedCode || !matchedCode.valid) {
-                console.log("No valid matching code found");
+            // Als we geen geldige code vinden
+            if (!validCode) {
                 return { valid: false };
             }
 
-            const now: Date = new Date();
-            const expiryDate: Date = new Date(matchedCode.expires_at);
-
-            if (expiryDate <= now) {
-                console.log("Code has expired");
-                return { valid: false };
-            }
-
-            console.log("Code is valid, applying discount:", matchedCode.discount);
+            // Als we wel een geldige code vinden, sturen we de korting terug
             return {
                 valid: true,
-                discountPercentage: matchedCode.discount,
-                code: matchedCode.code,
+                discountPercentage: validCode.amount,
+                code: validCode.code,
             };
         }
         catch (error) {
-            console.error("Discount validation error:", error);
-            return { valid: false };
-        }
-    }
+            // Als er iets mis gaat met de API, gebruiken we de test code
+            console.warn("Valideer via fallback (API faalde):", error);
 
-    public async getAllDiscountCodes(): Promise<DiscountCode[]> {
-        try {
-            console.log("Fetching discount codes from:", this.API_BASE_URL);
-            const response: Response = await fetch(this.API_BASE_URL, this.FETCH_OPTIONS);
-
-            if (!response.ok) {
-                console.error("API request failed:", response.status, response.statusText);
-                throw new Error(`API request failed with status ${response.status}`);
-            }
-
-            const responseText: string = await response.text();
-            console.log("Raw API response:", responseText);
-
-            if (!responseText) {
-                console.log("Empty response, using fallback code");
-                return [{
+            // Als de klant de test code heeft ingevoerd
+            if (code === this.fallbackCode.code) {
+                return {
+                    valid: true,
+                    discountPercentage: this.fallbackCode.amount,
                     code: this.fallbackCode.code,
-                    discount: this.fallbackCode.amount,
-                    expires_at: this.fallbackCode.validUntil,
-                    valid: this.fallbackCode.valid && new Date(this.fallbackCode.validUntil) > new Date(),
-                }];
+                };
             }
 
-            let jsonData: unknown;
-            try {
-                jsonData = JSON.parse(responseText);
-            }
-            catch (error) {
-                console.error("Failed to parse JSON response:", error);
-                throw new Error("Invalid JSON response from API");
-            }
-
-            if (!Array.isArray(jsonData)) {
-                console.error("Response is not an array:", jsonData);
-                throw new Error("Invalid response format - expected array");
-            }
-
-            const data: ThirdPartyDiscountCode[] = jsonData as ThirdPartyDiscountCode[];
-            console.log("Parsed discount codes:", data);
-
-            return data.map(item => ({
-                code: item.code,
-                discount: item.amount,
-                expires_at: item.validUntil,
-                valid: item.valid && new Date(item.validUntil) > new Date(),
-            }));
-        }
-        catch (error) {
-            console.error("Error fetching discount codes:", error);
-            return [{
-                code: this.fallbackCode.code,
-                discount: this.fallbackCode.amount,
-                expires_at: this.fallbackCode.validUntil,
-                valid: this.fallbackCode.valid && new Date(this.fallbackCode.validUntil) > new Date(),
-            }];
+            // Als het niet de test code is, is de code ongeldig
+            return { valid: false };
         }
     }
 }

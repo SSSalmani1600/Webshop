@@ -4,7 +4,6 @@ import type { Game } from "@api/types/Game";
 import { GamePrices } from "@api/types/GamePrices";
 import { NewProduct } from "@api/types/NewProduct";
 
-
 /**
  * Controller class for handling product-related API routes.
  */
@@ -87,5 +86,4 @@ export class ProductController {
             res.status(500).json({ error: "Zichtbaarheid wijzigen mislukt." });
         }
     }
-}
-
+};

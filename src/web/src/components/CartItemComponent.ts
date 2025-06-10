@@ -80,10 +80,9 @@ export class CartItemComponent extends HTMLElement {
                     this.itemPrice = typeof updatedItem.price === "string" ? parseFloat(updatedItem.price) : updatedItem.price;
                 }
 
-                // Calculate new total price for this item
-                const totalPrice: number = this.itemPrice * this.itemQuantity;
-                const discountedPrice: number = totalPrice * (1 - this.itemDiscount / 100);
-                const roundedDiscountedPrice: number = parseFloat(discountedPrice.toFixed(2));
+                // Get the total price for this item from the backend data
+                const updatedItemTotal: number = this.itemPrice * this.itemQuantity;
+                const updatedItemDiscounted: number = updatedItemTotal * (1 - this.itemDiscount / 100);
 
                 // Update quantity display
                 const quantityDisplay: HTMLElement | null = this.querySelector(".quantity-display");
@@ -95,8 +94,8 @@ export class CartItemComponent extends HTMLElement {
                 const priceContainer: HTMLElement | null = this.querySelector(".price-container");
                 if (priceContainer) {
                     priceContainer.innerHTML = `
-                        ${this.itemDiscount > 0 ? `<span class="original-price">€${totalPrice.toFixed(2)}</span>` : ""}
-                        <div class="item-price">€${roundedDiscountedPrice.toFixed(2)}</div>
+                        ${this.itemDiscount > 0 ? `<span class="original-price">€${updatedItemTotal.toFixed(2)}</span>` : ""}
+                        <div class="item-price">€${updatedItemDiscounted.toFixed(2)}</div>
                     `;
                 }
 
@@ -128,7 +127,7 @@ export class CartItemComponent extends HTMLElement {
 
     // Deze functie maakt de HTML voor het product
     public render(): void {
-        // Bereken de totale prijs en korting
+        // Get the total price for this item
         const totalPrice: number = this.itemPrice * this.itemQuantity;
         const discountedPrice: number = totalPrice * (1 - this.itemDiscount / 100);
         const roundedDiscountedPrice: number = parseFloat(discountedPrice.toFixed(2));

@@ -1,11 +1,14 @@
 import { DatabaseService } from "./DatabaseService";
 import { PoolConnection } from "mysql2/promise";
 import type { CartItem } from "../types/CartItem";
+import { DiscountService } from "./DiscountService";
+import { DiscountValidationResult } from "../interfaces/IDiscountService";
 
 // Deze service regelt alle database operaties voor de winkelwagen
 export class CartService {
     // We maken een verbinding met de database
     private readonly _databaseService: DatabaseService = new DatabaseService();
+    private readonly _discountService: DiscountService = new DiscountService();
 
     // Deze functie haalt alle producten op uit de winkelwagen van een gebruiker
     public async getCartItemsByUser(userId: number): Promise<CartItem[]> {
@@ -74,5 +77,39 @@ export class CartService {
         finally {
             connection.release();
         }
+    }
+
+    // Bereken het subtotaal van de winkelwagen
+    public calculateSubtotal(items: CartItem[]): number {
+        return items.reduce((sum, item) => {
+            const price: number = typeof item.price === "string" ? parseFloat(item.price) : item.price;
+            return sum + (price * item.quantity);
+        }, 0);
+    }
+
+    // Bereken het totaal met eventuele korting
+    public async calculateCartTotals(items: CartItem[], discountCode: string | undefined, userId: number): Promise<{
+        subtotal: number;
+        total: number;
+        discountPercentage: number;
+    }> {
+        const subtotal: number = this.calculateSubtotal(items);
+        let total: number = subtotal;
+        let discountPercentage: number = 0;
+
+        if (discountCode) {
+            const validation: DiscountValidationResult = await this._discountService.validateDiscountCode(discountCode, userId);
+            if (validation.valid && validation.discountPercentage) {
+                discountPercentage = validation.discountPercentage;
+                const discountAmount: number = subtotal * (discountPercentage / 100);
+                total = subtotal - discountAmount;
+            }
+        }
+
+        return {
+            subtotal: parseFloat(subtotal.toFixed(2)),
+            total: parseFloat(total.toFixed(2)),
+            discountPercentage,
+        };
     }
 }

@@ -58,4 +58,21 @@ export class CartService {
             connection.release();
         }
     }
+
+    public async updateCartItemQuantity(cartItemId: number, userId: number, quantity: number): Promise<void> {
+        const connection: PoolConnection = await this._databaseService.openConnection();
+        try {
+            await connection.execute(
+                "UPDATE cart_items SET quantity = ? WHERE id = ? AND user_id = ?",
+                [quantity, cartItemId, userId]
+            );
+        }
+        catch (error) {
+            console.error("Database error bij updaten cart item quantity:", error);
+            throw new Error("Kan hoeveelheid niet bijwerken in database");
+        }
+        finally {
+            connection.release();
+        }
+    }
 }

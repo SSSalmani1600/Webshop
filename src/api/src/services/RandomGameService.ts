@@ -47,7 +47,7 @@ export class RandomGameService {
     }
 
     /**
-     * Haalt het totaal aantal games op (voor statistieken)
+     * Haalt het totaal aantal games op (voor statistieken) dus toont het aantal games.
      * @returns Het aantal games in de database
      */
     public async getTotalGamesCount(): Promise<number> {

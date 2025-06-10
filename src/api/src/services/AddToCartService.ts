@@ -11,6 +11,15 @@ interface CartItemData {
 }
 
 /**
+ * Interface voor game price response van externe API
+ */
+interface GamePriceResponse {
+    price: number;
+    productId: number;
+    currency: string;
+}
+
+/**
  * Service voor het afhandelen van add to cart functionaliteit
  * Bevat de businesslogica voor het toevoegen van items aan het winkelmandje
  */
@@ -31,22 +40,17 @@ export class AddToCartService {
         const connection: PoolConnection = await this.databaseService.openConnection();
 
         try {
-            // Controleer of de game bestaat en haal de prijs op uit de database
-            const gameData: { id: number; price: number } | null = await this.getGameWithPrice(connection, cartItem.gameId);
-            if (!gameData) {
+            // Controleer of de game bestaat
+            const gameExists: boolean = await this.checkGameExists(connection, cartItem.gameId);
+            if (!gameExists) {
                 return {
                     success: false,
                     message: "Game niet gevonden",
                 };
             }
 
-            const price: number = gameData.price;
-            if (price <= 0) {
-                return {
-                    success: false,
-                    message: "Prijs niet beschikbaar voor deze game",
-                };
-            }
+            // Probeer eerst de externe API, fallback naar €20
+            const price: number = await this.getGamePrice(cartItem.gameId);
 
             // Controleer of het item al in het winkelmandje zit
             const existingCartItem: { id: number }[] = await this.databaseService.query(
@@ -73,7 +77,7 @@ export class AddToCartService {
                 };
             }
 
-            // Voeg nieuw item toe aan het winkelmandje met actuele prijs uit database
+            // Voeg nieuw item toe aan het winkelmandje
             await this.databaseService.query(
                 connection,
                 "INSERT INTO cart_items (user_id, game_id, quantity, price) VALUES (?, ?, ?, ?)",
@@ -94,27 +98,54 @@ export class AddToCartService {
     }
 
     /**
-     * Haal game data inclusief prijs op uit de database
+     * Haal game prijs op - eerst van externe API, anders fallback naar €20
+     *
+     * @param gameId - Het ID van de game
+     * @returns De prijs van de game
+     */
+    private async getGamePrice(gameId: number): Promise<number> {
+        try {
+            // Probeer externe API
+            const response: globalThis.Response = await fetch(`http://oege.ie.hva.nl:8889/api/productprices/${gameId}`);
+
+            if (response.ok) {
+                const data: GamePriceResponse[] = await response.json() as GamePriceResponse[];
+                if (Array.isArray(data) && data.length > 0 && data[0].price) {
+                    console.log(`Price fetched from API for game ${gameId}: €${data[0].price}`);
+                    return data[0].price;
+                }
+            }
+        }
+        catch {
+            // API niet bereikbaar - gebruik fallback
+            console.log(`External API not available for game ${gameId}, using fallback price €20`);
+        }
+
+        // Fallback naar standaardprijs
+        console.log(`Using fallback price €20 for game ${gameId}`);
+        return 20.00;
+    }
+
+    /**
+     * Controleer of een game bestaat in de database
      *
      * @param connection - Database connectie
      * @param gameId - Het ID van de game
-     * @returns Game data met prijs of null als niet gevonden
+     * @returns true als de game bestaat, false anders
      */
-    private async getGameWithPrice(connection: PoolConnection, gameId: number): Promise<{ id: number; price: number } | null> {
+    private async checkGameExists(connection: PoolConnection, gameId: number): Promise<boolean> {
         try {
-            const result: { id: number; price: number }[] = await this.databaseService.query(
+            const result: { id: number }[] = await this.databaseService.query(
                 connection,
-                "SELECT id, price FROM games WHERE id = ?",
+                "SELECT id FROM games WHERE id = ?",
                 gameId
             );
-            if (Array.isArray(result) && result.length > 0) {
-                return result[0];
-            }
-            return null;
+
+            return Array.isArray(result) && result.length > 0;
         }
         catch (error) {
-            console.error(`Error fetching game data for game ${gameId}:`, error);
-            return null;
+            console.error(`Error checking if game exists for game ${gameId}:`, error);
+            return false;
         }
     }
 };

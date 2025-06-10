@@ -131,4 +131,65 @@ export class CartController {
             res.status(500).json({ error: "Internal server error" });
         }
     }
+
+    public async updateCartItemQuantity(req: Request, res: Response): Promise<void> {
+        try {
+            const userId: number | null = getUserIdFromCookie(req);
+            const cartItemId: number = parseInt(req.params.id, 10);
+            // Add type checking for request body
+            interface UpdateQuantityBody {
+                quantity: string;
+            }
+            const body: UpdateQuantityBody = req.body as UpdateQuantityBody;
+            const quantity: number = parseInt(body.quantity, 10);
+
+            if (!userId) {
+                res.status(401).json({ error: "Geen geldige gebruiker in cookie" });
+                return;
+            }
+
+            if (isNaN(cartItemId) || isNaN(quantity) || quantity < 1) {
+                res.status(400).json({ error: "Ongeldige item ID of hoeveelheid" });
+                return;
+            }
+
+            // Update the quantity
+            await cartService.updateCartItemQuantity(cartItemId, userId, quantity);
+
+            // Get updated cart to return new totals
+            const items: CartItem[] = await cartService.getCartItemsByUser(userId);
+            // Calculate subtotal before any discounts
+            const subtotal: number = items.reduce((sum, item) => {
+                const itemPrice: number = typeof item.price === "string" ? parseFloat(item.price) : item.price;
+                return sum + (itemPrice * item.quantity);
+            }, 0);
+
+            // Check for discount code
+            const discountCode: string | undefined = req.query.discountCode as string | undefined;
+            let total: number = subtotal;
+            let discountPercentage: number = 0;
+
+            if (discountCode) {
+                const validation: DiscountValidationResult = await discountService.validateDiscountCode(discountCode, userId);
+                if (validation.valid && validation.discountPercentage) {
+                    discountPercentage = validation.discountPercentage;
+                    const discountAmount: number = subtotal * (discountPercentage / 100);
+                    total = subtotal - discountAmount;
+                }
+            }
+
+            // Send response with all updated values
+            res.json({
+                success: true,
+                cart: items,
+                subtotal: parseFloat(subtotal.toFixed(2)),
+                total: parseFloat(total.toFixed(2)),
+                discountPercentage,
+            });
+        }
+        catch (error) {
+            console.error("Error updating cart item quantity:", error);
+            res.status(500).json({ error: "Kon hoeveelheid niet bijwerken" });
+        }
+    }
 }

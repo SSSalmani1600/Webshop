@@ -457,6 +457,9 @@ export class CartPageComponent extends HTMLElement {
                 throw new Error(`Failed to delete item: ${deleteResponse.statusText}`);
             }
 
+            // Dispatch cart-updated event to update the navbar counter
+            document.dispatchEvent(new CustomEvent("cart-updated"));
+
             // Verwijder het product uit onze lijst en update het scherm
             this.cartItems = this.cartItems.filter(item => item.id !== itemId);
             await this.fetchCart();

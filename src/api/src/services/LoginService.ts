@@ -51,8 +51,7 @@ export class LoginService {
             }
 
             return null;
-        }
-        finally {
+        } finally {
             connection.release();
         }
     }
@@ -74,8 +73,29 @@ export class LoginService {
                 loggedIn ? 1 : 0,
                 userId
             );
+        } finally {
+            connection.release();
         }
-        finally {
+    }
+
+    /**
+     * Haalt een gebruiker op uit de database op basis van ID
+     *
+     * @param userId - De ID van de gebruiker
+     * @returns Een Promise met de gebruikersgegevens, of null als niet gevonden
+     */
+    public async getUserById(userId: number): Promise<UserData | null> {
+        const connection: PoolConnection = await this.databaseService.openConnection();
+
+        try {
+            const users: UserData[] = await this.databaseService.query<UserData[]>(
+                connection,
+                "SELECT * FROM `user` WHERE id = ? LIMIT 1",
+                userId
+            );
+
+            return users.length > 0 ? users[0] : null;
+        } finally {
             connection.release();
         }
     }

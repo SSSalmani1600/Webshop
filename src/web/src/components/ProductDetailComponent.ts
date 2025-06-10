@@ -64,6 +64,9 @@ export class GameDetailComponent extends HTMLElement {
     const res = await fetch(`${VITE_API_URL}session`, { credentials: "include" });
     const data = await res.json();
 
+      console.log("📦 getSession() response:", data); // 🔥 HIER TOEVOEGEN
+
+
     if (
       typeof data === "object" &&
       data !== null &&

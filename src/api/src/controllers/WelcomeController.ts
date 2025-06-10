@@ -4,6 +4,7 @@ import { SessionService } from "@api/services/SessionService";
 import { WelcomeService } from "@api/services/WelcomeService";
 import { Request, Response } from "express";
 
+
 /**
  * This controller demonstrates the use of sessions, cookies and Services.
  *
@@ -12,6 +13,7 @@ import { Request, Response } from "express";
 export class WelcomeController {
     private readonly _welcomeService: IWelcomeService = new WelcomeService();
     private readonly _sessionService: ISessionService = new SessionService();
+
 
     public async getSession(req: Request, res: Response): Promise<void> {
         const sessionId: string | undefined = await this._sessionService.createSession(req.userId ?? 0);

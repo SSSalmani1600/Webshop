@@ -2,7 +2,7 @@ import { DatabaseService } from "./DatabaseService";
 import { PoolConnection } from "mysql2/promise";
 
 /**
- * Interface voor cart item data (zonder price van client)
+ * Interface voor cart item data
  */
 interface CartItemData {
     gameId: number;
@@ -50,9 +50,15 @@ export class AddToCartService {
                 };
             }
 
-            // Probeer eerst de externe API, fallback naar €20
-            const price: number = await this.getGamePrice(cartItem.gameId);
+            const { gameId, isFree = false } = cartItem;
 
+            let price: number;
+            if (isFree) {
+                price = 0;
+            }
+            else {
+                price = await this.getGamePrice(gameId);
+            }
             // Controleer of het item al in het winkelmandje zit
             const existingCartItem: { id: number }[] = await this.databaseService.query(
                 connection,

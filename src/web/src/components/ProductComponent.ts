@@ -4,108 +4,111 @@ import "@web/components/AddToWishlistComponent";
 import "@web/components/Add_to_cartcomponent";
 
 interface SessionResponse {
-  sessionId: string;
+    sessionId: string;
 }
 
 export class GameList extends HTMLElement {
-  private games: Game[] = [];
-  private gamesWithPrices: Game[] = [];
-  private selectedGenres: Set<string> = new Set();
+    private games: Game[] = [];
+    private gamesWithPrices: Game[] = [];
+    private selectedGenres: Set<string> = new Set();
 
-  public constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-  }
-
-  public async connectedCallback(): Promise<void> {
-    try {
-      const sessionId: string = await this.getSession();
-      const res: Response = await fetch(`${VITE_API_URL}products`, {
-        headers: { "x-session": sessionId }
-      });
-
-      if (!res.ok) {
-        this.renderError(`Error fetching games: ${res.status}`);
-        return;
-      }
-
-      this.games = (await res.json()) as Game[];
-      if (this.games.length === 0) {
-        this.renderError("No games found.");
-        return;
-      }
-
-      await this.render();
-    } catch (error) {
-      console.error(error);
-      this.renderError("An unexpected error occurred.");
+    public constructor() {
+        super();
+        this.attachShadow({ mode: "open" });
     }
-  }
 
-  private async getSession(): Promise<string> {
-    const res: Response = await fetch(`${VITE_API_URL}session`);
-    const data: SessionResponse = (await res.json()) as SessionResponse;
-    if (typeof data.sessionId === "string") {
-      return data.sessionId;
+    public async connectedCallback(): Promise<void> {
+        try {
+            const sessionId: string = await this.getSession();
+            const res: Response = await fetch(`${VITE_API_URL}products`, {
+                headers: { "x-session": sessionId },
+            });
+
+            if (!res.ok) {
+                this.renderError(`Error fetching games: ${res.status}`);
+                return;
+            }
+
+            this.games = (await res.json()) as Game[];
+            if (this.games.length === 0) {
+                this.renderError("No games found.");
+                return;
+            }
+
+            await this.render();
+        }
+        catch (error) {
+            console.error(error);
+            this.renderError("An unexpected error occurred.");
+        }
     }
-    throw new Error("Invalid session object");
-  }
 
-  private async fetchGamePrice(gameId: number): Promise<number | null> {
-    try {
-      const sessionId: string = await this.getSession();
-      const res: Response = await fetch(`${VITE_API_URL}product-prices/${gameId}`, {
-        headers: { "x-session": sessionId }
-      });
-      const data: GamePrices[] = (await res.json()) as GamePrices[];
-      return data[0]?.price ?? null;
-    } catch {
-      return null;
+    private async getSession(): Promise<string> {
+        const res: Response = await fetch(`${VITE_API_URL}session`);
+        const data: SessionResponse = (await res.json()) as SessionResponse;
+        if (typeof data.sessionId === "string") {
+            return data.sessionId;
+        }
+        throw new Error("Invalid session object");
     }
-  }
 
-  private getUniqueGenres(): string[] {
-    const genres: Set<string> = new Set();
-    this.games.forEach((game) => {
-      game.genre?.split(",").map((g) => g.trim()).forEach((g) => genres.add(g));
-    });
-    return Array.from(genres).sort();
-  }
-
-  private filterGamesByGenres(games: Game[]): Game[] {
-    if (this.selectedGenres.size === 0) return games;
-    return games.filter((game) => {
-      const gameGenres = game.genre?.split(",").map((g) => g.trim()) || [];
-      return gameGenres.some((g) => this.selectedGenres.has(g));
-    });
-  }
-
-  private handleGenreChange(event: Event): void {
-    const checkbox = event.target as HTMLInputElement;
-    if (checkbox.checked) {
-      this.selectedGenres.add(checkbox.value);
-    } else {
-      this.selectedGenres.delete(checkbox.value);
+    private async fetchGamePrice(gameId: number): Promise<number | null> {
+        try {
+            const sessionId: string = await this.getSession();
+            const res: Response = await fetch(`${VITE_API_URL}product-prices/${gameId}`, {
+                headers: { "x-session": sessionId },
+            });
+            const data: GamePrices[] = (await res.json()) as GamePrices[];
+            return data[0]?.price ?? null;
+        }
+        catch {
+            return null;
+        }
     }
-    void this.render();
-  }
 
-  public sortByPrice(order: "asc" | "desc"): void {
-    if (!Array.isArray(this.gamesWithPrices)) return;
+    private getUniqueGenres(): string[] {
+        const genres: Set<string> = new Set();
+        this.games.forEach(game => {
+            game.genre?.split(",").map(g => g.trim()).forEach(g => genres.add(g));
+        });
+        return Array.from(genres).sort();
+    }
 
-    this.gamesWithPrices.sort((a, b) => {
-      const priceA = a.price ?? 0;
-      const priceB = b.price ?? 0;
-      return order === "asc" ? priceA - priceB : priceB - priceA;
-    });
+    private filterGamesByGenres(games: Game[]): Game[] {
+        if (this.selectedGenres.size === 0) return games;
+        return games.filter(game => {
+            const gameGenres: string[] = game.genre?.split(",").map(g => g.trim()) || [];
+            return gameGenres.some(g => this.selectedGenres.has(g));
+        });
+    }
 
-    void this.renderFromSortedList();
-  }
+    private handleGenreChange(event: Event): void {
+        const checkbox: HTMLInputElement = event.target as HTMLInputElement;
+        if (checkbox.checked) {
+            this.selectedGenres.add(checkbox.value);
+        }
+        else {
+            this.selectedGenres.delete(checkbox.value);
+        }
+        this.render().catch((error: unknown) => console.error(error));
+    }
 
-  private async render(): Promise<void> {
-    if (!this.shadowRoot) return;
+    public sortByPrice(order: "asc" | "desc"): void {
+        if (!Array.isArray(this.gamesWithPrices)) return;
 
-    const style = `
+        this.gamesWithPrices.sort((a, b) => {
+            const priceA: number = a.price ?? 0;
+            const priceB: number = b.price ?? 0;
+            return order === "asc" ? priceA - priceB : priceB - priceA;
+        });
+
+        this.renderFromSortedList();
+    }
+
+    private async render(): Promise<void> {
+        if (!this.shadowRoot) return;
+
+        const style: string = `
       <style>
         :host {
           display: block;
@@ -206,21 +209,26 @@ export class GameList extends HTMLElement {
         .action-button:hover {
           background-color: #9b5dfc;
         }
+        add-to-wishlist {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
       </style>
     `;
 
-    const visibleGames = this.games.filter((g) => !g.hidden);
-    const filteredGames = this.filterGamesByGenres(visibleGames);
+        const visibleGames: Game[] = this.games.filter(g => !g.hidden);
+        const filteredGames: Game[] = this.filterGamesByGenres(visibleGames);
 
-    this.gamesWithPrices = await Promise.all(
-      filteredGames.map(async (game) => ({
-        ...game,
-        price: await this.fetchGamePrice(game.id)
-      }))
-    );
+        this.gamesWithPrices = await Promise.all(
+            filteredGames.map(async game => ({
+                ...game,
+                price: await this.fetchGamePrice(game.id),
+            }))
+        );
 
-    const genres = this.getUniqueGenres();
-    const genreFilter = `
+        const genres: string[] = this.getUniqueGenres();
+        const genreFilter: string = `
       <div class="filter-panel">
         <div class="filter-header">Filters</div>
         <div class="filter-section">
@@ -233,7 +241,7 @@ export class GameList extends HTMLElement {
         <div class="filter-section">
           <strong>Genres:</strong>
           <div class="genre-options">
-            ${genres.map((genre) => `
+            ${genres.map(genre => `
               <div class="genre-checkbox">
                 <input type="checkbox" id="genre-${genre}" value="${genre}" ${this.selectedGenres.has(genre) ? "checked" : ""} />
                 <label for="genre-${genre}">${genre}</label>
@@ -244,87 +252,87 @@ export class GameList extends HTMLElement {
       </div>
     `;
 
-    const productList = this.gamesWithPrices
-      .map((game) => {
-        const imageUrl =
-          typeof game.images === "string" && game.images
-            ? game.images.split(",")[0].trim()
-            : "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg";
+        const productList: string = this.gamesWithPrices
+            .map(game => {
+                const imageUrl: string =
+                    typeof game.images === "string" && game.images
+                        ? game.images.split(",")[0].trim()
+                        : "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg";
 
-        const priceLabel =
-          (game.price ?? 0) > 0 ? `€ ${(game.price!).toFixed(2)}` : "Onbekende prijs";
+                const priceLabel: string =
+                    (game.price ?? 0) > 0 ? `€ ${(game.price!).toFixed(2)}` : "Onbekende prijs";
 
-        return `
+                return `
           <div class="product-card">
             <img class="product-image" src="${imageUrl}" alt="${game.title}" />
             <strong>${game.title}</strong>
             <div class="price">${priceLabel}</div>
             <div class="button-row">
               <a class="action-button" href="gameDetail.html?id=${game.id}">Bekijken</a>
-              <add-to-wishlist class="action-button" game-id="${game.id}"></add-to-wishlist>
+              <add-to-wishlist game-id="${game.id}"></add-to-wishlist>
             </div>
             <add-to-cart game-id="${game.id}" price="${game.price ?? 0}"></add-to-cart>
           </div>
         `;
-      })
-      .join("");
+            })
+            .join("");
 
-    this.shadowRoot.innerHTML =
-      style + genreFilter + `<div class="product-list">${productList}</div>`;
+        this.shadowRoot.innerHTML =
+            style + genreFilter + `<div class="product-list">${productList}</div>`;
 
-    this.shadowRoot
-      .querySelectorAll<HTMLInputElement>("input[type='checkbox']")
-      .forEach((checkbox) => {
-        checkbox.addEventListener("change", (e) => this.handleGenreChange(e));
-      });
-  }
-
-  private async renderFromSortedList(): Promise<void> {
-    if (!this.shadowRoot) return;
-
-    const filtered = this.filterGamesByGenres(this.gamesWithPrices);
-
-    const productListHTML = filtered
-      .map((game) => {
-        const imageUrl =
-          typeof game.images === "string" && game.images
-            ? game.images.split(",")[0].trim()
-            : "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg";
-
-        const priceLabel =
-          (game.price ?? 0) > 0 ? `€ ${(game.price!).toFixed(2)}` : "Onbekende prijs";
-
-        return `
-          <div class="product-card">
-            <img class="product-image" src="${imageUrl}" alt="${game.title}" />
-            <strong>${game.title}</strong>
-            <div class="price">${priceLabel}</div>
-            <div class="button-row">
-              <a class="action-button" href="gameDetail.html?id=${game.id}">Bekijken</a>
-              <add-to-wishlist class="action-button" game-id="${game.id}"></add-to-wishlist>
-            </div>
-            <add-to-cart game-id="${game.id}" price="${game.price ?? 0}"></add-to-cart>
-          </div>
-        `;
-      })
-      .join("");
-
-    const listContainer = this.shadowRoot.querySelector(".product-list");
-    if (listContainer) {
-      listContainer.innerHTML = productListHTML;
+        this.shadowRoot
+            .querySelectorAll<HTMLInputElement>("input[type='checkbox']")
+            .forEach(checkbox => {
+                checkbox.addEventListener("change", e => this.handleGenreChange(e));
+            });
     }
-  }
 
-  private renderError(message: string): void {
-    if (!this.shadowRoot) return;
-    this.shadowRoot.innerHTML = `
+    private renderFromSortedList(): void {
+        if (!this.shadowRoot) return;
+
+        const filtered: Game[] = this.filterGamesByGenres(this.gamesWithPrices);
+
+        const productListHTML: string = filtered
+            .map(game => {
+                const imageUrl: string =
+                    typeof game.images === "string" && game.images
+                        ? game.images.split(",")[0].trim()
+                        : "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg";
+
+                const priceLabel: string =
+                    (game.price ?? 0) > 0 ? `€ ${(game.price!).toFixed(2)}` : "Onbekende prijs";
+
+                return `
+          <div class="product-card">
+            <img class="product-image" src="${imageUrl}" alt="${game.title}" />
+            <strong>${game.title}</strong>
+            <div class="price">${priceLabel}</div>
+            <div class="button-row">
+              <a class="action-button" href="gameDetail.html?id=${game.id}">Bekijken</a>
+              <add-to-wishlist game-id="${game.id}"></add-to-wishlist>
+            </div>
+            <add-to-cart game-id="${game.id}" price="${game.price ?? 0}"></add-to-cart>
+          </div>
+        `;
+            })
+            .join("");
+
+        const listContainer: Element | null = this.shadowRoot.querySelector(".product-list");
+        if (listContainer) {
+            listContainer.innerHTML = productListHTML;
+        }
+    }
+
+    private renderError(message: string): void {
+        if (!this.shadowRoot) return;
+        this.shadowRoot.innerHTML = `
       <style>
         :host { display: block; padding: 20px; font-family: Arial, sans-serif; }
         p { color: red; font-size: 18px; font-weight: bold; }
       </style>
       <p>${message}</p>
     `;
-  }
+    }
 }
 
 customElements.define("game-list", GameList);

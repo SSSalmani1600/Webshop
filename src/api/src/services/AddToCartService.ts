@@ -107,15 +107,14 @@ export class AddToCartService {
                 "SELECT id, price FROM games WHERE id = ?",
                 gameId
             );
-            
             if (Array.isArray(result) && result.length > 0) {
                 return result[0];
             }
-            
             return null;
-        } catch (error) {
+        }
+        catch (error) {
             console.error(`Error fetching game data for game ${gameId}:`, error);
             return null;
         }
     }
-}
+};

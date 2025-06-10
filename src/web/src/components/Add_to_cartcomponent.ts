@@ -156,11 +156,12 @@ export class AddToCartComponent extends HTMLElement {
         notification.style.fontSize = "14px";
         notification.style.zIndex = "1000";
         notification.style.maxWidth = "300px";
-        notification.style.wordWrap = "break-word";
+        notification.style.overflowWrap = "break-word";
 
         if (type === "success") {
             notification.style.backgroundColor = "#10B981";
-        } else {
+        }
+        else {
             notification.style.backgroundColor = "#EF4444";
         }
 

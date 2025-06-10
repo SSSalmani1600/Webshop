@@ -54,4 +54,24 @@ export class OrderService {
             connection.release();
         }
     }
+
+    public async getUserEmailById(userId: number): Promise<string> {
+        const connection: PoolConnection = await this._db.openConnection();
+
+        try {
+            const [rows] = await connection.query(
+                "SELECT email FROM users WHERE id = ?",
+                [userId]
+            );
+            const result = Array.isArray(rows) ? rows[0] : null;
+            return result?.email ?? "";
+        }
+        catch (e) {
+            console.error("Fout in getUserEmailById:", e);
+            throw new Error(`Kan e-mailadres niet ophalen: ${e instanceof Error ? e.message : e}`);
+        }
+        finally {
+            connection.release();
+        }
+        }
 }

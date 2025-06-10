@@ -47,5 +47,7 @@ export class MailService {
             const error: string = await response.text();
             throw new Error("Mail verzenden mislukt: " + error);
         }
+
+        console.log(`✅ Mail verzonden naar ${toEmail}`);
     }
 }

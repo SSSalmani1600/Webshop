@@ -1,4 +1,5 @@
 import { Router, Request, Response } from "express";
+import { ParamsDictionary } from "express-serve-static-core";
 import { WelcomeController } from "./controllers/WelcomeController";
 import { WelcomeUserController } from "./controllers/WelcomeUserController";
 import { OrderController } from "./controllers/OrderContoller";
@@ -71,6 +72,7 @@ router.get("/cart", (req: Request, res: Response) => cartController.getCart(req,
 router.delete("/cart/item/:id", (req: Request, res: Response) => cartController.deleteCartItem(req, res));
 router.post("/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
 router.get("/cart/count", (req: Request, res: Response) => navbarController.getCartCount(req, res));
+router.patch("/cart/item/:id/quantity", (req: Request, res: Response) => cartController.updateCartItemQuantity(req, res));
 router.get("/games/search", (req: Request, res: Response) => gameSearchController.searchGamesByTitle(req, res));
 
 // Discount code endpoints
@@ -87,7 +89,7 @@ router.use("/api", sessionMiddleware, reviewController.router);
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));
 
 // Order endpoint
-router.post("/order/complete", (req: Request, res: Response) => orderController.createOrder(req, res));
+router.post("/order/complete", (req: Request<ParamsDictionary, unknown, OrderRequestBody>, res: Response) => orderController.createOrder(req, res));
 router.get("/order/complete", (req, res) => orderController.getBoughtGames(req, res));
 
 router.get("/game", (req, res) => gameDetailController.getGameById(req, res));

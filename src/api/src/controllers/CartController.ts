@@ -3,10 +3,13 @@ import { CartService } from "../services/CartService";
 import { CartItem } from "../types/CartItem";
 import { DiscountService } from "../services/DiscountService";
 import { DiscountValidationResult } from "../interfaces/IDiscountService";
+import { Actie } from "@api/types/Actie";
+import { ActionService } from "@api/services/ActionService";
 
 // Deze controller handelt alle verzoeken af voor de winkelwagen
 const cartService: CartService = new CartService();
 const discountService: DiscountService = new DiscountService();
+const actionService: ActionService = new ActionService();
 
 // Deze functie haalt het gebruikers-ID uit de cookie
 function getUserIdFromCookie(req: Request): number | null {
@@ -89,6 +92,34 @@ export class CartController {
         }
 
         try {
+            const items: CartItem[] = await cartService.getCartItemsByUser(userId);
+            const toDeleteItem: CartItem | undefined = items.find(item => item.id === cartItemId);
+
+            if (!toDeleteItem) {
+                res.status(404).json({ error: "Cart item niet gevonden" });
+                return;
+            }
+
+            const paidGameId: number = toDeleteItem.game_id;
+
+            await cartService.deleteCartItemById(cartItemId, userId);
+
+            const actie: Actie | null = await actionService.getActieByProductA(paidGameId);
+
+            if (actie) {
+                const freeItem: CartItem | undefined = items.find(item => item.game_id === actie.product_b_id);
+
+                if (freeItem) {
+                    await cartService.deleteCartItemById(freeItem.id, userId);
+                }
+            }
+
+            res.status(200).json({
+                success: true,
+                message: "Product (en eventueel gratis spel) uit winkelwagen verwijderd",
+                actieVerwijderd: !!actie,
+                gratisProductId: actie ? actie.product_b_id : null,
+            });
             // Verwijder het product uit de winkelwagen
             await cartService.deleteCartItemById(cartItemId, userId);
             // Stuur een bevestiging terug

@@ -12,6 +12,7 @@ export class ReviewController {
         this.router.post("/games/:id/reviews", this.postReview.bind(this));
         this.router.get("/games/:id/reviews", this.getReviewsByGameId.bind(this));
         this.router.put("/reviews/:id", this.updateReview.bind(this));
+        this.router.delete("/reviews/:id", this.deleteReview.bind(this));
     }
 
     public async postReview(req: Request, res: Response): Promise<void> {
@@ -85,17 +86,52 @@ export class ReviewController {
             console.log("⛳ review.username:", review.username);
             console.log("⛳ vergelijking:", review.username === username);
 
-           if (review.username !== username) {
-    res.status(403).json({ message: "Je mag alleen je eigen review bewerken." });
-    return;
-}
-
+            if (review.username !== username) {
+                res.status(403).json({ message: "Je mag alleen je eigen review bewerken." });
+                return;
+            }
 
             await this.postReviewService.updateReview(reviewId, comment);
             res.status(200).json({ message: "Review succesvol bijgewerkt." });
         } catch (error) {
             console.error("Fout bij updateReview:", error);
             res.status(500).json({ message: "Kon review niet bijwerken." });
+        }
+    }
+
+    public async deleteReview(req: Request, res: Response): Promise<void> {
+        try {
+            const reviewId = parseInt(req.params.id);
+            const userIdCookie = req.cookies?.user;
+            const userId = parseInt(userIdCookie);
+
+            if (!userId || isNaN(userId) || isNaN(reviewId)) {
+                res.status(401).json({ message: "Je moet ingelogd zijn om een review te verwijderen." });
+                return;
+            }
+
+            const gebruiker = await this.postReviewService.getUsernameByUserId(userId);
+            if (!gebruiker) {
+                res.status(404).json({ message: "Gebruiker niet gevonden." });
+                return;
+            }
+
+            const review = await this.postReviewService.getReviewById(reviewId);
+            if (!review) {
+                res.status(404).json({ message: "Review niet gevonden." });
+                return;
+            }
+
+            if (review.username !== gebruiker.username) {
+                res.status(403).json({ message: "Je mag alleen je eigen review verwijderen." });
+                return;
+            }
+
+            await this.postReviewService.deleteReview(reviewId);
+            res.status(200).json({ message: "Review succesvol verwijderd." });
+        } catch (error) {
+            console.error("Fout bij deleteReview:", error);
+            res.status(500).json({ message: "Er ging iets mis bij het verwijderen van de review." });
         }
     }
 }

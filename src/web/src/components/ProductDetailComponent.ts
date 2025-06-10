@@ -209,7 +209,11 @@ export class GameDetailComponent extends HTMLElement {
                 <strong style="color: #fff; font-size: 15px;">${r.username}</strong>
                 ${
                   canEdit
-                    ? `<button class="edit-btn" data-review-id="${r.id}" data-comment="${r.comment}" style="background-color: #7f41f5; color: white; border: none; padding: 6px 12px; font-size: 13px; border-radius: 8px; cursor: pointer;">✏️ Bewerken</button>`
+                    ? `
+                    <div style="display: flex; gap: 10px;">
+                      <button class="edit-btn" data-review-id="${r.id}" data-comment="${r.comment}" style="background-color: #7f41f5; color: white; border: none; padding: 6px 12px; font-size: 13px; border-radius: 8px; cursor: pointer;">✏️ Bewerken</button>
+                      <button class="delete-btn" data-review-id="${r.id}" style="background-color: #d9534f; color: white; border: none; padding: 6px 12px; font-size: 13px; border-radius: 8px; cursor: pointer;">🗑️ Verwijderen</button>
+                    </div>`
                     : ""
                 }
               </div>
@@ -261,6 +265,17 @@ export class GameDetailComponent extends HTMLElement {
         this.editingReviewId = null;
         this.editingReviewText = "";
         await this.loadReviews(gameId);
+      }
+
+      if (target.classList.contains("delete-btn")) {
+        const reviewId = parseInt(target.dataset.reviewId ?? "0", 10);
+        if (reviewId && confirm("Weet je zeker dat je deze review wilt verwijderen?")) {
+          await fetch(`${VITE_API_URL}api/reviews/${reviewId}`, {
+            method: "DELETE",
+            credentials: "include",
+          });
+          await this.loadReviews(gameId);
+        }
       }
     });
   }

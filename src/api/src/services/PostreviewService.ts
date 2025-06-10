@@ -104,4 +104,18 @@ export class PostreviewService {
             connection.release();
         }
     }
+
+    public async deleteReview(reviewId: number): Promise<void> {
+        const connection: PoolConnection = await this.db.openConnection();
+
+        try {
+            const query = `
+                DELETE FROM review
+                WHERE id = ?
+            `;
+            await this.db.query<ResultSetHeader>(connection, query, reviewId);
+        } finally {
+            connection.release();
+        }
+    }
 }

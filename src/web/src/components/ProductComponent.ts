@@ -36,6 +36,14 @@ export class GameList extends HTMLElement {
       }
 
       await this.render();
+
+      // ✅ Sorteer dropdown eventlistener toevoegen
+      this.shadowRoot
+        ?.querySelector("#sort-select")
+        ?.addEventListener("change", (e: Event) => {
+          const target = e.target as HTMLSelectElement;
+          this.sortByPrice(target.value as "asc" | "desc");
+        });
     } catch (error) {
       console.error(error);
       this.renderError("An unexpected error occurred.");
@@ -130,7 +138,7 @@ export class GameList extends HTMLElement {
           margin-bottom: 1.5rem;
         }
         .filter-section select {
-          width: 100%;
+          width: 50%;
           padding: 10px;
           background-color: #2a2a2a;
           color: #fff;
@@ -206,6 +214,9 @@ export class GameList extends HTMLElement {
         .action-button:hover {
           background-color: #9b5dfc;
         }
+        .genre-options {
+        margin-top: 0.5rem;
+        }
       </style>
     `;
 
@@ -224,11 +235,15 @@ export class GameList extends HTMLElement {
       <div class="filter-panel">
         <div class="filter-header">Filters</div>
         <div class="filter-section">
-          <label for="sort-select">Sorteer op prijs:</label>
-          <select id="sort-select">
-            <option value="asc">Laag → Hoog</option>
-            <option value="desc">Hoog → Laag</option>
-          </select>
+          <label for="sort-select" style="display: block; margin-bottom: 0.5rem;">
+  Sorteer op prijs:
+</label>
+<select id="sort-select">
+  <option value="asc">Laag → Hoog</option>
+  <option value="desc">Hoog → Laag</option>
+</select>
+
+
         </div>
         <div class="filter-section">
           <strong>Genres:</strong>

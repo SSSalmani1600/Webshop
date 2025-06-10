@@ -306,6 +306,13 @@ export class CartPageComponent extends HTMLElement {
 
     // Deze functie wordt aangeroepen als de pagina wordt geladen
     public connectedCallback(): void {
+        // Check URL for discount code when page loads
+        const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+        const discountCode: string | null = urlParams.get("discountCode");
+        if (discountCode) {
+            this.currentDiscountCode = discountCode;
+        }
+
         // Haal de winkelwagen inhoud op van de server
         void this.fetchCart();
 
@@ -328,6 +335,29 @@ export class CartPageComponent extends HTMLElement {
             this.currentDiscount = customEvent.detail.discountPercentage;
             this.currentDiscountCode = customEvent.detail.code;
             await this.fetchCart();
+        });
+
+        // Listen for quantity updates
+        const cartList: HTMLElement = this.shadowRoot?.querySelector("#cart-list") as HTMLElement;
+        cartList.addEventListener("quantity-updated", (event: Event) => {
+            const customEvent: CustomEvent<{
+                cart: CartItem[];
+                subtotal: number;
+                total: number;
+                discountPercentage: number;
+            }> = event as CustomEvent<{
+                cart: CartItem[];
+                subtotal: number;
+                total: number;
+                discountPercentage: number;
+            }>;
+            this.cartItems = customEvent.detail.cart;
+            this.currentDiscount = customEvent.detail.discountPercentage;
+            this.updateCartDisplay({
+                total: customEvent.detail.total,
+                subtotal: customEvent.detail.subtotal,
+                discountPercentage: customEvent.detail.discountPercentage,
+            });
         });
     }
 
@@ -457,6 +487,9 @@ export class CartPageComponent extends HTMLElement {
                 throw new Error(`Failed to delete item: ${deleteResponse.statusText}`);
             }
 
+            // Dispatch cart-updated event to update the navbar counter
+            document.dispatchEvent(new CustomEvent("cart-updated"));
+
             // Verwijder het product uit onze lijst en update het scherm
             this.cartItems = this.cartItems.filter(item => item.id !== itemId);
             await this.fetchCart();
@@ -522,11 +555,29 @@ export class CartPageComponent extends HTMLElement {
         // Voeg elk product toe aan het scherm
         this.cartItems.forEach((item: CartItem) => {
             const element: CartItemComponent = new CartItemComponent(item);
-            element.setDiscount(data?.discountPercentage ?? this.currentDiscount);
+            element.setDiscount(data?.discountPercentage ?? this.currentDiscount, this.currentDiscountCode);
             element.addEventListener("item-delete", async (event: Event) => {
                 const customEvent: CustomEvent<{ id: number }> = event as CustomEvent<{ id: number }>;
-                const itemId: number = customEvent.detail.id;
-                await this.deleteCartItem(itemId);
+                await this.deleteCartItem(customEvent.detail.id);
+            });
+            element.addEventListener("quantity-updated", (event: Event) => {
+                const customEvent: CustomEvent<{
+                    cart: CartItem[];
+                    subtotal: number;
+                    total: number;
+                    discountPercentage: number;
+                }> = event as CustomEvent<{
+                    cart: CartItem[];
+                    subtotal: number;
+                    total: number;
+                    discountPercentage: number;
+                }>;
+                this.cartItems = customEvent.detail.cart;
+                this.updateCartDisplay({
+                    total: customEvent.detail.total,
+                    subtotal: customEvent.detail.subtotal,
+                    discountPercentage: customEvent.detail.discountPercentage,
+                });
             });
             cartList.appendChild(element);
         });

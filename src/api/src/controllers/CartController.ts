@@ -1,14 +1,11 @@
 import { Request, Response } from "express";
 import { CartService } from "../services/CartService";
 import { CartItem } from "../types/CartItem";
-import { DiscountService } from "../services/DiscountService";
-import { DiscountValidationResult } from "../interfaces/IDiscountService";
 import { Actie } from "@api/types/Actie";
 import { ActionService } from "@api/services/ActionService";
 
 // Deze controller handelt alle verzoeken af voor de winkelwagen
 const cartService: CartService = new CartService();
-const discountService: DiscountService = new DiscountService();
 const actionService: ActionService = new ActionService();
 
 // Deze functie haalt het gebruikers-ID uit de cookie
@@ -20,6 +17,16 @@ function getUserIdFromCookie(req: Request): number | null {
     // Zoek naar een cookie met de naam 'user' en een nummer als waarde
     const match: RegExpMatchArray | null = cookieHeader.match(/(?:^|;\s*)user=(\d+)/);
     return match ? parseInt(match[1], 10) : null;
+}
+
+interface CartTotals {
+    subtotal: number;
+    total: number;
+    discountPercentage: number;
+}
+
+interface UpdateQuantityBody {
+    quantity: string;
 }
 
 export class CartController {
@@ -38,27 +45,8 @@ export class CartController {
             // Kijk of er een kortingscode is meegegeven
             const discountCode: string | undefined = req.query.discountCode as string | undefined;
 
-            // Bereken het totaalbedrag zonder korting
-            const subtotal: number = items.reduce((sum, item) => {
-                const price: number = typeof item.price === "string" ? parseFloat(item.price) : item.price;
-                return sum + (price * item.quantity);
-            }, 0);
-
-            let total: number = subtotal;
-            let discountPercentage: number = 0;
-
-            // Als er een kortingscode is, controleer deze en pas korting toe
-            if (discountCode) {
-                const validation: DiscountValidationResult = await discountService.validateDiscountCode(discountCode, userId);
-                if (validation.valid && validation.discountPercentage) {
-                    discountPercentage = validation.discountPercentage;
-                    const discountAmount: number = subtotal * (discountPercentage / 100);
-                    total = subtotal - discountAmount;
-                }
-            }
-
-            // Rond het totaalbedrag af op 2 decimalen
-            total = parseFloat(total.toFixed(2));
+            // Bereken totalen met de CartService
+            const totals: CartTotals = await cartService.calculateCartTotals(items, discountCode, userId);
 
             // Stuur alle informatie terug naar de klant
             res.json({
@@ -67,9 +55,9 @@ export class CartController {
                     // Zorg dat alle prijzen als getallen worden verstuurd
                     price: typeof item.price === "string" ? parseFloat(item.price) : item.price,
                 })),
-                subtotal: parseFloat(subtotal.toFixed(2)),
-                total: total,
-                discountPercentage: discountPercentage,
+                subtotal: totals.subtotal,
+                total: totals.total,
+                discountPercentage: totals.discountPercentage,
             });
         }
         catch (error) {
@@ -129,6 +117,50 @@ export class CartController {
             // Als er iets mis gaat, log de fout en stuur een foutmelding
             console.error("Error deleting cart item:", error);
             res.status(500).json({ error: "Internal server error" });
+        }
+    }
+
+    public async updateCartItemQuantity(req: Request, res: Response): Promise<void> {
+        try {
+            const userId: number | null = getUserIdFromCookie(req);
+            const cartItemId: number = parseInt(req.params.id, 10);
+            const body: UpdateQuantityBody = req.body as UpdateQuantityBody;
+            const quantity: number = parseInt(body.quantity, 10);
+
+            if (!userId) {
+                res.status(401).json({ error: "Geen geldige gebruiker in cookie" });
+                return;
+            }
+
+            if (isNaN(cartItemId) || isNaN(quantity) || quantity < 1) {
+                res.status(400).json({ error: "Ongeldige item ID of hoeveelheid" });
+                return;
+            }
+
+            // Update the quantity
+            await cartService.updateCartItemQuantity(cartItemId, userId, quantity);
+
+            // Get updated cart to return new totals
+            const items: CartItem[] = await cartService.getCartItemsByUser(userId);
+
+            // Check for discount code
+            const discountCode: string | undefined = req.query.discountCode as string | undefined;
+
+            // Calculate totals using CartService
+            const totals: CartTotals = await cartService.calculateCartTotals(items, discountCode, userId);
+
+            // Send response with all updated values
+            res.json({
+                success: true,
+                cart: items,
+                subtotal: totals.subtotal,
+                total: totals.total,
+                discountPercentage: totals.discountPercentage,
+            });
+        }
+        catch (error) {
+            console.error("Error updating cart item quantity:", error);
+            res.status(500).json({ error: "Kon hoeveelheid niet bijwerken" });
         }
     }
 }

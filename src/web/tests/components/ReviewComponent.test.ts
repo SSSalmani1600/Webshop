@@ -14,9 +14,9 @@ describe("GameDetailComponent", () => {
     const component = new GameDetailComponent();
     document.body.appendChild(component);
 
-    // Simuleer shadow DOM en elementen
-    component["shadow"] = component.attachShadow({ mode: "open" });
-    component["shadow"].innerHTML = `
+    // Shadow DOM opzetten
+    component.attachShadow({ mode: "open" });
+    component.shadowRoot!.innerHTML = `
       <textarea id="review-input"></textarea>
       <div id="star-rating">
         <span data-value="1">☆</span>
@@ -29,14 +29,14 @@ describe("GameDetailComponent", () => {
       <div id="review-status"></div>
     `;
 
-    const reviewInput = component.shadow.querySelector("#review-input") as HTMLTextAreaElement;
-    const submitButton = component.shadow.querySelector("#submit-review") as HTMLButtonElement;
-    const reviewStatus = component.shadow.querySelector("#review-status") as HTMLElement;
+    const reviewInput = component.shadowRoot!.querySelector("#review-input") as HTMLTextAreaElement;
+    const submitButton = component.shadowRoot!.querySelector("#submit-review") as HTMLButtonElement;
+    const reviewStatus = component.shadowRoot!.querySelector("#review-status") as HTMLElement;
 
     reviewInput.value = ""; // geen tekst
     submitButton.click(); // geen ster geselecteerd
 
-    // kleine delay om eventuele asynchroon gedrag toe te staan
+    // kleine delay om eventuele async gedrag toe te staan
     await new Promise((r) => setTimeout(r, 100));
 
     expect(reviewStatus.textContent).toBe("Vul een review én een waardering in.");
@@ -57,9 +57,9 @@ describe("GameDetailComponent", () => {
     const component = new GameDetailComponent();
     document.body.appendChild(component);
 
-    // Manueel shadow DOM bouwen zoals in de component
-    component["shadow"] = component.attachShadow({ mode: "open" });
-    component["shadow"].innerHTML = `
+    // Shadow DOM opzetten
+    component.attachShadow({ mode: "open" });
+    component.shadowRoot!.innerHTML = `
       <textarea id="review-input"></textarea>
       <div id="star-rating">
         <span data-value="1">☆</span>
@@ -72,10 +72,10 @@ describe("GameDetailComponent", () => {
       <div id="review-status"></div>
     `;
 
-    const reviewInput = component.shadow.querySelector("#review-input") as HTMLTextAreaElement;
-    const stars = component.shadow.querySelectorAll<HTMLSpanElement>("#star-rating span");
-    const submitButton = component.shadow.querySelector("#submit-review") as HTMLButtonElement;
-    const reviewStatus = component.shadow.querySelector("#review-status") as HTMLElement;
+    const reviewInput = component.shadowRoot!.querySelector("#review-input") as HTMLTextAreaElement;
+    const stars = component.shadowRoot!.querySelectorAll<HTMLSpanElement>("#star-rating span");
+    const submitButton = component.shadowRoot!.querySelector("#submit-review") as HTMLButtonElement;
+    const reviewStatus = component.shadowRoot!.querySelector("#review-status") as HTMLElement;
 
     reviewInput.value = "Leuke game!";
     stars[4].dispatchEvent(new Event("click")); // geef 5 sterren

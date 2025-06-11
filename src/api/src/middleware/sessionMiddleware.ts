@@ -1,8 +1,12 @@
 import { ISessionService } from "@api/interfaces/ISessionService";
 import { SessionService } from "@api/services/SessionService";
 import { NextFunction, Request, Response } from "express";
+import { LoginService } from "@api/services/LoginService";
+
 
 const sessionService: ISessionService = new SessionService();
+const loginService = new LoginService();
+
 
 /**
  * Check if a session-header or session-cookie is available to optionally resolve the current User ID.
@@ -22,6 +26,14 @@ export async function sessionMiddleware(req: Request, _res: Response, next: Next
     const userId: number | undefined = await sessionService.getUserIdBySession(req.sessionId);
 
     req.userId = userId;
+
+    if (userId) {
+    const gebruiker = await loginService.getUserById(userId);
+    if (gebruiker) {
+        req.username = gebruiker.username;
+    }
+}
+
 
     next();
 }

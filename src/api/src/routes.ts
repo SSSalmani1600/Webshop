@@ -14,6 +14,7 @@ import { DiscountController } from "./controllers/DiscountController";
 import { DiscountCodeRequestBody } from "./interfaces/IDiscountService";
 import { GameDetailController } from "./controllers/ProductDetailController";
 import { ShowHomepageGamesController } from "./controllers/ShowHomepageGamesController";
+
 import { WishlistController } from "./controllers/WishlistController";
 import { NavbarController } from "./controllers/NavbarController";
 import { GameSearchController } from "./controllers/SearchbarController";
@@ -22,6 +23,7 @@ import { LogoutController } from "./controllers/LogoutController";
 import { RandomGameController } from "./controllers/RandomGameController";
 import { AddToWishlistController } from "./controllers/AddToWishlistController";
 import { ActionController } from "./controllers/ActionController";
+import { ForgotPasswordController } from "./controllers/ForgotPasswordController";
 
 export const router: Router = Router();
 
@@ -49,10 +51,12 @@ const randomGameController: RandomGameController = new RandomGameController();
 const reviewController: ReviewController = new ReviewController();
 const addToWishlistController: AddToWishlistController = new AddToWishlistController();
 const actionController: ActionController = new ActionController();
+const forgotPasswordController: ForgotPasswordController = new ForgotPasswordController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
 router.post("/auth/logout", (req: Request, res: Response) => logoutController.logout(req, res));
+router.post("/auth/forgot-password", (req: Request, res: Response) => forgotPasswordController.resetPassword(req, res));
 router.post("/register", (req: Request, res: Response) => {
     console.log("POST /register ontvangen", req.body);
     return registerController.addNewUser(req, res);

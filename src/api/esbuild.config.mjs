@@ -10,6 +10,12 @@ const typecheckOptions = {
         "./src/**/*.ts",
         "../shared/**/*.ts",
     ],
+    excludePatterns: [
+  "**/node_modules/**", // sla libraries over
+  "**/stripe",          // sla Stripe over, anders krijg je fout
+   "**/stripe*",     // voorkom fouten bij import 'stripe'
+],
+    
     throwOnError: false,
     plugins: [
         interfacesTypecheckPlugin(),
@@ -25,6 +31,7 @@ const options = {
     target: "node20",
     // NOTE: Due to a bug in the @hboictcloud/esbuild-plugin-interfaces, this has to be disabled.
     minifyIdentifiers: false,
+    external: ['stripe'], //Stripe derdepartijtje
     watchPlugins: [
         typechecksPlugin(typecheckOptions),
         interfacesPlugin(),

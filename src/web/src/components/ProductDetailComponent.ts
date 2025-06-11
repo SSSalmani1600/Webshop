@@ -4,206 +4,288 @@ import { PostreviewApiService } from "@web/services/PostreviewApiService";
 import "@web/components/AddToWishlistComponent";
 
 interface SessionData {
-    sessionId: string;
-    username: string;
+  sessionId: string;
+  username: string;
+  userId: number;
 }
 
-interface ReviewResponse {
-    message: string;
+interface Review {
+  id: number;
+  rating: number;
+  comment: string;
+  username: string;
 }
 
 export class GameDetailComponent extends HTMLElement {
-    private shadow: ShadowRoot;
+  private shadow: ShadowRoot;
+  private editingReviewId: number | null = null;
+  private editingReviewText = "";
+  private currentUsername = "";
+  private currentUserId = 0;
 
-    public constructor() {
-        super();
-        this.shadow = this.attachShadow({ mode: "open" });
+  public constructor() {
+    super();
+    this.shadow = this.attachShadow({ mode: "open" });
+  }
+
+  public connectedCallback(): void {
+    this.renderLoading();
+    void this.loadGame();
+  }
+
+  private renderLoading(): void {
+    this.shadow.innerHTML = `<p style="color: white;">Game wordt geladen...</p>`;
+  }
+
+  private async loadGame(): Promise<void> {
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameId = urlParams.get("id");
+
+    if (!gameId) {
+      this.shadow.innerHTML = `<p style="color: red;">Geen game ID opgegeven.</p>`;
+      return;
     }
 
-    public connectedCallback(): void {
-        this.renderLoading();
-        void this.loadGame();
+    try {
+      const { sessionId, username, userId } = await this.getSession();
+      this.currentUsername = username;
+      this.currentUserId = userId;
+
+      const response = await fetch(`${VITE_API_URL}game?id=${gameId}`, {
+        headers: { "x-session": sessionId },
+      });
+
+      if (!response.ok) throw new Error("Kon game niet ophalen.");
+
+      const game = (await response.json()) as Game;
+      this.renderGame(game, parseInt(gameId, 10));
+    } catch (error) {
+      this.shadow.innerHTML = `<p style="color: red;">Fout: ${(error as Error).message}</p>`;
+    }
+  }
+
+  private async getSession(): Promise<SessionData> {
+    const res = await fetch(`${VITE_API_URL}session`, { credentials: "include" });
+    const data = await res.json();
+
+    if (
+      typeof data === "object" &&
+      data !== null &&
+      "sessionId" in data &&
+      "username" in data &&
+      "userId" in data &&
+      typeof data.sessionId === "string" &&
+      typeof data.username === "string" &&
+      typeof data.userId === "number"
+    ) {
+      return data as SessionData;
     }
 
-    private renderLoading(): void {
-        this.shadow.innerHTML = "<p style=\"color: white;\">Game wordt geladen...</p>";
-    }
+    throw new Error("Invalid session object");
+  }
 
-    private async loadGame(): Promise<void> {
-        const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
-        const gameId: string | null = urlParams.get("id");
+  private renderGame(game: Game, gameId: number): void {
+    this.shadow.innerHTML = `
+      <div class="box" style="max-width: 1500px; margin: 0 auto 20px auto;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <h2><br><strong>${game.title}</strong></h2>
+          <add-to-wishlist game-id="${gameId}"></add-to-wishlist>
+        </div>
+        <img src="${game.thumbnail}" alt="${game.title}" />
+      </div>
 
-        if (!gameId) {
-            this.shadow.innerHTML = "<p style=\"color: red;\">Geen game ID opgegeven.</p>";
-            return;
-        }
+      <div class="info-boxes">
+        <div class="box">
+          <h3>Description</h3>
+          ${game.descriptionHtml}
+        </div>
+        <div class="box">
+          <h3>Reviews:</h3>
+          <div id="reviews-output"></div>
 
-        try {
-            const { sessionId, username } = await this.getSession();
+          <textarea id="review-input" rows="4" placeholder="Schrijf hier je review..."
+            style="width: 100%; padding: 10px; border-radius: 8px; resize: vertical; margin-bottom: 10px;"></textarea>
 
-            const response: Response = await fetch(`${VITE_API_URL}game?id=${gameId}`, {
-                headers: {
-                    "x-session": sessionId,
-                },
-            });
+          <div id="star-rating" style="margin-bottom: 10px; font-size: 24px; color: gray; cursor: pointer;">
+            <span data-value="1">☆</span>
+            <span data-value="2">☆</span>
+            <span data-value="3">☆</span>
+            <span data-value="4">☆</span>
+            <span data-value="5">☆</span>
+          </div>
 
-            if (!response.ok) throw new Error("Kon game niet ophalen.");
+          <button id="submit-review" style="padding: 10px 20px; border-radius: 999px; background-color: #7f41f5; color: white; border: none; cursor: pointer;">Plaatsen</button>
+          <div id="review-status" style="margin-top: 10px; color: lightgreen;"></div>
+        </div>
+      </div>
+    `;
 
-            const game: Game = await response.json() as Game;
-            this.renderGame(game, parseInt(gameId), username);
-        }
-        catch (error) {
-            this.shadow.innerHTML = "<p style=\"color: red;\">Fout: " + (error as Error).message + "</p>";
-        }
-    }
+    const reviewService = new PostreviewApiService();
+    const reviewButton = this.shadow.querySelector<HTMLButtonElement>("#submit-review");
+    const reviewInput = this.shadow.querySelector<HTMLTextAreaElement>("#review-input");
+    const reviewStatus = this.shadow.querySelector<HTMLDivElement>("#review-status");
+    let selectedRating = 0;
+    const stars = this.shadow.querySelectorAll<HTMLSpanElement>("#star-rating span");
 
-    private async getSession(): Promise<SessionData> {
-        const res: Response = await fetch(`${VITE_API_URL}session`, {
-            credentials: "include", //  cookies meesturen
+    stars.forEach((star) => {
+      star.addEventListener("click", () => {
+        selectedRating = parseInt(star.dataset.value ?? "0", 10);
+        stars.forEach((s, index) => {
+          s.textContent = index < selectedRating ? "★" : "☆";
+          s.style.color = index < selectedRating ? "gold" : "gray";
         });
-        const data: unknown = await res.json();
+      });
+    });
 
-        if (
-            typeof data === "object" &&
-            data !== null &&
-            "sessionId" in data &&
-            "username" in data &&
-            typeof (data as SessionData).sessionId === "string" &&
-            typeof (data as SessionData).username === "string"
-        ) {
-            return data as SessionData;
+    reviewButton?.addEventListener("click", async () => {
+      const comment = reviewInput?.value.trim();
+      if (!comment || selectedRating < 1) {
+        if (reviewStatus) {
+          reviewStatus.textContent = "Vul een review én een waardering in.";
+          reviewStatus.style.color = "red";
         }
+        return;
+      }
 
-        throw new Error("Invalid session object");
-    }
+      // ✅ Controle of gebruiker is ingelogd
+      if (!this.currentUserId || !this.currentUsername) {
+        alert("Je moet ingelogd zijn om een review te plaatsen.");
+        window.location.href = "/login";
+        return;
+      }
 
-    private renderGame(
-        game: {
-            title: string;
-            thumbnail: string;
-            descriptionHtml: string;
-            price?: number | null;
-        },
-        gameId: number,
-        username: string
-    ): void {
-        this.shadow.innerHTML = `
-            <div class="box" style="max-width: 1500px; margin: 0 auto 20px auto;">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <h2><br><strong>${game.title}</strong></h2>
-                    <add-to-wishlist game-id="${gameId}"></add-to-wishlist>
+      const body: ReviewRequestBody = {
+        userId: this.currentUserId,
+        rating: selectedRating,
+        comment,
+      };
+
+      await reviewService.postReview(gameId, body);
+
+      if (reviewStatus) {
+        reviewStatus.textContent = "Review geplaatst.";
+        reviewStatus.style.color = "lightgreen";
+      }
+
+      if (reviewInput) reviewInput.value = "";
+      selectedRating = 0;
+
+      stars.forEach((s) => {
+        s.textContent = "☆";
+        s.style.color = "gray";
+      });
+
+      await this.loadReviews(gameId);
+      this.setupReviewEditing(gameId);
+    });
+
+    void this.loadReviews(gameId).then(() => this.setupReviewEditing(gameId));
+  }
+
+  private async loadReviews(gameId: number): Promise<void> {
+    const output = this.shadow.querySelector<HTMLElement>("#reviews-output");
+    if (!output) return;
+
+    try {
+      const res = await fetch(`${VITE_API_URL}api/games/${gameId}/reviews`, { credentials: "include" });
+      const reviews = (await res.json()) as Review[];
+
+      output.innerHTML = reviews
+        .map((r) => {
+          const canEdit = r.username?.trim().toLowerCase() === this.currentUsername.trim().toLowerCase();
+
+          if (this.editingReviewId === r.id && canEdit) {
+            return `
+              <div style="background-color: #3a3a3a; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                <strong style="color: #fff; font-size: 15px;">${r.username}</strong><br/>
+                <div style="margin: 8px 0; color: gold; font-size: 16px;">
+                  ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
                 </div>
-                <img src="${game.thumbnail}" alt="${game.title}" />
+                <textarea id="edit-textarea" style="width: 100%; height: 80px; margin-top: 10px; padding: 10px; font-size: 14px; border-radius: 8px; border: 1px solid #ccc; resize: vertical;">${this.editingReviewText}</textarea>
+                <div style="margin-top: 10px;">
+                  <button id="save-edit" style="background-color: #7f41f5; color: white; padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; margin-right: 10px;">Opslaan</button>
+                  <button id="cancel-edit" style="background-color: #555; color: white; padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer;">Annuleren</button>
+                </div>
+              </div>
+            `;
+          }
+
+          return `
+            <div style="background-color: #3a3a3a; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="color: #fff; font-size: 15px;">${r.username}</strong>
+                ${
+                  canEdit
+                    ? `
+                    <div style="display: flex; gap: 10px;">
+                      <button class="edit-btn" data-review-id="${r.id}" data-comment="${r.comment}" style="background-color: #7f41f5; color: white; border: none; padding: 6px 12px; font-size: 13px; border-radius: 8px; cursor: pointer;">✏️ Bewerken</button>
+                      <button class="delete-btn" data-review-id="${r.id}" style="background-color: #d9534f; color: white; border: none; padding: 6px 12px; font-size: 13px; border-radius: 8px; cursor: pointer;">🗑️ Verwijderen</button>
+                    </div>`
+                    : ""
+                }
+              </div>
+              <div style="margin-top: 6px; color: gold; font-size: 16px;">
+                ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
+              </div>
+              <p style="margin-top: 8px; color: #ddd; font-size: 14px;">${r.comment}</p>
             </div>
-
-            <div class="info-boxes">
-                <div class="box">
-                    <h3>Description</h3>
-                    ${game.descriptionHtml}
-                </div>
-                <div class="box">
-                    <h3>Reviews:</h3>
-                    <div id="reviews-output"></div>
-
-                    <textarea id="review-input" rows="4" placeholder="Schrijf hier je review..." 
-                        style="width: 100%; padding: 10px; border-radius: 8px; resize: vertical; margin-bottom: 10px;"></textarea>
-
-                    <div id="star-rating" style="margin-bottom: 10px; font-size: 24px; color: gray; cursor: pointer;">
-                        <span data-value="1">☆</span>
-                        <span data-value="2">☆</span>
-                        <span data-value="3">☆</span>
-                        <span data-value="4">☆</span>
-                        <span data-value="5">☆</span>
-                    </div>
-
-                    <button id="submit-review" style="padding: 10px 20px; border-radius: 999px; background-color: #7f41f5; color: white; border: none; cursor: pointer;">Plaatsen</button>
-                    <div id="review-status" style="margin-top: 10px; color: lightgreen;"></div>
-                </div>
-            </div>
-        `;
-
-        const reviewService: PostreviewApiService = new PostreviewApiService();
-        const reviewButton: HTMLButtonElement | null = this.shadow.querySelector("#submit-review");
-        const reviewInput: HTMLTextAreaElement | null = this.shadow.querySelector("#review-input");
-        const reviewStatus: HTMLDivElement | null = this.shadow.querySelector("#review-status");
-        const currentUsername: string = username;
-        let selectedRating: number = 0;
-        const stars: NodeListOf<HTMLSpanElement> = this.shadow.querySelectorAll("#star-rating span");
-
-        stars.forEach(star => {
-            star.addEventListener("click", () => {
-                selectedRating = parseInt(star.dataset.value || "0");
-                stars.forEach((s, index) => {
-                    s.textContent = index < selectedRating ? "★" : "☆";
-                    s.style.color = index < selectedRating ? "gold" : "gray";
-                });
-            });
-        });
-
-        reviewButton?.addEventListener("click", async () => {
-            const comment: string | undefined = reviewInput?.value.trim();
-            const rating: number = selectedRating;
-            const userId: number = 1;
-
-            if (!comment || rating < 1) {
-                reviewStatus!.textContent = "Vul een review én een waardering in.";
-                reviewStatus!.style.color = "red";
-                return;
-            }
-
-            const body: ReviewRequestBody = {
-                userId,
-                rating,
-                comment,
-                username: currentUsername,
-            };
-
-            const response: ReviewResponse = await reviewService.postReview(gameId, body);
-
-            reviewStatus!.textContent = response.message;
-            reviewStatus!.style.color = "lightgreen";
-            reviewInput!.value = "";
-            selectedRating = 0;
-
-            stars.forEach(s => {
-                s.textContent = "☆";
-                s.style.color = "gray";
-            });
-
-            await this.loadReviews(gameId);
-        });
-
-        void this.loadReviews(gameId);
+          `;
+        })
+        .join("");
+    } catch {
+      output.innerHTML = "<p style='color:red;'>Kon reviews niet ophalen.</p>";
     }
+  }
 
-    private async loadReviews(gameId: number): Promise<void> {
-        const output: HTMLElement | null = this.shadow.querySelector("#reviews-output");
-        if (!output) return;
+  private setupReviewEditing(gameId: number): void {
+    const output = this.shadow.querySelector("#reviews-output");
+    if (!output) return;
 
-        try {
-            const res: Response = await fetch(`${VITE_API_URL}api/games/${gameId}/reviews`, {
-                credentials: "include",
-            });
-            const reviews: unknown = await res.json();
+    output.addEventListener("click", async (e) => {
+      const target = e.target as HTMLElement;
 
-            if (!Array.isArray(reviews)) return;
+      if (target.classList.contains("edit-btn")) {
+        const reviewId = parseInt(target.dataset.reviewId ?? "0", 10);
+        const comment = target.dataset.comment ?? "";
+        this.editingReviewId = reviewId;
+        this.editingReviewText = comment;
+        await this.loadReviews(gameId);
+      }
 
-            output.innerHTML = reviews
-                .map((r: { rating: number; comment: string; username?: string }) => `
-                    <div style="margin-bottom: 10px;">
-                        <strong style="color: #fff;">${r.username || "Anoniem"}</strong><br/>
-                        <span style="color: gold; font-size: 16px;">
-                            ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
-                        </span><br/>
-                        <span style="color: #ccc; font-size: 14px;">${r.comment}</span>
-                    </div>
-                `)
-                .join("");
+      if (target.id === "cancel-edit") {
+        this.editingReviewId = null;
+        this.editingReviewText = "";
+        await this.loadReviews(gameId);
+      }
+
+      if (target.id === "save-edit") {
+        const textarea = this.shadow.querySelector<HTMLTextAreaElement>("#edit-textarea");
+        const newComment = textarea?.value.trim();
+        if (newComment && this.editingReviewId) {
+          await fetch(`${VITE_API_URL}api/reviews/${this.editingReviewId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ comment: newComment }),
+          });
         }
-        catch {
-            output.innerHTML = "<p style='color:red;'>Kon reviews niet ophalen.</p>";
+        this.editingReviewId = null;
+        this.editingReviewText = "";
+        await this.loadReviews(gameId);
+      }
+
+      if (target.classList.contains("delete-btn")) {
+        const reviewId = parseInt(target.dataset.reviewId ?? "0", 10);
+        if (reviewId && confirm("Weet je zeker dat je deze review wilt verwijderen?")) {
+          await fetch(`${VITE_API_URL}api/reviews/${reviewId}`, {
+            method: "DELETE",
+            credentials: "include",
+          });
+          await this.loadReviews(gameId);
         }
-    }
+      }
+    });
+  }
 }
 
 customElements.define("game-detail-page", GameDetailComponent);

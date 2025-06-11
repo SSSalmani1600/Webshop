@@ -14,7 +14,7 @@ export class OrderService {
         try {
             const result: ResultSetHeader = await this._db.query<ResultSetHeader>(
                 connection,
-                `INSERT INTO \`orders\` (user_id, order_number, total_price, created_at)
+                `INSERT INTO orders (user_id, order_number, total_price, created_at)
                  VALUES (?, ?, ?, NOW())`,
                 [userId, orderNumber, totalPrice]
             );
@@ -137,7 +137,7 @@ export class OrderService {
         try {
             const [rows] = await connection.query<RowDataPacket[]>(
                 `SELECT g.title, g.Thumbnail AS image_url, og.quantity, og.price
-                 FROM order_games og
+                 FROM order_game og
                  JOIN games g ON og.game_id = g.id
                  WHERE og.order_id = ?`,
                 [orderId]

@@ -128,13 +128,13 @@ export class Checkout extends HTMLElement {
 
                 const orderNumber: string = Math.floor(100000 + Math.random() * 900000).toString(); // Genereer tijdelijk ordernummer
 
-                const cartRes: Response = await fetch(`${API_BASE}/cart`, {
+                const cartRes: Response = await fetch(`${this.API_BASE}/cart`, {
                     credentials: "include",
                 });
                 const cartData: CartData = await cartRes.json() as CartData;
                 const totalPrice: number = cartData.total;
 
-                const orderRes: Response = await fetch(`${API_BASE}/order/complete`, {
+                const orderRes: Response = await fetch(`${this.API_BASE}/order/complete`, {
                     method: "POST",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },

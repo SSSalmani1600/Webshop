@@ -3,8 +3,8 @@ interface CartItem {
     id: number;
     game_id: number;
     quantity: number; // Hoeveel stuks
-    price: number;    // Prijs per stuk
-    name: string;     // Naam van het product
+    price: number; // Prijs per stuk
+    name: string; // Naam van het product
 }
 
 // Astructuur van de API: een lijst van cart items

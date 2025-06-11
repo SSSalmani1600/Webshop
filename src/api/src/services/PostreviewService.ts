@@ -18,12 +18,13 @@ export class PostreviewService {
         const connection: PoolConnection = await this.db.openConnection();
 
         try {
-            const query = `
+            const query: string = `
                 INSERT INTO review (user_id, game_id, rating, comment)
                 VALUES (?, ?, ?, ?)
             `;
             await this.db.query<ResultSetHeader>(connection, query, userId, gameId, rating, comment);
-        } finally {
+        }
+        finally {
             connection.release();
         }
     }
@@ -42,7 +43,8 @@ export class PostreviewService {
                 [gameId]
             );
             return rows as { rating: number; comment: string; username: string }[];
-        } finally {
+        }
+        finally {
             connection.release();
         }
     }
@@ -51,13 +53,14 @@ export class PostreviewService {
         const connection: PoolConnection = await this.db.openConnection();
 
         try {
-            const query = `
+            const query: string = `
                 UPDATE review
                 SET comment = ?
                 WHERE id = ?
             `;
             await this.db.query<ResultSetHeader>(connection, query, comment, reviewId);
-        } finally {
+        }
+        finally {
             connection.release();
         }
     }
@@ -76,12 +79,13 @@ export class PostreviewService {
                 [reviewId]
             );
 
-            if (!rows || rows.length === 0) {
+            if (rows.length === 0) {
                 return null;
             }
 
             return rows[0] as Review;
-        } finally {
+        }
+        finally {
             connection.release();
         }
     }
@@ -91,16 +95,17 @@ export class PostreviewService {
 
         try {
             const [rows] = await connection.query<RowDataPacket[]>(
-                `SELECT username FROM user WHERE id = ?`,
+                "SELECT username FROM user WHERE id = ?",
                 [userId]
             );
 
-            if (!rows || rows.length === 0) {
+            if (rows.length === 0) {
                 return null;
             }
 
             return rows[0] as { username: string };
-        } finally {
+        }
+        finally {
             connection.release();
         }
     }
@@ -109,12 +114,13 @@ export class PostreviewService {
         const connection: PoolConnection = await this.db.openConnection();
 
         try {
-            const query = `
+            const query: string = `
                 DELETE FROM review
                 WHERE id = ?
             `;
             await this.db.query<ResultSetHeader>(connection, query, reviewId);
-        } finally {
+        }
+        finally {
             connection.release();
         }
     }

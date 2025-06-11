@@ -51,7 +51,8 @@ export class LoginService {
             }
 
             return null;
-        } finally {
+        }
+        finally {
             connection.release();
         }
     }
@@ -73,7 +74,8 @@ export class LoginService {
                 loggedIn ? 1 : 0,
                 userId
             );
-        } finally {
+        }
+        finally {
             connection.release();
         }
     }
@@ -95,7 +97,8 @@ export class LoginService {
             );
 
             return users.length > 0 ? users[0] : null;
-        } finally {
+        }
+        finally {
             connection.release();
         }
     }

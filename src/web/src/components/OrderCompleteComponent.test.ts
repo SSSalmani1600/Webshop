@@ -18,14 +18,12 @@ describe("OrderConfirmationComponent", () => {
 
         // eslint-disable-next-line @typescript-eslint/typedef
         const shadow = component.shadowRoot!;
-        // eslint-disable-next-line @typescript-eslint/typedef
-        const title = shadow.querySelector("h1");
 
-        expect(title).toBeInTheDocument();
+        const title: HTMLElement | null = shadow.querySelector("h1");
+        expect(title).not.toBeNull();
         expect(title?.textContent).toMatch(/bedankt voor uw bestelling/i);
-
-        // eslint-disable-next-line @typescript-eslint/typedef
-        const total = shadow.querySelector(".order-total");
-        expect(total).toBeInTheDocument();
+        const total: HTMLElement | null = shadow.querySelector(".order-total");
+        expect(total).not.toBeNull();
+        expect(total?.textContent).toBeDefined();
     });
 });

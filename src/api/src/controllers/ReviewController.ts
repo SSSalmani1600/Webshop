@@ -1,6 +1,26 @@
 import { Router, Request, Response } from "express";
 import { PostreviewService } from "@api/services/PostreviewService";
 
+interface User {
+    username: string;
+}
+
+interface Review {
+    id?: number;
+    username: string;
+    rating: number;
+    comment: string;
+}
+
+interface ReviewRequestBody {
+    rating: number;
+    comment: string;
+}
+
+interface UpdateReviewRequestBody {
+    comment: string;
+}
+
 export class ReviewController {
     public readonly router: Router;
     private readonly postReviewService: PostreviewService;
@@ -17,10 +37,10 @@ export class ReviewController {
 
     public async postReview(req: Request, res: Response): Promise<void> {
         try {
-            const gameId = parseInt(req.params.id);
-            const userIdCookie = req.cookies?.user;
-            const userId = parseInt(userIdCookie);
-            const { rating, comment } = req.body;
+            const gameId: number = parseInt(req.params.id, 10);
+            const userIdCookie: unknown = req.cookies.user;
+            const userId: number = typeof userIdCookie === "string" ? parseInt(userIdCookie, 10) : NaN;
+            const { rating, comment }: ReviewRequestBody = req.body as ReviewRequestBody;
 
             if (!userId || isNaN(userId) || isNaN(gameId) || !rating || !comment) {
                 res.status(401).json({ message: "Je moet ingelogd zijn om een review te plaatsen." });
@@ -30,7 +50,8 @@ export class ReviewController {
             await this.postReviewService.addReview(userId, gameId, rating, comment);
 
             res.status(201).json({ message: "Review succesvol toegevoegd." });
-        } catch (error) {
+        }
+        catch (error) {
             console.error("Fout bij postReview:", error);
             res.status(500).json({ message: "Er ging iets mis bij het opslaan van de review." });
         }
@@ -38,16 +59,17 @@ export class ReviewController {
 
     public async getReviewsByGameId(req: Request, res: Response): Promise<void> {
         try {
-            const gameId = parseInt(req.params.id);
+            const gameId: number = parseInt(req.params.id, 10);
 
             if (isNaN(gameId)) {
                 res.status(400).json({ message: "Ongeldig game ID." });
                 return;
             }
 
-            const reviews = await this.postReviewService.getReviewsForGame(gameId);
+            const reviews: Review[] = await this.postReviewService.getReviewsForGame(gameId);
             res.status(200).json(reviews);
-        } catch (error) {
+        }
+        catch (error) {
             console.error("Fout bij ophalen reviews:", error);
             res.status(500).json({ message: "Kon reviews niet ophalen." });
         }
@@ -55,28 +77,28 @@ export class ReviewController {
 
     public async updateReview(req: Request, res: Response): Promise<void> {
         try {
-            const reviewId = parseInt(req.params.id);
-            const { comment } = req.body;
-            const userIdCookie = req.cookies?.user;
-            const userId = parseInt(userIdCookie);
+            const reviewId: number = parseInt(req.params.id, 10);
+            const { comment }: UpdateReviewRequestBody = req.body as UpdateReviewRequestBody;
+            const userIdCookie: unknown = req.cookies.user;
+            const userId: number = typeof userIdCookie === "string" ? parseInt(userIdCookie, 10) : NaN;
 
             if (!userId || isNaN(userId) || !comment || isNaN(reviewId)) {
                 res.status(400).json({ message: "Ongeldige invoer of niet ingelogd." });
                 return;
             }
 
-            const gebruiker = await this.postReviewService.getUsernameByUserId(userId);
+            const gebruiker: User | null = await this.postReviewService.getUsernameByUserId(userId);
 
             if (!gebruiker) {
                 res.status(404).json({ message: "Gebruiker niet gevonden." });
                 return;
             }
 
-            const username = gebruiker.username;
+            const username: string = gebruiker.username;
             console.log("⛳ userId uit cookie:", userId);
             console.log("⛳ username uit DB:", username);
 
-            const review = await this.postReviewService.getReviewById(reviewId);
+            const review: Review | null = await this.postReviewService.getReviewById(reviewId);
 
             if (!review) {
                 res.status(404).json({ message: "Review niet gevonden." });
@@ -93,7 +115,8 @@ export class ReviewController {
 
             await this.postReviewService.updateReview(reviewId, comment);
             res.status(200).json({ message: "Review succesvol bijgewerkt." });
-        } catch (error) {
+        }
+        catch (error) {
             console.error("Fout bij updateReview:", error);
             res.status(500).json({ message: "Kon review niet bijwerken." });
         }
@@ -101,22 +124,22 @@ export class ReviewController {
 
     public async deleteReview(req: Request, res: Response): Promise<void> {
         try {
-            const reviewId = parseInt(req.params.id);
-            const userIdCookie = req.cookies?.user;
-            const userId = parseInt(userIdCookie);
+            const reviewId: number = parseInt(req.params.id, 10);
+            const userIdCookie: unknown = req.cookies.user;
+            const userId: number = typeof userIdCookie === "string" ? parseInt(userIdCookie, 10) : NaN;
 
             if (!userId || isNaN(userId) || isNaN(reviewId)) {
                 res.status(401).json({ message: "Je moet ingelogd zijn om een review te verwijderen." });
                 return;
             }
 
-            const gebruiker = await this.postReviewService.getUsernameByUserId(userId);
+            const gebruiker: User | null = await this.postReviewService.getUsernameByUserId(userId);
             if (!gebruiker) {
                 res.status(404).json({ message: "Gebruiker niet gevonden." });
                 return;
             }
 
-            const review = await this.postReviewService.getReviewById(reviewId);
+            const review: Review | null = await this.postReviewService.getReviewById(reviewId);
             if (!review) {
                 res.status(404).json({ message: "Review niet gevonden." });
                 return;
@@ -129,7 +152,8 @@ export class ReviewController {
 
             await this.postReviewService.deleteReview(reviewId);
             res.status(200).json({ message: "Review succesvol verwijderd." });
-        } catch (error) {
+        }
+        catch (error) {
             console.error("Fout bij deleteReview:", error);
             res.status(500).json({ message: "Er ging iets mis bij het verwijderen van de review." });
         }

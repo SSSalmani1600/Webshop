@@ -3,6 +3,8 @@ import type { GamePrices } from "../../../api/src/types/GamePrices";
 import "@web/components/AddToWishlistComponent";
 import "@web/components/Add_to_cartcomponent";
 
+declare const VITE_API_URL: string;
+
 interface SessionResponse {
     sessionId: string;
 }
@@ -22,7 +24,7 @@ export class GameList extends HTMLElement {
         try {
             const sessionId: string = await this.getSession();
             const res: Response = await fetch(`${VITE_API_URL}products`, {
-                headers: { "x-session": sessionId }
+                headers: { "x-session": sessionId },
             });
 
             if (!res.ok) {
@@ -38,7 +40,8 @@ export class GameList extends HTMLElement {
 
             await this.render();
             this.setupSortEvent();
-        } catch (error) {
+        }
+        catch (error) {
             console.error(error);
             this.renderError("An unexpected error occurred.");
         }
@@ -57,39 +60,45 @@ export class GameList extends HTMLElement {
         try {
             const sessionId: string = await this.getSession();
             const res: Response = await fetch(`${VITE_API_URL}product-prices/${gameId}`, {
-                headers: { "x-session": sessionId }
+                headers: { "x-session": sessionId },
             });
             const data: GamePrices[] = (await res.json()) as GamePrices[];
             return data[0]?.price ?? null;
-        } catch {
+        }
+        catch {
             return null;
         }
     }
 
     private getUniqueGenres(): string[] {
         const genres: Set<string> = new Set();
-        this.games.forEach((game) => {
-            game.genre?.split(",").map((g) => g.trim()).forEach((g) => genres.add(g));
+        this.games.forEach(game => {
+            const genreString: string | null | undefined = (game as unknown as { genre?: string | null }).genre;
+            if (typeof genreString === "string" && genreString.length > 0) {
+                genreString.split(",").map(g => g.trim()).forEach(g => genres.add(g));
+            }
         });
         return Array.from(genres).sort();
     }
 
     private filterGamesByGenres(games: Game[]): Game[] {
         if (this.selectedGenres.size === 0) return games;
-        return games.filter((game) => {
-            const gameGenres = game.genre?.split(",").map((g) => g.trim()) || [];
-            return gameGenres.some((g) => this.selectedGenres.has(g));
+        return games.filter(game => {
+            const genreString: string | null | undefined = (game as unknown as { genre?: string | null }).genre;
+            const gameGenres: string[] = typeof genreString === "string" ? genreString.split(",").map(g => g.trim()) : [];
+            return gameGenres.some(g => this.selectedGenres.has(g));
         });
     }
 
     private handleGenreChange(event: Event): void {
-        const checkbox = event.target as HTMLInputElement;
+        const checkbox: HTMLInputElement = event.target as HTMLInputElement;
         if (checkbox.checked) {
             this.selectedGenres.add(checkbox.value);
-        } else {
+        }
+        else {
             this.selectedGenres.delete(checkbox.value);
         }
-        void this.render().then(() => this.setupSortEvent());
+        this.render().then(() => this.setupSortEvent()).catch((error: unknown) => console.error(error));
     }
 
     public sortByPrice(order: "asc" | "desc"): void {
@@ -97,18 +106,18 @@ export class GameList extends HTMLElement {
         if (!Array.isArray(this.gamesWithPrices)) return;
 
         this.gamesWithPrices.sort((a, b) => {
-            const priceA = a.price ?? 0;
-            const priceB = b.price ?? 0;
+            const priceA: number = a.price ?? 0;
+            const priceB: number = b.price ?? 0;
             return order === "asc" ? priceA - priceB : priceB - priceA;
         });
 
-        void this.renderFromSortedList();
+        this.renderFromSortedList();
     }
 
     private async render(): Promise<void> {
         if (!this.shadowRoot) return;
 
-        const style = `
+        const style: string = `
       <style>
         :host {
           display: block;
@@ -213,18 +222,18 @@ export class GameList extends HTMLElement {
       </style>
     `;
 
-        const visibleGames = this.games.filter((g) => !g.hidden);
-        const filteredGames = this.filterGamesByGenres(visibleGames);
+        const visibleGames: Game[] = this.games.filter(g => !g.hidden);
+        const filteredGames: Game[] = this.filterGamesByGenres(visibleGames);
 
         this.gamesWithPrices = await Promise.all(
-            filteredGames.map(async (game) => ({
+            filteredGames.map(async game => ({
                 ...game,
-                price: await this.fetchGamePrice(game.id)
+                price: await this.fetchGamePrice(game.id),
             }))
         );
 
-        const genres = this.getUniqueGenres();
-        const genreFilter = `
+        const genres: string[] = this.getUniqueGenres();
+        const genreFilter: string = `
       <div class="filter-panel">
         <div class="filter-header">Filters</div>
         <div class="filter-section">
@@ -240,29 +249,29 @@ export class GameList extends HTMLElement {
           <strong>Genres:</strong>
           <div class="genre-options">
             ${genres
-                .map(
-                    (genre) => `
-              <div class="genre-checkbox">
-                <input type="checkbox" id="genre-${genre}" value="${genre}" ${this.selectedGenres.has(genre) ? "checked" : ""
-                        } />
-                <label for="genre-${genre}">${genre}</label>
-              </div>
-            `
-                )
-                .join("")}
+            .map(
+                genre => `
+            <div class="genre-checkbox">
+              <input type="checkbox" id="genre-${genre}" value="${genre}" ${this.selectedGenres.has(genre) ? "checked" : ""
+                    } />
+              <label for="genre-${genre}">${genre}</label>
+            </div>
+          `
+            )
+            .join("")}
           </div>
         </div>
       </div>
     `;
 
-        const productList = this.gamesWithPrices
-            .map((game) => {
-                const imageUrl =
+        const productList: string = this.gamesWithPrices
+            .map(game => {
+                const imageUrl: string =
                     typeof game.images === "string" && game.images
                         ? game.images.split(",")[0].trim()
                         : "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg";
 
-                const priceLabel =
+                const priceLabel: string =
                     (game.price ?? 0) > 0 ? `€ ${(game.price!).toFixed(2)}` : "Onbekende prijs";
 
                 return `
@@ -284,37 +293,37 @@ export class GameList extends HTMLElement {
 
         this.shadowRoot
             .querySelectorAll<HTMLInputElement>("input[type='checkbox']")
-            .forEach((checkbox) => {
-                checkbox.addEventListener("change", (e) => this.handleGenreChange(e));
+            .forEach(checkbox => {
+                checkbox.addEventListener("change", e => this.handleGenreChange(e));
             });
 
         this.setupSortEvent();
     }
 
     private setupSortEvent(): void {
-        const sortSelect = this.shadowRoot?.querySelector("#sort-select") as HTMLSelectElement | null;
+        const sortSelect: HTMLSelectElement | null = this.shadowRoot?.querySelector("#sort-select") as HTMLSelectElement | null;
         if (sortSelect) {
             sortSelect.value = this.currentSortOrder;
             sortSelect.addEventListener("change", (e: Event) => {
-                const target = e.target as HTMLSelectElement;
+                const target: HTMLSelectElement = e.target as HTMLSelectElement;
                 this.sortByPrice(target.value as "asc" | "desc");
             });
         }
     }
 
-    private async renderFromSortedList(): Promise<void> {
+    private renderFromSortedList(): void {
         if (!this.shadowRoot) return;
 
-        const filtered = this.filterGamesByGenres(this.gamesWithPrices);
+        const filtered: Game[] = this.filterGamesByGenres(this.gamesWithPrices);
 
-        const productListHTML = filtered
-            .map((game) => {
-                const imageUrl =
+        const productListHTML: string = filtered
+            .map(game => {
+                const imageUrl: string =
                     typeof game.images === "string" && game.images
                         ? game.images.split(",")[0].trim()
                         : "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg";
 
-                const priceLabel =
+                const priceLabel: string =
                     (game.price ?? 0) > 0 ? `€ ${(game.price!).toFixed(2)}` : "Onbekende prijs";
 
                 return `
@@ -332,7 +341,7 @@ export class GameList extends HTMLElement {
             })
             .join("");
 
-        const listContainer = this.shadowRoot.querySelector(".product-list");
+        const listContainer: Element | null = this.shadowRoot.querySelector(".product-list");
         if (listContainer) {
             listContainer.innerHTML = productListHTML;
         }

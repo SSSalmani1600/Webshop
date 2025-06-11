@@ -17,6 +17,7 @@ import { WishlistController } from "./controllers/WishlistController";
 import { NavbarController } from "./controllers/NavbarController";
 import { GameSearchController } from "./controllers/SearchbarController";
 import { LogoutController } from "./controllers/LogoutController";
+import { ForgotPasswordController } from "./controllers/ForgotPasswordController";
 
 export const router: Router = Router();
 
@@ -40,10 +41,12 @@ const navbarController: NavbarController = new NavbarController();
 const gameSearchController: GameSearchController = new GameSearchController();
 const logoutController: LogoutController = new LogoutController();
 const showHomepageGamesController: ShowHomepageGamesController = new ShowHomepageGamesController();
+const forgotPasswordController: ForgotPasswordController = new ForgotPasswordController();
 
 // Authentication endpoints (no session required)
 router.post("/auth/login", (req: Request, res: Response) => loginController.login(req, res));
 router.post("/auth/logout", (req: Request, res: Response) => logoutController.logout(req, res));
+router.post("/auth/forgot-password", (req: Request, res: Response) => forgotPasswordController.resetPassword(req, res));
 router.post("/register", (req: Request, res: Response) => {
     console.log("POST /register ontvangen", req.body);
     return registerController.addNewUser(req, res);

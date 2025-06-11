@@ -68,9 +68,9 @@ export class LoginController {
             if (rememberMe) {
                 await this.loginService.updateLoginStatus(user.id, true);
                 res.cookie("session", sessionId, {
-                    httpOnly: true,         // ✅ beveiligd
-                    secure: false,          // mag true als je HTTPS gebruikt
-                    sameSite: "lax",        // laat sessie toe binnen domein
+                    httpOnly: true, // ✅ beveiligd
+                    secure: false, // mag true als je HTTPS gebruikt
+                    sameSite: "lax", // laat sessie toe binnen domein
                     maxAge: 60 * 60 * 1000, // 1 uur geldig
                 });
 
@@ -95,7 +95,6 @@ export class LoginController {
                     sameSite: "lax",
                 });
             }
-
 
             res.status(200).json({
                 success: true,

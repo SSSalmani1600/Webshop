@@ -40,7 +40,6 @@ export class AddToCartController {
                 return;
             }
 
-         
             const result: { success: boolean; message: string } = await this._addToCartService.addToCart({
                 gameId,
                 quantity,
@@ -71,4 +70,4 @@ export class AddToCartController {
             });
         }
     }
-}
+};

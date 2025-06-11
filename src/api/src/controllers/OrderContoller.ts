@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ParamsDictionary } from "express-serve-static-core";
-import { OrderService } from "@api/services/OrderService";
-import { MailService } from "@api/services/MailService";
+import { OrderService } from "../services/OrderService";
+import { MailService } from "../services/MailService";
 
 function getUserIdFromCookie(req: Request): number | null {
     const raw: unknown = req.cookies.user;

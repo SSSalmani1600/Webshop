@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { ActionService } from "@api/services/ActionService";
-import { Actie } from "@api/types/Actie";
+import { ActionService } from "../services/ActionService";
+import { Actie } from "../types/Actie";
 
 export class ActionController {
     private readonly _actionService: ActionService = new ActionService();

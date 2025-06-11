@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { AddToCartService } from "../services/AddToCartService";
 import { ActionService } from "../services/ActionService";
-import { Actie } from "@api/types/Actie";
+import { Actie } from "../types/Actie";
 
 export class AddToCartController {
     private readonly _addToCartService = new AddToCartService();

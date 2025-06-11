@@ -1,6 +1,6 @@
 import { PoolConnection } from "mysql2/promise";
 import { DatabaseService } from "./DatabaseService";
-import { Actie } from "@api/types/Actie";
+import { Actie } from "../types/Actie";
 
 export class ActionService {
     private readonly _databaseService: DatabaseService;

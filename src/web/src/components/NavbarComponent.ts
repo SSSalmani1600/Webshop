@@ -151,7 +151,7 @@ export class NavbarComponent extends HTMLElement {
                 .cart {
                     position: relative;
                     cursor: pointer;
-                    display: flex;
+                    display: none;
                     align-items: center;
                 }
 
@@ -286,6 +286,7 @@ export class NavbarComponent extends HTMLElement {
 
     private async updateAuthStatus(): Promise<void> {
         const authButtons: HTMLButtonElement | null = this._shadow.getElementById("auth-buttons") as HTMLButtonElement;
+        const cartElement: HTMLElement | null = this._shadow.getElementById("cart") as HTMLElement;
         const modal: HTMLElement = this._shadow.getElementById("logout-modal") as HTMLElement;
         const cancelButton: HTMLElement = this._shadow.getElementById("cancel-logout") as HTMLElement;
         const confirmButton: HTMLElement = this._shadow.getElementById("confirm-logout") as HTMLElement;
@@ -305,6 +306,11 @@ export class NavbarComponent extends HTMLElement {
                         Uitloggen
                     </button>
                 `;
+
+                // Show cart icon when logged in
+                if (cartElement instanceof HTMLElement) {
+                    cartElement.style.display = "flex";
+                }
 
                 // Add logout event listener
                 const logoutBtn: HTMLButtonElement | null = this._shadow.getElementById("logout-btn") as HTMLButtonElement;
@@ -331,6 +337,11 @@ export class NavbarComponent extends HTMLElement {
                             localStorage.clear();
                             sessionStorage.clear();
 
+                            // Hide cart icon when logged out
+                            if (cartElement instanceof HTMLElement) {
+                                cartElement.style.display = "none";
+                            }
+
                             // Update UI immediately to show login/register
                             authButtons.innerHTML = `
                                 <a href="login.html">Inloggen/Registreren</a>
@@ -353,14 +364,22 @@ export class NavbarComponent extends HTMLElement {
                 authButtons.innerHTML = `
                     <a href="login.html">Inloggen/Registreren</a>
                 `;
+
+                // Hide cart icon when not logged in
+                if (cartElement instanceof HTMLElement) {
+                    cartElement.style.display = "none";
+                }
             }
         }
         catch (error: unknown) {
             console.error("Error checking auth status:", error);
-            // Default to showing login link
+            // Default to showing login link and hiding cart
             authButtons.innerHTML = `
                 <a href="login.html">Inloggen/Registreren</a>
             `;
+            if (cartElement instanceof HTMLElement) {
+                cartElement.style.display = "none";
+            }
         }
     }
 
@@ -395,6 +414,12 @@ export class NavbarComponent extends HTMLElement {
     }
 
     public updateCartCount(): void {
+        // Only update cart count if cart is visible (user is logged in)
+        const cartElement: HTMLElement | null = this._shadow.getElementById("cart");
+        if (!cartElement || cartElement.style.display === "none") {
+            return;
+        }
+
         fetch(`${VITE_API_URL}cart/count`, { credentials: "include" })
             .then((res: Response) => {
                 if (!res.ok) throw new Error("Cart count ophalen mislukt");

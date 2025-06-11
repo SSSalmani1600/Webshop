@@ -94,4 +94,29 @@ export class OrderService {
             connection.release();
         }
     }
+
+    public async getGamesByOrderId(orderId: number): Promise<
+        { title: string; image_url: string; quantity: number; price: number }[]
+    > {
+        const connection: PoolConnection = await this._db.openConnection();
+
+        try {
+            const [rows] = await connection.query<RowDataPacket[]>(
+                `SELECT g.title, g.Thumbnail AS image_url, og.quantity, og.price
+                 FROM order_games og
+                 JOIN games g ON og.game_id = g.id
+                 WHERE og.order_id = ?`,
+                [orderId]
+            );
+
+            return rows as { title: string; image_url: string; quantity: number; price: number }[];
+        }
+        catch (e) {
+            console.error("Fout bij getGamesByOrderId:", e);
+            throw new Error(`Kon gekochte games niet ophalen: ${e instanceof Error ? e.message : e}`);
+        }
+        finally {
+            connection.release();
+        }
+    }
 }

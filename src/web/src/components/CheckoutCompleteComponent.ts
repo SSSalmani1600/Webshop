@@ -1,10 +1,7 @@
-import { PaymentService } from "../services/PaymentService";
-
 export class CheckoutCompleteComponent extends HTMLElement {
     private readonly API_BASE: string = window.location.hostname.includes("localhost")
         ? "http://localhost:3001"
         : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
-    private readonly _paymentService: PaymentService = new PaymentService();
 
     public constructor() {
         super();
@@ -29,8 +26,8 @@ export class CheckoutCompleteComponent extends HTMLElement {
     private async checkPaymentStatus(): Promise<void> {
         try {
             // Haal orderId uit URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const orderId = urlParams.get('orderId');
+            const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+            const orderId: string | null = urlParams.get("orderId");
 
             if (!orderId) {
                 this.showError("Geen order ID gevonden");
@@ -38,32 +35,55 @@ export class CheckoutCompleteComponent extends HTMLElement {
             }
 
             // Haal transaction ID op uit database
-            const response = await fetch(`${this.API_BASE}/checkout/payment/${orderId}`, {
-                credentials: "include"
+            const response: Response = await fetch(`${this.API_BASE}/checkout/payment/${orderId}`, {
+                credentials: "include",
             });
 
             if (!response.ok) {
                 throw new Error("Kan betalingsgegevens niet ophalen");
             }
 
-            const { transactionId } = await response.json();
+            const data: { transactionId: string } = await response.json() as { transactionId: string };
+            const { transactionId } = data;
 
-            // Controleer betalingsstatus
-            const status = await this._paymentService.checkPaymentStatus(transactionId);
+            // Controleer betalingsstatus via directe API call
+            const status: string = await this.checkPaymentStatusDirect(transactionId);
 
-            if (status === 'paid') {
+            if (status === "paid") {
                 // Betaling succesvol
                 this.showSuccess(orderId);
-            } else if (status === 'canceled') {
+            }
+            else if (status === "canceled") {
                 // Betaling geannuleerd
                 this.showCancelled();
-            } else {
+            }
+            else {
                 // Betaling nog open
                 this.showPending();
             }
-        } catch (error) {
+        }
+        catch (error) {
             console.error("Fout bij controleren betaling:", error);
             this.showError("Er ging iets mis bij het controleren van uw betaling");
+        }
+    }
+
+    private async checkPaymentStatusDirect(transactionId: string): Promise<string> {
+        try {
+            const response: Response = await fetch(`${this.API_BASE}/payment/status/${transactionId}`, {
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                throw new Error("Kan betalingsstatus niet ophalen");
+            }
+
+            const data: { status: string } = await response.json() as { status: string };
+            return data.status;
+        }
+        catch (error) {
+            console.error("Fout bij ophalen betalingsstatus:", error);
+            return "error";
         }
     }
 
@@ -118,4 +138,4 @@ export class CheckoutCompleteComponent extends HTMLElement {
     }
 }
 
-customElements.define("checkout-complete-component", CheckoutCompleteComponent); 
+customElements.define("checkout-complete-component", CheckoutCompleteComponent);

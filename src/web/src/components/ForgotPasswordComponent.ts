@@ -207,4 +207,4 @@ export class ForgotPasswordComponent extends HTMLElement {
 }
 
 // Registreer het custom element
-customElements.define("forgot-password-form", ForgotPasswordComponent); 
+customElements.define("forgot-password-form", ForgotPasswordComponent);

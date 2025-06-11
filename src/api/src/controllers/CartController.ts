@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { CartService } from "../services/CartService";
 import { CartItem } from "../types/CartItem";
-import { Actie } from "@api/types/Actie";
-import { ActionService } from "@api/services/ActionService";
+import { Actie } from "../types/Actie";
+import { ActionService } from "../services/ActionService";
 
 // Deze controller handelt alle verzoeken af voor de winkelwagen
 const cartService: CartService = new CartService();
@@ -108,10 +108,6 @@ export class CartController {
                 actieVerwijderd: !!actie,
                 gratisProductId: actie ? actie.product_b_id : null,
             });
-            // Verwijder het product uit de winkelwagen
-            await cartService.deleteCartItemById(cartItemId, userId);
-            // Stuur een bevestiging terug
-            res.status(204).send();
         }
         catch (error) {
             // Als er iets mis gaat, log de fout en stuur een foutmelding

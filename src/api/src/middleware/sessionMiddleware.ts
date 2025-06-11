@@ -3,10 +3,8 @@ import { SessionService } from "@api/services/SessionService";
 import { NextFunction, Request, Response } from "express";
 import { LoginService } from "@api/services/LoginService";
 
-
 const sessionService: ISessionService = new SessionService();
-const loginService = new LoginService();
-
+const loginService: LoginService = new LoginService();
 
 /**
  * Check if a session-header or session-cookie is available to optionally resolve the current User ID.
@@ -28,12 +26,11 @@ export async function sessionMiddleware(req: Request, _res: Response, next: Next
     req.userId = userId;
 
     if (userId) {
-    const gebruiker = await loginService.getUserById(userId);
-    if (gebruiker) {
-        req.username = gebruiker.username;
+        const gebruiker: { username: string } | null = await loginService.getUserById(userId);
+        if (gebruiker) {
+            req.username = gebruiker.username;
+        }
     }
-}
-
 
     next();
 }

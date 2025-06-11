@@ -1,9 +1,8 @@
-import { ISessionService } from "@api/interfaces/ISessionService";
-import { IWelcomeService } from "@api/interfaces/IWelcomeService";
-import { SessionService } from "@api/services/SessionService";
-import { WelcomeService } from "@api/services/WelcomeService";
+import { ISessionService } from "../interfaces/ISessionService";
+import { IWelcomeService } from "../interfaces/IWelcomeService";
+import { SessionService } from "../services/SessionService";
+import { WelcomeService } from "../services/WelcomeService";
 import { Request, Response } from "express";
-
 
 /**
  * This controller demonstrates the use of sessions, cookies and Services.
@@ -14,25 +13,24 @@ export class WelcomeController {
     private readonly _welcomeService: IWelcomeService = new WelcomeService();
     private readonly _sessionService: ISessionService = new SessionService();
 
-
     public async getSession(req: Request, res: Response): Promise<void> {
-    const sessionId: string | undefined = await this._sessionService.createSession(req.userId ?? 0);
+        const sessionId: string | undefined = await this._sessionService.createSession((req as unknown as { userId?: number }).userId ?? 0);
 
-    const username: string = req.username ?? "Anoniem";
-    const userId: number = req.userId ?? 0;
+        const username: string = (req as unknown as { username?: string }).username ?? "Anoniem";
+        const userId: number = (req as unknown as { userId?: number }).userId ?? 0;
 
-    res
-        .cookie("session", sessionId)
-        .json({
-            sessionId,
-            username,
-            userId,
-        });
-}
+        res
+            .cookie("session", sessionId)
+            .json({
+                sessionId,
+                username,
+                userId,
+            });
+    }
 
     public async deleteSession(req: Request, res: Response): Promise<void> {
         const result: boolean | undefined = await this._sessionService.deleteSession(
-            req.sessionId!
+            (req as unknown as { sessionId: string }).sessionId
         );
 
         if (!result) {
@@ -51,7 +49,7 @@ export class WelcomeController {
     }
 
     public getWelcome(req: Request, res: Response): void {
-        const result: string = this._welcomeService.getWelcomeText(req.userId);
+        const result: string = this._welcomeService.getWelcomeText((req as unknown as { userId?: number }).userId);
 
         res.json({
             message: result,
@@ -60,8 +58,8 @@ export class WelcomeController {
 
     public getSecret(req: Request, res: Response): void {
         res.json({
-            sessionId: req.sessionId,
-            userId: req.userId,
+            sessionId: (req as unknown as { sessionId?: string }).sessionId,
+            userId: (req as unknown as { userId?: number }).userId,
         });
     }
 }

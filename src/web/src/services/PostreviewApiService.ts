@@ -19,8 +19,9 @@ export class PostreviewApiService {
             });
 
             // wacht op antwoord en geef terug
-            return await response.json();
-        } catch (error) {
+            return await response.json() as ReviewResponse;
+        }
+        catch (error) {
             // als fout gebeurt, toon melding
             console.error("Fout bij review plaatsen:", error);
             return { message: "Er ging iets mis met je review." };

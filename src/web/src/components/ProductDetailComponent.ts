@@ -4,88 +4,89 @@ import { PostreviewApiService } from "@web/services/PostreviewApiService";
 import "@web/components/AddToWishlistComponent";
 
 interface SessionData {
-  sessionId: string;
-  username: string;
-  userId: number;
+    sessionId: string;
+    username: string;
+    userId: number;
 }
 
 interface Review {
-  id: number;
-  rating: number;
-  comment: string;
-  username: string;
+    id: number;
+    rating: number;
+    comment: string;
+    username: string;
 }
 
 export class GameDetailComponent extends HTMLElement {
-  private shadow: ShadowRoot;
-  private editingReviewId: number | null = null;
-  private editingReviewText = "";
-  private currentUsername = "";
-  private currentUserId = 0;
+    private shadow: ShadowRoot;
+    private editingReviewId: number | null = null;
+    private editingReviewText: string = "";
+    private currentUsername: string = "";
+    private currentUserId: number = 0;
 
-  public constructor() {
-    super();
-    this.shadow = this.attachShadow({ mode: "open" });
-  }
-
-  public connectedCallback(): void {
-    this.renderLoading();
-    void this.loadGame();
-  }
-
-  private renderLoading(): void {
-    this.shadow.innerHTML = `<p style="color: white;">Game wordt geladen...</p>`;
-  }
-
-  private async loadGame(): Promise<void> {
-    const urlParams = new URLSearchParams(window.location.search);
-    const gameId = urlParams.get("id");
-
-    if (!gameId) {
-      this.shadow.innerHTML = `<p style="color: red;">Geen game ID opgegeven.</p>`;
-      return;
+    public constructor() {
+        super();
+        this.shadow = this.attachShadow({ mode: "open" });
     }
 
-    try {
-      const { sessionId, username, userId } = await this.getSession();
-      this.currentUsername = username;
-      this.currentUserId = userId;
-
-      const response = await fetch(`${VITE_API_URL}game?id=${gameId}`, {
-        headers: { "x-session": sessionId },
-      });
-
-      if (!response.ok) throw new Error("Kon game niet ophalen.");
-
-      const game = (await response.json()) as Game;
-      this.renderGame(game, parseInt(gameId, 10));
-    } catch (error) {
-      this.shadow.innerHTML = `<p style="color: red;">Fout: ${(error as Error).message}</p>`;
-    }
-  }
-
-  private async getSession(): Promise<SessionData> {
-    const res = await fetch(`${VITE_API_URL}session`, { credentials: "include" });
-    const data = await res.json();
-
-    if (
-      typeof data === "object" &&
-      data !== null &&
-      "sessionId" in data &&
-      "username" in data &&
-      "userId" in data &&
-      typeof data.sessionId === "string" &&
-      typeof data.username === "string" &&
-      typeof data.userId === "number"
-    ) {
-      return data as SessionData;
+    public connectedCallback(): void {
+        this.renderLoading();
+        void this.loadGame();
     }
 
-    throw new Error("Invalid session object");
-  }
+    private renderLoading(): void {
+        this.shadow.innerHTML = "<p style=\"color: white;\">Game wordt geladen...</p>";
+    }
 
-  private renderGame(game: Game, gameId: number): void {
-    this.shadow.innerHTML = `
+    private async loadGame(): Promise<void> {
+        const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+        const gameId: string | null = urlParams.get("id");
+
+        if (!gameId) {
+            this.shadow.innerHTML = "<p style=\"color: red;\">Geen game ID opgegeven.</p>";
+            return;
+        }
+
+        try {
+            const { sessionId, username, userId } = await this.getSession();
+            this.currentUsername = username;
+            this.currentUserId = userId;
+
+            const response: Response = await fetch(`${VITE_API_URL}game?id=${gameId}`, {
+                headers: { "x-session": sessionId },
+            });
+
+            if (!response.ok) throw new Error("Kon game niet ophalen.");
+
+            const game: Game = (await response.json()) as Game;
+            this.renderGame(game, parseInt(gameId, 10));
+        }
+        catch (error) {
+            this.shadow.innerHTML = `<p style="color: red;">Fout: ${(error as Error).message}</p>`;
+        }
+    }
+
+    private async getSession(): Promise<SessionData> {
+        const res: Response = await fetch(`${VITE_API_URL}session`, { credentials: "include" });
+        const data: unknown = await res.json();
+
+        if (
+            typeof data === "object" &&
+            data !== null &&
+            "sessionId" in data &&
+            "username" in data &&
+            "userId" in data &&
+            typeof data.sessionId === "string" &&
+            typeof data.username === "string" &&
+            typeof data.userId === "number"
+        ) {
+            return data as SessionData;
+        }
+
+        throw new Error("Invalid session object");
+    }
+
+    private renderGame(game: Game, gameId: number): void {
+        this.shadow.innerHTML = `
       <div class="box" style="max-width: 1500px; margin: 0 auto 20px auto;">
         <div style="display: flex; align-items: center; justify-content: space-between;">
           <h2><br><strong>${game.title}</strong></h2>
@@ -120,82 +121,82 @@ export class GameDetailComponent extends HTMLElement {
       </div>
     `;
 
-    const reviewService = new PostreviewApiService();
-    const reviewButton = this.shadow.querySelector<HTMLButtonElement>("#submit-review");
-    const reviewInput = this.shadow.querySelector<HTMLTextAreaElement>("#review-input");
-    const reviewStatus = this.shadow.querySelector<HTMLDivElement>("#review-status");
-    let selectedRating = 0;
-    const stars = this.shadow.querySelectorAll<HTMLSpanElement>("#star-rating span");
+        const reviewService: PostreviewApiService = new PostreviewApiService();
+        const reviewButton: HTMLButtonElement | null = this.shadow.querySelector<HTMLButtonElement>("#submit-review");
+        const reviewInput: HTMLTextAreaElement | null = this.shadow.querySelector<HTMLTextAreaElement>("#review-input");
+        const reviewStatus: HTMLDivElement | null = this.shadow.querySelector<HTMLDivElement>("#review-status");
+        let selectedRating: number = 0;
+        const stars: NodeListOf<HTMLSpanElement> = this.shadow.querySelectorAll<HTMLSpanElement>("#star-rating span");
 
-    stars.forEach((star) => {
-      star.addEventListener("click", () => {
-        selectedRating = parseInt(star.dataset.value ?? "0", 10);
-        stars.forEach((s, index) => {
-          s.textContent = index < selectedRating ? "★" : "☆";
-          s.style.color = index < selectedRating ? "gold" : "gray";
+        stars.forEach(star => {
+            star.addEventListener("click", () => {
+                selectedRating = parseInt(star.dataset.value ?? "0", 10);
+                stars.forEach((s, index) => {
+                    s.textContent = index < selectedRating ? "★" : "☆";
+                    s.style.color = index < selectedRating ? "gold" : "gray";
+                });
+            });
         });
-      });
-    });
 
-    reviewButton?.addEventListener("click", async () => {
-      const comment = reviewInput?.value.trim();
-      if (!comment || selectedRating < 1) {
-        if (reviewStatus) {
-          reviewStatus.textContent = "Vul een review én een waardering in.";
-          reviewStatus.style.color = "red";
-        }
-        return;
-      }
+        reviewButton?.addEventListener("click", async () => {
+            const comment: string | undefined = reviewInput?.value.trim();
+            if (!comment || selectedRating < 1) {
+                if (reviewStatus) {
+                    reviewStatus.textContent = "Vul een review én een waardering in.";
+                    reviewStatus.style.color = "red";
+                }
+                return;
+            }
 
-      // ✅ Controle of gebruiker is ingelogd
-      if (!this.currentUserId || !this.currentUsername) {
-        alert("Je moet ingelogd zijn om een review te plaatsen.");
-        window.location.href = "/login";
-        return;
-      }
+            // ✅ Controle of gebruiker is ingelogd
+            if (!this.currentUserId || !this.currentUsername) {
+                alert("Je moet ingelogd zijn om een review te plaatsen.");
+                window.location.href = "/login";
+                return;
+            }
 
-      const body: ReviewRequestBody = {
-        userId: this.currentUserId,
-        rating: selectedRating,
-        comment,
-      };
+            const body: ReviewRequestBody = {
+                userId: this.currentUserId,
+                rating: selectedRating,
+                comment,
+            };
 
-      await reviewService.postReview(gameId, body);
+            await reviewService.postReview(gameId, body);
 
-      if (reviewStatus) {
-        reviewStatus.textContent = "Review geplaatst.";
-        reviewStatus.style.color = "lightgreen";
-      }
+            if (reviewStatus) {
+                reviewStatus.textContent = "Review geplaatst.";
+                reviewStatus.style.color = "lightgreen";
+            }
 
-      if (reviewInput) reviewInput.value = "";
-      selectedRating = 0;
+            if (reviewInput) reviewInput.value = "";
+            selectedRating = 0;
 
-      stars.forEach((s) => {
-        s.textContent = "☆";
-        s.style.color = "gray";
-      });
+            stars.forEach(s => {
+                s.textContent = "☆";
+                s.style.color = "gray";
+            });
 
-      await this.loadReviews(gameId);
-      this.setupReviewEditing(gameId);
-    });
+            await this.loadReviews(gameId);
+            this.setupReviewEditing(gameId);
+        });
 
-    void this.loadReviews(gameId).then(() => this.setupReviewEditing(gameId));
-  }
+        void this.loadReviews(gameId).then(() => this.setupReviewEditing(gameId));
+    }
 
-  private async loadReviews(gameId: number): Promise<void> {
-    const output = this.shadow.querySelector<HTMLElement>("#reviews-output");
-    if (!output) return;
+    private async loadReviews(gameId: number): Promise<void> {
+        const output: HTMLElement | null = this.shadow.querySelector<HTMLElement>("#reviews-output");
+        if (!output) return;
 
-    try {
-      const res = await fetch(`${VITE_API_URL}api/games/${gameId}/reviews`, { credentials: "include" });
-      const reviews = (await res.json()) as Review[];
+        try {
+            const res: Response = await fetch(`${VITE_API_URL}api/games/${gameId}/reviews`, { credentials: "include" });
+            const reviews: Review[] = (await res.json()) as Review[];
 
-      output.innerHTML = reviews
-        .map((r) => {
-          const canEdit = r.username?.trim().toLowerCase() === this.currentUsername.trim().toLowerCase();
+            output.innerHTML = reviews
+                .map(r => {
+                    const canEdit: boolean = r.username.trim().toLowerCase() === this.currentUsername.trim().toLowerCase();
 
-          if (this.editingReviewId === r.id && canEdit) {
-            return `
+                    if (this.editingReviewId === r.id && canEdit) {
+                        return `
               <div style="background-color: #3a3a3a; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
                 <strong style="color: #fff; font-size: 15px;">${r.username}</strong><br/>
                 <div style="margin: 8px 0; color: gold; font-size: 16px;">
@@ -208,21 +209,20 @@ export class GameDetailComponent extends HTMLElement {
                 </div>
               </div>
             `;
-          }
+                    }
 
-          return `
+                    return `
             <div style="background-color: #3a3a3a; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <strong style="color: #fff; font-size: 15px;">${r.username}</strong>
-                ${
-                  canEdit
-                    ? `
+                ${canEdit
+                            ? `
                     <div style="display: flex; gap: 10px;">
                       <button class="edit-btn" data-review-id="${r.id}" data-comment="${r.comment}" style="background-color: #7f41f5; color: white; border: none; padding: 6px 12px; font-size: 13px; border-radius: 8px; cursor: pointer;">✏️ Bewerken</button>
                       <button class="delete-btn" data-review-id="${r.id}" style="background-color: #d9534f; color: white; border: none; padding: 6px 12px; font-size: 13px; border-radius: 8px; cursor: pointer;">🗑️ Verwijderen</button>
                     </div>`
-                    : ""
-                }
+                            : ""
+                        }
               </div>
               <div style="margin-top: 6px; color: gold; font-size: 16px;">
                 ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
@@ -230,62 +230,63 @@ export class GameDetailComponent extends HTMLElement {
               <p style="margin-top: 8px; color: #ddd; font-size: 14px;">${r.comment}</p>
             </div>
           `;
-        })
-        .join("");
-    } catch {
-      output.innerHTML = "<p style='color:red;'>Kon reviews niet ophalen.</p>";
+                })
+                .join("");
+        }
+        catch {
+            output.innerHTML = "<p style=\"color:red;\">Kon reviews niet ophalen.</p>";
+        }
     }
-  }
 
-  private setupReviewEditing(gameId: number): void {
-    const output = this.shadow.querySelector("#reviews-output");
-    if (!output) return;
+    private setupReviewEditing(gameId: number): void {
+        const output: Element | null = this.shadow.querySelector("#reviews-output");
+        if (!output) return;
 
-    output.addEventListener("click", async (e) => {
-      const target = e.target as HTMLElement;
+        output.addEventListener("click", async e => {
+            const target: HTMLElement = e.target as HTMLElement;
 
-      if (target.classList.contains("edit-btn")) {
-        const reviewId = parseInt(target.dataset.reviewId ?? "0", 10);
-        const comment = target.dataset.comment ?? "";
-        this.editingReviewId = reviewId;
-        this.editingReviewText = comment;
-        await this.loadReviews(gameId);
-      }
+            if (target.classList.contains("edit-btn")) {
+                const reviewId: number = parseInt(target.dataset.reviewId ?? "0", 10);
+                const comment: string = target.dataset.comment ?? "";
+                this.editingReviewId = reviewId;
+                this.editingReviewText = comment;
+                await this.loadReviews(gameId);
+            }
 
-      if (target.id === "cancel-edit") {
-        this.editingReviewId = null;
-        this.editingReviewText = "";
-        await this.loadReviews(gameId);
-      }
+            if (target.id === "cancel-edit") {
+                this.editingReviewId = null;
+                this.editingReviewText = "";
+                await this.loadReviews(gameId);
+            }
 
-      if (target.id === "save-edit") {
-        const textarea = this.shadow.querySelector<HTMLTextAreaElement>("#edit-textarea");
-        const newComment = textarea?.value.trim();
-        if (newComment && this.editingReviewId) {
-          await fetch(`${VITE_API_URL}api/reviews/${this.editingReviewId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ comment: newComment }),
-          });
-        }
-        this.editingReviewId = null;
-        this.editingReviewText = "";
-        await this.loadReviews(gameId);
-      }
+            if (target.id === "save-edit") {
+                const textarea: HTMLTextAreaElement | null = this.shadow.querySelector<HTMLTextAreaElement>("#edit-textarea");
+                const newComment: string | undefined = textarea?.value.trim();
+                if (newComment && this.editingReviewId) {
+                    await fetch(`${VITE_API_URL}api/reviews/${this.editingReviewId}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify({ comment: newComment }),
+                    });
+                }
+                this.editingReviewId = null;
+                this.editingReviewText = "";
+                await this.loadReviews(gameId);
+            }
 
-      if (target.classList.contains("delete-btn")) {
-        const reviewId = parseInt(target.dataset.reviewId ?? "0", 10);
-        if (reviewId && confirm("Weet je zeker dat je deze review wilt verwijderen?")) {
-          await fetch(`${VITE_API_URL}api/reviews/${reviewId}`, {
-            method: "DELETE",
-            credentials: "include",
-          });
-          await this.loadReviews(gameId);
-        }
-      }
-    });
-  }
+            if (target.classList.contains("delete-btn")) {
+                const reviewId: number = parseInt(target.dataset.reviewId ?? "0", 10);
+                if (reviewId && confirm("Weet je zeker dat je deze review wilt verwijderen?")) {
+                    await fetch(`${VITE_API_URL}api/reviews/${reviewId}`, {
+                        method: "DELETE",
+                        credentials: "include",
+                    });
+                    await this.loadReviews(gameId);
+                }
+            }
+        });
+    }
 }
 
 customElements.define("game-detail-page", GameDetailComponent);

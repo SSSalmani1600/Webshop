@@ -147,6 +147,13 @@ export class GameDetailComponent extends HTMLElement {
         return;
       }
 
+      // ✅ Controle of gebruiker is ingelogd
+      if (!this.currentUserId || !this.currentUsername) {
+        alert("Je moet ingelogd zijn om een review te plaatsen.");
+        window.location.href = "/login";
+        return;
+      }
+
       const body: ReviewRequestBody = {
         userId: this.currentUserId,
         rating: selectedRating,

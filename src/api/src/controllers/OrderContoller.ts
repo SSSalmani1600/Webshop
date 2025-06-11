@@ -92,4 +92,27 @@ export class OrderController {
             res.status(500).json({ error: "Kon gekochte games niet ophalen." });
         }
     }
+
+    public async getGamesForOrder(
+        req: Request,
+        res: Response
+    ): Promise<void> {
+        const userId: number | null = getUserIdFromCookie(req);
+        const orderId: number = parseInt(req.params.orderId);
+
+        if (!userId || isNaN(orderId)) {
+            res.status(400).json({ error: "Ongeldige gebruiker of order ID" });
+            return;
+        }
+
+        try {
+            const games: { title: string; image_url: string; quantity: number; price: number }[] =
+            await this._orderService.getGamesByOrderId(orderId);
+            res.status(200).json(games);
+        }
+        catch (error: unknown) {
+            console.error("Fout bij ophalen van gekochte games:", error);
+            res.status(500).json({ error: "Kon gekochte games niet ophalen." });
+        }
+    }
 }

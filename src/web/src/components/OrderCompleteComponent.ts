@@ -20,7 +20,11 @@ export class OrderCompleteComponent extends HTMLElement {
 
     private async loadOrder(): Promise<void> {
         try {
-            const response: Response = await fetch("http://localhost:3001/order/complete", {
+            const params: URLSearchParams = new URLSearchParams(window.location.search);
+            const orderId: string | null = params.get("orderId");
+            if (!orderId) throw new Error("Order ID ontbreekt in URL");
+
+            const response: Response = await fetch(`http://localhost:3001/order/${orderId}/games`, {
                 credentials: "include",
             });
             if (!response.ok) throw new Error("Kon bestelling niet ophalen");

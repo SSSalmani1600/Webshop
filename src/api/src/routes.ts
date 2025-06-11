@@ -78,6 +78,7 @@ router.use("/api", sessionMiddleware, reviewController.router);
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));
 
 // Order endpoint
+router.get("/order/:orderId/games", (req: Request, res: Response) => orderController.getGamesForOrder(req, res));
 router.post("/order/complete", (req: Request, res: Response) => orderController.createOrder(req, res));
 router.get("/order/complete", (req, res) => orderController.getBoughtGames(req, res));
 

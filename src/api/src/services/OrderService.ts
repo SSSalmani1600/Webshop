@@ -1,5 +1,5 @@
 import { DatabaseService } from "./DatabaseService";
-import { PoolConnection, ResultSetHeader } from "mysql2/promise";
+import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 
 export class OrderService {
     private readonly _db: DatabaseService = new DatabaseService();
@@ -14,8 +14,8 @@ export class OrderService {
         try {
             const result: ResultSetHeader = await this._db.query<ResultSetHeader>(
                 connection,
-                `INSERT INTO \`order\` (user_id, order_number, total_price)
-                 VALUES (?, ?, ?)`,
+                `INSERT INTO \`order\` (user_id, order_number, total_price, created_at)
+                 VALUES (?, ?, ?, NOW())`,
                 [userId, orderNumber, totalPrice]
             );
 
@@ -59,11 +59,11 @@ export class OrderService {
         const connection: PoolConnection = await this._db.openConnection();
 
         try {
-            const [rows] = await connection.query(
+            const [rows] = await connection.query<RowDataPacket[]>(
                 "SELECT email FROM users WHERE id = ?",
                 [userId]
             );
-            const result = Array.isArray(rows) ? rows[0] : null;
+            const result: { email: string } | null = Array.isArray(rows) ? rows[0] as { email: string } : null;
             return result?.email ?? "";
         }
         catch (e) {
@@ -79,12 +79,12 @@ export class OrderService {
         const connection: PoolConnection = await this._db.openConnection();
 
         try {
-            const [rows] = await connection.query(
+            const [rows] = await connection.query<RowDataPacket[]>(
                 "SELECT username FROM users WHERE id = ?",
                 [userId]
             );
-            const result = Array.isArray(rows) ? rows[0] : null;
-            return result?.username ?? "";        
+            const result: { username: string } | null = Array.isArray(rows) ? rows[0] as { username: string } : null;
+            return result?.username ?? "";
         }
         catch (e) {
             console.error("Fout in getUserNameById:", e);

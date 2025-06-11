@@ -73,6 +73,7 @@ router.get("/welcome-user", (req: Request, res: Response) => welcomeUserControll
 // Cart endpoints
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
 router.delete("/cart/item/:id", (req: Request, res: Response) => cartController.deleteCartItem(req, res));
+router.delete("/cart/clear", (req: Request, res: Response) => cartController.clearCart(req, res));
 router.post("/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
 router.get("/cart/count", (req: Request, res: Response) => navbarController.getCartCount(req, res));
 router.patch("/cart/item/:id/quantity", (req: Request, res: Response) => cartController.updateCartItemQuantity(req, res));
@@ -92,7 +93,8 @@ router.use("/api", sessionMiddleware, reviewController.router);
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));
 
 // Order endpoint
-router.post("/order/complete", (req: Request<ParamsDictionary, unknown, OrderRequestBody>, res: Response) => orderController.createOrder(req, res));
+router.get("/order/:orderId/games", (req: Request, res: Response) => orderController.getGamesForOrder(req, res));
+router.post("/order/complete", (req: Request, res: Response) => orderController.createOrder(req, res));
 router.get("/order/complete", (req, res) => orderController.getBoughtGames(req, res));
 
 router.get("/game", (req, res) => gameDetailController.getGameById(req, res));

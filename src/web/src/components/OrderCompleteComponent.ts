@@ -11,6 +11,7 @@ export class OrderCompleteComponent extends HTMLElement {
     public connectedCallback(): void {
         this.renderLoading();
         void this.loadOrder();
+        void this.clearCart();
     }
 
     private renderLoading(): void {
@@ -19,7 +20,11 @@ export class OrderCompleteComponent extends HTMLElement {
 
     private async loadOrder(): Promise<void> {
         try {
-            const response: Response = await fetch("http://localhost:3001/order/complete", {
+            const params: URLSearchParams = new URLSearchParams(window.location.search);
+            const orderId: string | null = params.get("orderId");
+            if (!orderId) throw new Error("Order ID ontbreekt in URL");
+
+            const response: Response = await fetch(`http://localhost:3001/order/${orderId}/games`, {
                 credentials: "include",
             });
             if (!response.ok) throw new Error("Kon bestelling niet ophalen");
@@ -29,6 +34,18 @@ export class OrderCompleteComponent extends HTMLElement {
         }
         catch (error) {
             this.shadow.innerHTML = `<p style="color: red;">Fout: ${(error as Error).message}</p>`;
+        }
+    }
+
+    private async clearCart(): Promise<void> {
+        try {
+            await fetch("http://localhost:3001/cart/clear", {
+                method: "DELETE",
+                credentials: "include",
+            });
+        }
+        catch (error) {
+            console.error("Fout bij legen van winkelmandje:", error);
         }
     }
 

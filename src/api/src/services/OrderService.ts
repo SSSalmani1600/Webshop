@@ -14,7 +14,7 @@ export class OrderService {
         try {
             const result: ResultSetHeader = await this._db.query<ResultSetHeader>(
                 connection,
-                `INSERT INTO \`order\` (user_id, order_number, total_price, created_at)
+                `INSERT INTO \`orders\` (user_id, order_number, total_price, created_at)
                  VALUES (?, ?, ?, NOW())`,
                 [userId, orderNumber, totalPrice]
             );
@@ -23,6 +23,40 @@ export class OrderService {
         }
         catch (e) {
             throw new Error(`Bestelling maken mislukt: ${e instanceof Error ? e.message : e}`);
+        }
+        finally {
+            connection.release();
+        }
+    }
+
+    public async saveGamesForOrder(userId: number, orderId: number): Promise<void> {
+        const connection: PoolConnection = await this._db.openConnection();
+
+        try {
+            const [cartItems]: [RowDataPacket[], unknown] = await connection.query<RowDataPacket[]>(
+                `SELECT game_id, quantity, price
+                 FROM cart_items
+                 WHERE user_id = ?`,
+                [userId]
+            );
+
+            interface CartItemRow {
+                game_id: number;
+                quantity: number;
+                price: number;
+            }
+
+            for (const item of cartItems as CartItemRow[]) {
+                const gameId: number = item.game_id;
+                const quantity: number = item.quantity;
+                const price: number = item.price;
+
+                await connection.query(
+                    `INSERT INTO order_game (order_id, game_id, quantity, price)
+         VALUES (?, ?, ?, ?)`,
+                    [orderId, gameId, quantity, price]
+                );
+            }
         }
         finally {
             connection.release();
@@ -38,7 +72,7 @@ export class OrderService {
             const [rows] = await connection.query(
                 `
                 SELECT g.title, ci.quantity, ci.price
-                FROM cart_item ci
+                FROM cart_items ci
                 JOIN games g ON ci.game_id = g.id
                 WHERE ci.user_id = ?
                 `,

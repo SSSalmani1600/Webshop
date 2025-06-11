@@ -20,6 +20,11 @@ interface AddressFormData {
     telefoonnummer: string;
 }
 
+interface OrderResponse {
+    orderId: number;
+    orderNumber: string;
+}
+
 export class Checkout extends HTMLElement {
     private readonly API_BASE: string = window.location.hostname.includes("localhost")
         ? "http://localhost:3001"
@@ -113,14 +118,31 @@ export class Checkout extends HTMLElement {
 
                 if (!res.ok) throw new Error("Fout bij opslaan");
 
-                await res.json();
+                const orderNumber: string = Math.floor(100000 + Math.random() * 900000).toString(); // Genereer tijdelijk ordernummer
 
-                // als gelukt → melding + doorsturen
-                alert("✅ Je adres is opgeslagen!");
-                window.location.href = "example.html";
+                const cartRes: Response = await fetch(`${this.API_BASE}/cart`, {
+                    credentials: "include",
+                });
+                const cartData: CartData = await cartRes.json() as CartData;
+                const totalPrice: number = cartData.total;
+
+                const orderRes: Response = await fetch(`${this.API_BASE}/order/complete`, {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ orderNumber, totalPrice }),
+                });
+
+                if (!orderRes.ok) throw new Error("Bestelling plaatsen mislukt");
+
+                const result: OrderResponse = await orderRes.json() as OrderResponse;
+
+                // 3. Redirect naar order complete
+                window.location.href = `/order-complete.html?orderId=${result.orderId}&orderNumber=${result.orderNumber}`;
             }
-            catch {
-                alert("Er ging iets mis bij het opslaan");
+            catch (error: unknown) {
+                const errorMsg: string = error instanceof Error ? error.message : String(error);
+                alert("Fout bij afronden bestelling: " + errorMsg);
             }
         });
     }

@@ -49,6 +49,8 @@ export class OrderController {
                 totalPrice
             );
 
+            await this._orderService.saveGamesForOrder(userId, orderId);
+
             const email: string = await this._orderService.getUserEmailById(userId);
             const name: string = await this._orderService.getUserNameById(userId);
             const gamesInCart: CartGame[] = await this._orderService.getCartItemsByUser(userId);

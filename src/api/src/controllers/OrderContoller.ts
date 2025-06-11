@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { OrderService } from "@api/services/OrderService";
 import { ParamsDictionary } from "express-serve-static-core";
 
-// Zelfde helper als in je CartController
 function getUserIdFromCookie(req: Request): number | null {
     const raw: unknown = req.cookies.user;
     const parsed: number = typeof raw === "string" ? parseInt(raw, 10) : NaN;

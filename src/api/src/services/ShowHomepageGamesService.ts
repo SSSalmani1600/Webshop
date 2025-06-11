@@ -15,7 +15,7 @@ export class ShowHomepageGamesService {
 
     /**
      * Haalt een beperkt aantal uitgelichte games op voor de homepage
-     * Retourneert maximaal 5 games gesorteerd op ID (kan later aangepast worden naar andere criteria)
+     * Retourneert specifiek gekozen games voor de homepage
      *
      * @returns Een Promise met een array van Game objecten voor de homepage
      */
@@ -23,15 +23,21 @@ export class ShowHomepageGamesService {
         const connection: PoolConnection = await this._databaseService.openConnection();
 
         try {
-            // Haal de eerste 5 games op uit de database voor de homepage
-            // Dit kan later uitgebreid worden met specifieke filtering voor "featured" games
+            // Haal specifieke games op die jij hebt gekozen
             const result: Game[] = await this._databaseService.query<Game[]>(
                 connection,
                 `
                 SELECT *
                 FROM games
-                ORDER BY id ASC
-                LIMIT 5
+                WHERE id = 17 OR id = 12 OR id = 26 OR id = 46 OR id = 3
+                ORDER BY 
+                    CASE id
+                        WHEN 17 THEN 1
+                        WHEN 12 THEN 2
+                        WHEN 26 THEN 3
+                        WHEN 46 THEN 4  
+                        WHEN 3 THEN 5
+                    END
                 `
             );
 

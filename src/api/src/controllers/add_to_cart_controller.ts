@@ -1,18 +1,12 @@
 import { Request, Response } from "express";
 import { AddToCartService } from "../services/AddToCartService";
+import { ActionService } from "../services/ActionService";
+import { Actie } from "@api/types/Actie";
 
-/**
- * Controller die verantwoordelijk is voor het afhandelen van toevoegen aan winkelmandje
- */
 export class AddToCartController {
-    private readonly _addToCartService: AddToCartService = new AddToCartService();
+    private readonly _addToCartService = new AddToCartService();
+    private readonly _actionService = new ActionService();
 
-    /**
-     * Voeg een game toe aan het winkelmandje
-     *
-     * @param req - Express request object
-     * @param res - Express response object
-     */
     public async addToCart(req: Request, res: Response): Promise<void> {
         try {
             const userId: number | undefined = req.userId;
@@ -27,40 +21,57 @@ export class AddToCartController {
             // Haal game details uit het request body
             const gameId: number = Number((req.body as { game_id: string }).game_id);
             const quantity: number = Number((req.body as { quantity?: string }).quantity) || 1;
-            const price: number = Number((req.body as { price: string }).price);
 
-            console.log("Toevoegen aan winkelmandje:", { userId, gameId, quantity, price });
+            console.log("Toevoegen aan winkelmandje:", { userId, gameId, quantity });
 
-            // Valideer de request data
-            if (!gameId || !price) {
+            // Valideer de request data (prijs wordt nu server-side opgehaald)
+            if (!gameId) {
                 res.status(400).json({
                     success: false,
-                    message: "Ontbrekende game_id of price in verzoek",
+                    message: "Ontbrekende game_id in verzoek",
                 });
                 return;
             }
 
-            const result: { success: boolean; message: string } = await this._addToCartService.addToCart({
+            // Voeg hoofdproduct toe aan winkelmandje
+            const result: {
+                success: boolean;
+                message: string;
+            } = await this._addToCartService.addToCart({
                 gameId,
                 quantity,
-                price,
                 userId,
             });
 
-            if (result.success) {
-                const statusCode: number = result.message.includes("bijgewerkt") ? 200 : 201;
-                res.status(statusCode).json({
-                    success: true,
-                    message: result.message,
-                });
-            }
-            else {
+            if (!result.success) {
                 const statusCode: number = result.message === "Game niet gevonden" ? 404 : 400;
                 res.status(statusCode).json({
                     success: false,
                     message: result.message,
                 });
+                return;
             }
+
+            // Controleren op bijbehorende actie
+            const actie: Actie | null = await this._actionService.getActieByProductA(gameId);
+
+            if (actie) {
+                // Voeg gratis actieproduct toe
+                await this._addToCartService.addToCart({
+                    gameId: actie.product_b_id,
+                    quantity: 1,
+                    // price: 0,
+                    userId,
+                    isFree: true,
+                });
+            }
+
+            res.status(actie ? 200 : 201).json({
+                success: true,
+                message: result.message + (actie ? " + gratis actie-spel toegevoegd" : ""),
+                actieToegevoegd: !!actie,
+                gratisProductId: actie ? actie.product_b_id : null,
+            });
         }
         catch (error) {
             console.error("Fout bij toevoegen aan winkelmandje:", error);

@@ -1,5 +1,4 @@
 import "@web/components/ShowHomepageGamesComponent";
-import "@web/components/WelcomeUserComponent";
 import { WebshopEvent } from "@web/enums/WebshopEvent";
 
 import { html } from "@web/helpers/webComponents";
@@ -25,8 +24,8 @@ export class IndexPageComponent extends HTMLElement {
         }
 
         const element: HTMLElement = html`
-            <div>
-                <welcome-user></welcome-user>
+            <div style="display: none;">
+                <!-- This component is no longer needed as we use homepage-games directly -->
             </div>
         `;
 

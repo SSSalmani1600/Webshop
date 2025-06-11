@@ -1,4 +1,5 @@
 import { Router, Request, Response } from "express";
+import { ParamsDictionary } from "express-serve-static-core";
 import { WelcomeController } from "./controllers/WelcomeController";
 import { WelcomeUserController } from "./controllers/WelcomeUserController";
 import { OrderController } from "./controllers/OrderContoller";
@@ -16,7 +17,11 @@ import { ShowHomepageGamesController } from "./controllers/ShowHomepageGamesCont
 import { WishlistController } from "./controllers/WishlistController";
 import { NavbarController } from "./controllers/NavbarController";
 import { GameSearchController } from "./controllers/SearchbarController";
+import { ReviewController } from "./controllers/ReviewController";
 import { LogoutController } from "./controllers/LogoutController";
+import { RandomGameController } from "./controllers/RandomGameController";
+import { AddToWishlistController } from "./controllers/AddToWishlistController";
+import { ActionController } from "./controllers/ActionController";
 import { ForgotPasswordController } from "./controllers/ForgotPasswordController";
 
 export const router: Router = Router();
@@ -41,6 +46,10 @@ const navbarController: NavbarController = new NavbarController();
 const gameSearchController: GameSearchController = new GameSearchController();
 const logoutController: LogoutController = new LogoutController();
 const showHomepageGamesController: ShowHomepageGamesController = new ShowHomepageGamesController();
+const randomGameController: RandomGameController = new RandomGameController();
+const reviewController: ReviewController = new ReviewController();
+const addToWishlistController: AddToWishlistController = new AddToWishlistController();
+const actionController: ActionController = new ActionController();
 const forgotPasswordController: ForgotPasswordController = new ForgotPasswordController();
 
 // Authentication endpoints (no session required)
@@ -65,20 +74,24 @@ router.get("/cart", (req: Request, res: Response) => cartController.getCart(req,
 router.delete("/cart/item/:id", (req: Request, res: Response) => cartController.deleteCartItem(req, res));
 router.post("/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
 router.get("/cart/count", (req: Request, res: Response) => navbarController.getCartCount(req, res));
+router.patch("/cart/item/:id/quantity", (req: Request, res: Response) => cartController.updateCartItemQuantity(req, res));
 router.get("/games/search", (req: Request, res: Response) => gameSearchController.searchGamesByTitle(req, res));
 
 // Discount code endpoints
 router.post("/discount/apply", (req: Request<object, object, DiscountCodeRequestBody>, res: Response) => discountController.applyDiscount(req, res));
-router.get("/discount/codes", (req: Request, res: Response) => discountController.getAvailableDiscountCodes(req, res));
+router.get("/actie/:productId", (req, res) => actionController.getActieByProductA(req, res));
 
 // Checkout endpoint
 router.post("/checkout", (req: Request, res: Response) => checkoutController.createAddress(req, res));
+
+// Review endpoints (aangepast pad)
+router.use("/api", sessionMiddleware, reviewController.router);
 
 // Secret endpoint
 router.get("/secret", (req: Request, res: Response) => welcomeController.getSecret(req, res));
 
 // Order endpoint
-router.post("/order/complete", (req: Request, res: Response) => orderController.createOrder(req, res));
+router.post("/order/complete", (req: Request<ParamsDictionary, unknown, OrderRequestBody>, res: Response) => orderController.createOrder(req, res));
 router.get("/order/complete", (req, res) => orderController.getBoughtGames(req, res));
 
 router.get("/game", (req, res) => gameDetailController.getGameById(req, res));
@@ -100,3 +113,10 @@ router.get("/wishlist", (req: Request, res: Response) => wishlistController.getW
 
 // Homepage games endpoint
 router.get("/homepage-games", (req: Request, res: Response) => showHomepageGamesController.getHomepageGames(req, res));
+
+// Random game endpoint voor "Verras mij" functionaliteit
+router.get("/games/random", (req: Request, res: Response) => randomGameController.getRandomGame(req, res));
+
+// Wishlist endpoints
+router.post("/wishlist/add", (req: Request, res: Response) => addToWishlistController.addToWishlist(req, res));
+router.delete("/wishlist/:id", (req: Request, res: Response) => wishlistController.deleteWishlistItem(req, res));

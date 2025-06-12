@@ -519,7 +519,7 @@ export class CartPageComponent extends HTMLElement {
 
         cartList.innerHTML = "";
 
-        // Als de winkelwagen leeg is
+        // Als de winkelwagen leeg is.
         if (this.cartItems.length === 0) {
             // Laat een bericht zien dat de wagen leeg is
             header.textContent = "Er zijn geen producten in je winkelmandje.";

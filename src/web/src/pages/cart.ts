@@ -325,7 +325,14 @@ export class CartPageComponent extends HTMLElement {
         // Als op 'checkout' wordt geklikt, ga naar de afrekenpagina
         const checkoutButton: HTMLButtonElement = this.shadowRoot?.querySelector(".checkout-button") as HTMLButtonElement;
         checkoutButton.addEventListener("click", () => {
-            window.location.href = "checkout.html";
+            const params: URLSearchParams = new URLSearchParams();
+            if (this.currentDiscountCode) {
+                params.append("discountCode", this.currentDiscountCode);
+            }
+            if (this.currentDiscount > 0) {
+                params.append("discountPercentage", this.currentDiscount.toString());
+            }
+            window.location.href = `checkout.html?${params.toString()}`;
         });
 
         // Luister naar kortingscodes die worden ingevoerd

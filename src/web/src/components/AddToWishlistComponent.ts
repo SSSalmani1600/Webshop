@@ -75,12 +75,12 @@ export class AddToWishlistComponent extends HTMLElement {
         this._button.className = "wishlist-button";
         this._button.style.backgroundColor = "transparent";
         this._button.style.border = "none";
-        this._button.style.fontSize = "24px";
+        this._button.style.fontSize = "28px";
         this._button.style.cursor = "pointer";
         this._button.style.padding = "8px";
-        this._button.style.transition = "color 0.3s ease";
-        this._button.style.color = "#6B46C1";
-        this._button.style.opacity = "0.7";
+        this._button.style.transition = "all 0.2s ease";
+        this._button.style.color = "#7f3df4";
+        this._button.style.opacity = "0.9";
 
         this.appendChild(this._button);
         this.updateButtonStyle();
@@ -90,30 +90,36 @@ export class AddToWishlistComponent extends HTMLElement {
         if (!this._button) return;
 
         if (this._isInWishlist) {
-            this._button.style.color = "#6B46C1";
+            this._button.style.color = "#7f3df4";
             this._button.style.opacity = "1";
         }
         else {
-            this._button.style.color = "#6B46C1";
-            this._button.style.opacity = "0.7";
+            this._button.style.color = "#7f3df4";
+            this._button.style.opacity = "0.9";
         }
+
+        // Add hover effect
+        this._button.addEventListener("mouseover", () => {
+            if (this._button) {
+                this._button.style.transform = "scale(1.1)";
+                this._button.style.opacity = "1";
+                this._button.style.color = "#9b5dfc";
+            }
+        });
+
+        this._button.addEventListener("mouseout", () => {
+            if (this._button) {
+                this._button.style.transform = "scale(1)";
+                if (!this._isInWishlist) {
+                    this._button.style.opacity = "0.9";
+                }
+                this._button.style.color = "#7f3df4";
+            }
+        });
     }
 
     private setupEventListeners(): void {
         this._button?.addEventListener("click", this.handleAddToWishlist.bind(this));
-
-        // Hover effect
-        this._button?.addEventListener("mouseover", () => {
-            if (this._button) {
-                this._button.style.opacity = "1";
-            }
-        });
-
-        this._button?.addEventListener("mouseout", () => {
-            if (this._button && !this._isInWishlist) {
-                this._button.style.opacity = "0.7";
-            }
-        });
     }
 
     private async handleAddToWishlist(e: Event): Promise<void> {

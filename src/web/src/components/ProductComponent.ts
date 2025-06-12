@@ -202,6 +202,7 @@ export class GameList extends HTMLElement {
           gap: 8px;
           justify-content: center;
           margin-top: 1rem;
+          align-items: center;
         }
         .action-button {
           background-color: #7f3df4;
@@ -218,6 +219,37 @@ export class GameList extends HTMLElement {
         }
         .action-button:hover {
           background-color: #9b5dfc;
+        }
+        add-to-wishlist {
+          background: none !important;
+          border: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          font-size: 28px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 44px !important;
+        }
+        add-to-wishlist .wishlist-button {
+          background: none !important;
+          border: none !important;
+          padding: 8px !important;
+          margin: 0 !important;
+          font-size: inherit !important;
+          color: #7f3df4 !important;
+          opacity: 0.9;
+          transition: all 0.2s ease;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          line-height: 1 !important;
+          cursor: pointer;
+        }
+        add-to-wishlist .wishlist-button:hover {
+          transform: scale(1.1);
+          opacity: 1;
+          color: #9b5dfc !important;
         }
       </style>
     `;
@@ -281,7 +313,7 @@ export class GameList extends HTMLElement {
             <div class="price">${priceLabel}</div>
             <div class="button-row">
               <a class="action-button" href="gameDetail.html?id=${game.id}">Bekijken</a>
-              <add-to-wishlist class="action-button" game-id="${game.id}"></add-to-wishlist>
+              <add-to-wishlist game-id="${game.id}"></add-to-wishlist>
             </div>
             <add-to-cart game-id="${game.id}" price="${game.price ?? 0}"></add-to-cart>
           </div>
@@ -333,7 +365,7 @@ export class GameList extends HTMLElement {
             <div class="price">${priceLabel}</div>
             <div class="button-row">
               <a class="action-button" href="gameDetail.html?id=${game.id}">Bekijken</a>
-              <add-to-wishlist class="action-button" game-id="${game.id}"></add-to-wishlist>
+              <add-to-wishlist game-id="${game.id}"></add-to-wishlist>
             </div>
             <add-to-cart game-id="${game.id}" price="${game.price ?? 0}"></add-to-cart>
           </div>

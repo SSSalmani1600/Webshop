@@ -2,6 +2,9 @@ import type { BoughtGame } from "@api/types/BoughtGames";
 
 export class OrderCompleteComponent extends HTMLElement {
     private shadow: ShadowRoot;
+    private readonly API_BASE: string = window.location.hostname.includes("localhost")
+        ? "http://localhost:3001"
+        : "https://laajoowiicoo13-pb4sea2425.hbo-ict.cloud/api";
 
     public constructor() {
         super();
@@ -23,7 +26,7 @@ export class OrderCompleteComponent extends HTMLElement {
             const orderId: string | null = params.get("orderId");
             if (!orderId) throw new Error("Order ID ontbreekt in URL");
 
-            const response: Response = await fetch(`http://localhost:3001/order/${orderId}/games`, {
+            const response: Response = await fetch(`${this.API_BASE}/order/${orderId}/games`, {
                 credentials: "include",
             });
             if (!response.ok) throw new Error("Kon bestelling niet ophalen");
@@ -38,7 +41,7 @@ export class OrderCompleteComponent extends HTMLElement {
 
     private async clearCart(): Promise<void> {
         try {
-            await fetch("http://localhost:3001/cart/clear", {
+            await fetch(`${this.API_BASE}/cart/clear`, {
                 method: "DELETE",
                 credentials: "include",
             });

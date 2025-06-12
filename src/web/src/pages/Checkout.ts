@@ -143,8 +143,28 @@ export class Checkout extends HTMLElement {
 
                 const result: OrderResponse = await orderRes.json() as OrderResponse;
 
-                // 3. Redirect naar order complete
-                window.location.href = `/example.html?orderId=${result.orderId}&orderNumber=${result.orderNumber}`;
+                if (!result.orderId) {
+                    throw new Error("Geen order ID ontvangen van de server");
+                }
+
+                // Get discount info from URL
+                const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+                const discountCode: string | null = urlParams.get("discountCode");
+                const discountPercentage: string | null = urlParams.get("discountPercentage");
+
+                // Build URL with all parameters
+                let redirectUrl: string = `/example.html?orderId=${result.orderId}`;
+
+                // Add discount parameters if they exist
+                if (discountCode) {
+                    redirectUrl += `&discountCode=${discountCode}`;
+                }
+                if (discountPercentage) {
+                    redirectUrl += `&discountPercentage=${discountPercentage}`;
+                }
+
+                // Redirect naar order complete
+                window.location.href = redirectUrl;
             }
             catch (error: unknown) {
                 const errorMsg: string = error instanceof Error ? error.message : String(error);
@@ -156,7 +176,18 @@ export class Checkout extends HTMLElement {
     // Haalt games uit winkelwagen op en laat ze zien
     private async loadCartItems(): Promise<void> {
         try {
-            const res: Response = await fetch(`${this.API_BASE}/cart`, {
+            // Get discount info from URL
+            const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+            const discountCode: string | null = urlParams.get("discountCode");
+            const discountPercentage: number = Number(urlParams.get("discountPercentage")) || 0;
+
+            // Add discount code to cart request if present
+            const url: URL = new URL(`${this.API_BASE}/cart`);
+            if (discountCode) {
+                url.searchParams.append("discountCode", discountCode);
+            }
+
+            const res: Response = await fetch(url.toString(), {
                 credentials: "include",
             });
 
@@ -185,12 +216,20 @@ export class Checkout extends HTMLElement {
                 </div>
             `).join("");
 
-            // zet totaal onderaan
+            // zet totaal onderaan met korting informatie
             summarySection.innerHTML += `
                 ${itemsHtml}
                 <hr style="border: none; border-top: 1px solid #444; margin: 16px 0;">
                 <div class="summary-total" style="font-size: 14px; color: #eee; line-height: 1.6;">
                     <p style="margin: 4px 0;">Subtotaal: <strong>€${subtotal.toFixed(2)}</strong></p>
+                    ${discountCode
+                        ? `
+                            <p style="margin: 4px 0; color: #703bf7;">
+                                Korting (${discountPercentage}%): <strong>-€${(subtotal - total).toFixed(2)}</strong>
+                            </p>
+                        `
+                        : ""
+                    }
                     <p style="margin: 4px 0;">Verzendkosten: <strong>€0,00</strong></p>
                     <p style="margin: 4px 0;"><strong style="font-size: 16px;">Totaal: €${total.toFixed(2)}</strong></p>
                 </div>

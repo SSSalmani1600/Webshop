@@ -65,7 +65,6 @@ export class WishlistItemComponent extends HTMLElement {
                     border-radius: 8px;
                     overflow: hidden;
                     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-                    cursor: pointer;
                     position: relative;
                     height: 100%;
                     display: flex;
@@ -104,6 +103,28 @@ export class WishlistItemComponent extends HTMLElement {
                     text-overflow: ellipsis;
                 }
 
+                .button-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                    margin-top: 0.5rem;
+                }
+
+                .view-button {
+                    background-color: #703bf7;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                    transition: background-color 0.2s ease;
+                }
+
+                .view-button:hover {
+                    background-color: #8655f9;
+                }
+
                 .delete-button {
                     background-color: #ff4444;
                     color: white;
@@ -112,7 +133,6 @@ export class WishlistItemComponent extends HTMLElement {
                     border-radius: 4px;
                     cursor: pointer;
                     font-size: 0.9rem;
-                    margin-top: 0.5rem;
                     transition: background-color 0.2s ease;
                 }
 
@@ -127,17 +147,25 @@ export class WishlistItemComponent extends HTMLElement {
                 }
             </style>
 
-            <div class="wishlist-item" onclick="window.location.href='gameDetail.html?id=${this.gameId}'">
+            <div class="wishlist-item">
                 <img src="${this.itemThumbnail}" alt="${this.itemTitle}" loading="lazy">
                 <div class="item-content">
                     <h3 class="item-title">${this.itemTitle}</h3>
-                    <button class="delete-button" onclick="event.stopPropagation()">Verwijderen</button>
+                    <div class="button-container">
+                        <button class="view-button">Bekijk</button>
+                        <button class="delete-button">Verwijderen</button>
+                    </div>
                 </div>
             </div>
         `;
 
         const deleteButton: HTMLButtonElement | null = this.querySelector(".delete-button");
         deleteButton?.addEventListener("click", this.deleteWishlistItem.bind(this));
+
+        const viewButton: HTMLButtonElement | null = this.querySelector(".view-button");
+        viewButton?.addEventListener("click", () => {
+            window.location.href = `gameDetail.html?id=${this.gameId}`;
+        });
     }
 }
 

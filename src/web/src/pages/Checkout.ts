@@ -14,7 +14,7 @@ interface CartData {
 
 interface OrderResponse {
     orderId: number;
-    orderNumber: string;
+    orderNumber: number;
 }
 
 interface UserSessionData {
@@ -126,8 +126,6 @@ export class Checkout extends HTMLElement {
 
                 if (!res.ok) throw new Error("Fout bij opslaan");
 
-                const orderNumber: string = Math.floor(100000 + Math.random() * 900000).toString(); // Genereer tijdelijk ordernummer
-
                 const cartRes: Response = await fetch(`${this.API_BASE}/cart`, {
                     credentials: "include",
                 });
@@ -138,7 +136,7 @@ export class Checkout extends HTMLElement {
                     method: "POST",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ orderNumber, totalPrice }),
+                    body: JSON.stringify({ totalPrice }),
                 });
 
                 if (!orderRes.ok) throw new Error("Bestelling plaatsen mislukt");
@@ -146,7 +144,7 @@ export class Checkout extends HTMLElement {
                 const result: OrderResponse = await orderRes.json() as OrderResponse;
 
                 // 3. Redirect naar order complete
-                window.location.href = `/order-complete.html?orderId=${result.orderId}&orderNumber=${result.orderNumber}`;
+                window.location.href = `/example.html?orderId=${result.orderId}&orderNumber=${result.orderNumber}`;
             }
             catch (error: unknown) {
                 const errorMsg: string = error instanceof Error ? error.message : String(error);

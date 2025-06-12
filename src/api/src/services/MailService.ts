@@ -4,7 +4,7 @@ export class MailService {
     public async sendOrderConfirmation(
         toName: string,
         toEmail: string,
-        orderNumber: string,
+        orderNumber: number,
         games: string[],
         total: number
     ): Promise<void> {

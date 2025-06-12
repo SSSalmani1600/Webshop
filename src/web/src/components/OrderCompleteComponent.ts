@@ -175,7 +175,6 @@ export class OrderCompleteComponent extends HTMLElement {
           <div class="order-content">
             <h1>Bedankt voor uw bestelling!</h1>
             <p>U ontvangt binnen enkele minuten een bevestiging per mail.</p>
-            <p class="order-number">Ordernummer: <strong>#123456</strong></p>
             <div class="order-box">
               <h2>Uw bestelling</h2>
               ${itemsHtml}

@@ -94,7 +94,7 @@ router.get("/secret", (req: Request, res: Response) => welcomeController.getSecr
 
 // Order endpoint
 router.get("/order/:orderId/games", (req: Request, res: Response) => orderController.getGamesForOrder(req, res));
-router.post("/order/complete", (req: Request<ParamsDictionary, unknown, { orderNumber: string; totalPrice: number }>, res: Response) => orderController.createOrder(req, res));
+router.post("/order/complete", (req: Request<ParamsDictionary, unknown, { orderNumber: number; totalPrice: number }>, res: Response) => orderController.createOrder(req, res));
 router.get("/order/complete", (req, res) => orderController.getBoughtGames(req, res));
 
 router.get("/game", (req, res) => gameDetailController.getGameById(req, res));

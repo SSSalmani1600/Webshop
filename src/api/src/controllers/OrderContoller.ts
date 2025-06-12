@@ -10,7 +10,6 @@ function getUserIdFromCookie(req: Request): number | null {
 }
 
 type OrderRequestBody = {
-    orderNumber: string;
     totalPrice: number;
 };
 
@@ -35,20 +34,15 @@ export class OrderController {
             return;
         }
 
-        const { orderNumber, totalPrice }: OrderRequestBody = req.body;
+        const { totalPrice }: OrderRequestBody = req.body;
 
-        if (!orderNumber || !totalPrice) {
-            res.status(400).json({ error: "orderNumber en totalPrice zijn verplicht" });
+        if (!totalPrice) {
+            res.status(400).json({ error: "totalPrice is verplicht" });
             return;
         }
 
         try {
-            const orderId: number = await this._orderService.createOrder(
-                userId,
-                orderNumber,
-                totalPrice
-            );
-
+            const { orderId, orderNumber } = await this._orderService.createOrder(userId, totalPrice);
             await this._orderService.saveGamesForOrder(userId, orderId);
 
             const email: string = await this._orderService.getUserEmailById(userId);

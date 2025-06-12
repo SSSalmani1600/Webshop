@@ -1,25 +1,29 @@
+import { console } from "node:inspector";
 import { DatabaseService } from "./DatabaseService";
 import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import { randomInt } from "node:crypto";
 
 export class OrderService {
     private readonly _db: DatabaseService = new DatabaseService();
 
     public async createOrder(
         userId: number,
-        orderNumber: string,
         totalPrice: number
-    ): Promise<number> {
+    ): Promise<{ orderId: number; orderNumber: number }> {
         const connection: PoolConnection = await this._db.openConnection();
+
+        const orderNumber: number = randomInt(0, 10);
+
+        console.log("INSERT INTO orders (order_number, total_price, user_id) VALUES (?, ?, ?)", orderNumber, totalPrice, userId);
 
         try {
             const result: ResultSetHeader = await this._db.query<ResultSetHeader>(
                 connection,
-                `INSERT INTO orders (user_id, order_number, total_price, created_at)
-                 VALUES (?, ?, ?, NOW())`,
-                [userId, orderNumber, totalPrice]
+                "INSERT INTO orders (order_number, total_price, user_id) VALUES (?, ?, ?)",
+                orderNumber, totalPrice, userId
             );
 
-            return result.insertId;
+            return { orderId: result.insertId, orderNumber };
         }
         catch (e) {
             throw new Error(`Bestelling maken mislukt: ${e instanceof Error ? e.message : e}`);
@@ -94,7 +98,7 @@ export class OrderService {
 
         try {
             const [rows] = await connection.query<RowDataPacket[]>(
-                "SELECT email FROM users WHERE id = ?",
+                "SELECT email FROM user WHERE id = ?",
                 [userId]
             );
             const result: { email: string } | null = Array.isArray(rows) ? rows[0] as { email: string } : null;
@@ -114,7 +118,7 @@ export class OrderService {
 
         try {
             const [rows] = await connection.query<RowDataPacket[]>(
-                "SELECT username FROM users WHERE id = ?",
+                "SELECT username FROM user WHERE id = ?",
                 [userId]
             );
             const result: { username: string } | null = Array.isArray(rows) ? rows[0] as { username: string } : null;

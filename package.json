@@ -9,6 +9,9 @@
         "src/*"
     ],
     "scripts": {
+        "build": "npm run build --workspace=@webshop/web && npm run build --workspace=@webshop/api",
+        "build:web": "npm run build --workspace=@webshop/web",
+        "build:api": "npm run build --workspace=@webshop/api",
         "typedoc": "npx typedoc"
     },
     "devDependencies": {

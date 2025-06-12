@@ -11,7 +11,6 @@ export class OrderCompleteComponent extends HTMLElement {
     public connectedCallback(): void {
         this.renderLoading();
         void this.loadOrder();
-        void this.clearCart();
     }
 
     private renderLoading(): void {
@@ -208,6 +207,16 @@ export class OrderCompleteComponent extends HTMLElement {
                 </div>
             </div>
         `;
+
+        const returnButton: HTMLAnchorElement | null = this.shadow.querySelector(".return-home");
+
+        if (returnButton) {
+            returnButton.addEventListener("click", async (event: MouseEvent) => {
+                event.preventDefault();
+                await this.clearCart();
+                window.location.href = "/";
+            });
+        }
     }
 }
 

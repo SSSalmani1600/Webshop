@@ -74,6 +74,7 @@ router.get("/welcome-user", (req: Request, res: Response) => welcomeUserControll
 // Cart endpoints
 router.get("/cart", (req: Request, res: Response) => cartController.getCart(req, res));
 router.delete("/cart/item/:id", (req: Request, res: Response) => cartController.deleteCartItem(req, res));
+router.delete("/cart/clear", (req: Request, res: Response) => cartController.clearCart(req, res));
 router.post("/cart/add", (req: Request, res: Response) => addToCartController.addToCart(req, res));
 router.get("/cart/count", (req: Request, res: Response) => navbarController.getCartCount(req, res));
 router.patch("/cart/item/:id/quantity", (req: Request, res: Response) => cartController.updateCartItemQuantity(req, res));

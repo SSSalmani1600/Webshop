@@ -12,7 +12,7 @@ export class OrderService {
     ): Promise<{ orderId: number; orderNumber: number }> {
         const connection: PoolConnection = await this._db.openConnection();
 
-        const orderNumber: number = randomInt(0, 10);
+        const orderNumber: number = randomInt(100000, 999999);
 
         console.log("INSERT INTO orders (order_number, total_price, user_id) VALUES (?, ?, ?)", orderNumber, totalPrice, userId);
 
